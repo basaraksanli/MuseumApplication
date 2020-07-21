@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Museum Application</string>
+    <string name="email">Email:</string>
+    <string name="password">Password:</string>
+    <string name="sign_in_with_email">Sign in with Email</string>
+    <string name="register_with_email">Register with Email</string>
+    <string name="facebook_login_Description">Facebook Login</string>
+    <string name="gmail_login_Description">Gmail Login</string>
+    <string name="huaweiid_login_Description">HuaweiID Login</string>
+    <string name="or_login_with">or Login With:</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="request_verification_code">Request Verification Code</string>
+    <string name="resend_verification_code">Resend Verification Code</string>
+    <string name="repeat_pass">Repeat Pass:</string>
+    <string name="verification_code">Verification Code:</string>
+    <string name="wait_xx_seconds_to_resend_the_verification_code">Wait XX seconds to resend the Verification Code</string>
+    <string name="name">Name</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="menu_settings">Settings</string>
+    <string name="map">Map</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="title_activity_main">MainActivity</string>
+</resources>

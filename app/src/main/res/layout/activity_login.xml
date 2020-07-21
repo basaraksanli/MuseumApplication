@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.auth.LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="100dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:id="@+id/textViewEmail"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/email" />
+
+            <View style="@style/Divider.Vertical" />
+
+            <EditText
+                android:id="@+id/editTextTextEmailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:id="@+id/textViewPassword"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="@string/password" />
+            <View style="@style/Divider.Vertical" />
+
+            <EditText
+                android:id="@+id/editTextTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/signinWithEmailButton"
+            android:layout_width="256dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:text="@string/sign_in_with_email"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="50dp"
+            android:textColor="#ffffff"/>
+        <Button
+            android:id="@+id/registerWithEmailButton"
+            android:layout_width="256dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:text="@string/register_with_email"
+            android:background="@color/colorPrimary"
+            android:layout_marginTop="5dp"
+            android:textColor="#ffffff"
+            android:onClick="registerButtonClicked"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/or_login_with"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/HuaweiIDButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/huaweilogo"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="75dp"
+                android:padding="5dp"
+                android:background="@color/colorPrimary"
+                android:contentDescription="@string/huaweiid_login_Description"
+                android:layout_marginEnd="3dp"/>
+
+            <ImageButton
+                android:id="@+id/button2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/googlelogo"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/gmail_login_Description"
+                android:background="@color/colorPrimary"
+                android:layout_marginEnd="3dp"/>
+
+            <ImageButton
+                android:id="@+id/button3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/facebooklogo"
+                android:padding="5dp"
+                android:background="@color/colorPrimary"
+                android:contentDescription="@string/facebook_login_Description" />
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

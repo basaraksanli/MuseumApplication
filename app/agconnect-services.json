@@ -1,0 +1,30 @@
+{
+	"agcgw":{
+		"backurl":"connect-dre.dbankcloud.cn",
+		"url":"connect-dre.hispace.hicloud.com"
+	},
+	"client":{
+		"cp_id":"5190090000026402810",
+		"product_id":"736430079244564595",
+		"client_id":"406509788520776768",
+		"client_secret":"F949948A67697D416B2772D1EAD549B18942767141E3680105BFF6B743AFE347",
+		"app_id":"102561777",
+		"package_name":"com.example.museumapplication",
+		"api_key":"CgB6e3x9CJLwZFmYaBB4a5BnglIhGyV/XDb0mIuMuVC8PcmLJp1BlHwnbBeNr5Rz4LoFmXUJA0LkGu07uPe4c8Lx"
+	},
+	"service":{
+		"analytics":{
+			"collector_url":"datacollector-dre.dt.hicloud.com,datacollector-dre.dt.dbankcloud.cn",
+			"resource_id":"p1",
+			"channel_id":""
+		},
+		"cloudstorage":{
+			"storage_url":"https://agc-storage-dre.platform.dbankcloud.cn"
+		},
+		"ml":{
+			"mlservice_url":"ml-api-dre.ai.dbankcloud.com,ml-api-dre.ai.dbankcloud.cn"
+		}
+	},
+	"region":"DE",
+	"configuration_version":"1.0"
+}
