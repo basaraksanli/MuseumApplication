@@ -9,12 +9,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.museumapplication.R;
+import com.example.museumapplication.utils.AuthProviders.IBaseAuth;
 import com.example.museumapplication.utils.AuthUtils;
 import com.example.museumapplication.utils.AuthProviders.EmailAuth;
 
 public class SignupActivity extends AppCompatActivity {
 
-    EmailAuth emailAuth;
+    IBaseAuth emailAuth;
     EditText email;
     EditText password;
     EditText repeatPass;
@@ -27,7 +28,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        emailAuth = new EmailAuth();
+
         email=  findViewById(R.id.emailEditText);
         password = findViewById(R.id.passwordEditText);
         repeatPass= findViewById(R.id.repeatPassEditText);
@@ -37,15 +38,19 @@ public class SignupActivity extends AppCompatActivity {
         requestCodeButton = findViewById(R.id.requestCodeButton);
         timerText = findViewById(R.id.timerText);
 
+        emailAuth = new EmailAuth();
+
     }
 
     public void requestVerificationButtonClicked(View view) {
-        emailAuth.createVerificationCode(email.getText().toString(), requestCodeButton, timerText, this);
+        ((EmailAuth)emailAuth).createVerificationCode(this);
     }
 
     public void registerButtonClicked(View view) {
+
         if(AuthUtils.checkFields(email, password, repeatPass,verificationCode,name)){
-            emailAuth.register(email.getText().toString(), password.getText().toString(), verificationCode.getText().toString(), this);
+            ((EmailAuth)emailAuth).setCredentialInfo(email.getText().toString(), password.getText().toString(), verificationCode.getText().toString(), this);
+            ((EmailAuth)emailAuth).register();
         }
     }
 
