@@ -56,7 +56,11 @@ public class HuaweiAuth implements IBaseAuth {
         scopeList.add(new Scope(HwIDConstant.SCOPE.ACCOUNT_BASEPROFILE));
         scopeList.add(new Scope(HwIDConstant.SCOPE.SCOPE_ACCOUNT_EMAIL));
         huaweiIdAuthParamsHelper.setScopeList(scopeList);
-        HuaweiIdAuthParams authParams = huaweiIdAuthParamsHelper.setAccessToken().setIdToken().createParams();
+        HuaweiIdAuthParams authParams = huaweiIdAuthParamsHelper.
+                setEmail().
+                setAccessToken().
+                setIdToken().
+                createParams();
 
         service = HuaweiIdAuthManager.getService((LoginActivity) context, authParams);
     }
@@ -78,6 +82,7 @@ public class HuaweiAuth implements IBaseAuth {
         Task<AuthHuaweiId> authHuaweiIdTask = HuaweiIdAuthManager.parseAuthResultFromIntent(data);
         if (authHuaweiIdTask.isSuccessful()) {
             AuthHuaweiId huaweiAccount = authHuaweiIdTask.getResult();
+            new UserLoggedIn(huaweiAccount.getUid(), huaweiAccount.getDisplayName(), huaweiAccount.getEmail());
             Log.i("Huawei Login:", "accessToken:" + huaweiAccount.getAccessToken());
             authWithHuawei(huaweiAccount);
 
@@ -94,7 +99,7 @@ public class HuaweiAuth implements IBaseAuth {
             public void onSuccess(SignInResult signInResult) {
                 // onSuccess
                 AGConnectUser user = signInResult.getUser();
-                new UserLoggedIn(user.getUid(), user.getDisplayName() ,user.getEmail());
+
 
                 Intent home = new Intent(context, HomeActivity.class);
                 context.startActivity(home);

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.example.museumapplication.R;
 import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectUser;
+
+import org.w3c.dom.Text;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -57,9 +60,20 @@ public class HomeActivity extends AppCompatActivity {
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_map)
                 .setDrawerLayout(drawer)
                 .build();
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        setNavViewHeader(navigationView);
+
+    }
+    public void setNavViewHeader(NavigationView nav){
+        TextView email = nav.getHeaderView(0).findViewById(R.id.emailTextView);
+        TextView name = nav.getHeaderView(0).findViewById(R.id.nameTextView);
+
+        name.setText(UserLoggedIn.getName());
+        email.setText(UserLoggedIn.getEmail());
     }
 
     @Override

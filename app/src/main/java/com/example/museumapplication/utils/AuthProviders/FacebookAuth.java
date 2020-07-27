@@ -14,6 +14,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.Login;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -36,14 +37,17 @@ public class FacebookAuth implements IBaseAuth {
 
         this.context = context;
 
+
         auth = AGConnectAuth.getInstance();
 
         mCallbackManager = CallbackManager.Factory.create();
         loginButton = ((LoginActivity) context).findViewById(R.id.facebookButton);
+        loginButton.setPermissions("email","public_profile");
     }
 
     @Override
     public void login() {
+
         LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {

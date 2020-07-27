@@ -42,6 +42,7 @@ public class GoogleAuth implements IBaseAuth ,GoogleApiClient.OnConnectionFailed
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.google_client_id))
+                .requestEmail()
                 .requestProfile()
                 .build();
         client = new GoogleApiClient.Builder(context.getApplicationContext())
