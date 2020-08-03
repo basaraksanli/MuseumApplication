@@ -1,35 +1,54 @@
 package com.example.museumapplication.data;
 
-import android.content.Context;
-
-import com.example.museumapplication.utils.AuthProviders.EmailAuth;
-import com.example.museumapplication.utils.AuthProviders.FacebookAuth;
-import com.example.museumapplication.utils.AuthProviders.GoogleAuth;
-import com.example.museumapplication.utils.AuthProviders.HuaweiAuth;
-import com.example.museumapplication.utils.AuthProviders.IBaseAuth;
 
 public class UserLoggedIn {
-    private static String uID;
-    private static String name;
-    private static String email;
+    //Singleton
+    private static UserLoggedIn instance = new UserLoggedIn();
 
-    public UserLoggedIn(String uID, String name, String email) {
-        UserLoggedIn.uID = uID;
-        UserLoggedIn.name = name;
-        UserLoggedIn.email = email;
+    private String UID;
+    private String providerUID;
+    private String name;
+    private String email;
+    private String photoUrl;
+
+
+    public void setUser(String UID,String providerUID, String email, String name, String photoUrl) {
+        this.UID = UID;
+        this.providerUID = providerUID;
+        this.name = name;
+        this.email = email;
+        this.photoUrl = photoUrl;
     }
 
-    public static String getuID() {
-        return uID;
+    public static UserLoggedIn getInstance() {
+        return instance;
     }
 
-    public static String getName() {
+    public String getProviderUID() {
+        return providerUID;
+    }
+
+    public String getName() {
         return name;
     }
 
-    public static String getEmail() {
+    public String getEmail() {
         return email;
     }
 
+    public String getUID() {
+        return UID;
+    }
 
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 }

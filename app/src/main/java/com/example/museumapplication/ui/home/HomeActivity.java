@@ -2,12 +2,20 @@ package com.example.museumapplication.ui.home;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -18,8 +26,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.museumapplication.data.UserLoggedIn;
+import com.example.museumapplication.ui.home.map.MapFragment;
 import com.example.museumapplication.utils.AuthProviders.IBaseAuth;
-import com.example.museumapplication.utils.AuthUtils;
 import com.facebook.login.LoginManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -27,9 +35,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.example.museumapplication.R;
 import com.huawei.agconnect.auth.AGConnectAuth;
-import com.huawei.agconnect.auth.AGConnectUser;
 
-import org.w3c.dom.Text;
+import java.io.InputStream;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -57,7 +64,7 @@ public class HomeActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_map)
+                R.id.nav_home, R.id.nav_settings, R.id.nav_map)
                 .setDrawerLayout(drawer)
                 .build();
 
@@ -72,8 +79,35 @@ public class HomeActivity extends AppCompatActivity {
         TextView email = nav.getHeaderView(0).findViewById(R.id.emailTextView);
         TextView name = nav.getHeaderView(0).findViewById(R.id.nameTextView);
 
-        name.setText(UserLoggedIn.getName());
-        email.setText(UserLoggedIn.getEmail());
+        name.setText(UserLoggedIn.getInstance().getName());
+        email.setText(UserLoggedIn.getInstance().getEmail());
+        new DownloadImageTask((de.hdodenhof.circleimageview.CircleImageView)nav.getHeaderView(0).findViewById(R.id.profilePictureView))
+                .execute(UserLoggedIn.getInstance().getPhotoUrl());
+
+    }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        de.hdodenhof.circleimageview.CircleImageView bmImage;
+
+        public DownloadImageTask(de.hdodenhof.circleimageview.CircleImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
     }
 
     @Override
@@ -113,4 +147,5 @@ public class HomeActivity extends AppCompatActivity {
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
     }
+
 }

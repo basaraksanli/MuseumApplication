@@ -49,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
     public void registerButtonClicked(View view) {
 
         if(AuthUtils.checkFields(email, password, repeatPass,verificationCode,name)){
-            ((EmailAuth)emailAuth).setCredentialInfo(email.getText().toString(), password.getText().toString(), verificationCode.getText().toString(), this);
+            ((EmailAuth)emailAuth).setCredentialInfo(email.getText().toString(), password.getText().toString(),verificationCode.getText().toString() ,name.getText().toString() , this);
             ((EmailAuth)emailAuth).register();
         }
     }

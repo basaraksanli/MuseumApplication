@@ -2,9 +2,10 @@ package com.example.museumapplication.ui.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.media.FaceDetector;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -18,9 +19,11 @@ import com.example.museumapplication.utils.AuthProviders.GoogleAuth;
 import com.example.museumapplication.utils.AuthProviders.HuaweiAuth;
 import com.example.museumapplication.utils.AuthProviders.IBaseAuth;
 import com.example.museumapplication.utils.AuthUtils;
+import com.example.museumapplication.utils.CloudDBHelper;
 import com.facebook.login.widget.LoginButton;
 import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectUser;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,23 +38,23 @@ public class LoginActivity extends AppCompatActivity {
 
         AGConnectAuth agConnectAuth = AGConnectAuth.getInstance();
         ImageButton googleButton= findViewById(R.id.googleButton);
+
         if(!AuthUtils.checkGoogleServices(this)) {
             googleButton.setEnabled(false);
             googleButton.setVisibility(View.GONE);
         }
 
-        if (agConnectAuth.getCurrentUser() == null) {
-
-
-        } else {
+        if (agConnectAuth.getCurrentUser() != null) {
             AGConnectUser user =agConnectAuth.getCurrentUser();
-            new UserLoggedIn(user.getUid(), user.getDisplayName(), user.getEmail());
+            //UserLoggedIn.getInstance().setUser(user.getUid(), user.getDisplayName() ,user.getEmail());
 
             Intent homeActivity = new Intent(this, HomeActivity.class);
             startActivity(homeActivity);
         }
         email = findViewById(R.id.editEmail);
         password = findViewById(R.id.editPassword);
+
+        CloudDBHelper.getInstance().initAGConnectCloudDB(this);
     }
 
     public void registerButtonClicked(View v) {

@@ -1,32 +1,23 @@
 package com.example.museumapplication.utils.AuthProviders;
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 import com.example.museumapplication.R;
+import com.example.museumapplication.data.User;
 import com.example.museumapplication.data.UserLoggedIn;
 import com.example.museumapplication.ui.auth.LoginActivity;
 import com.example.museumapplication.ui.home.HomeActivity;
 import com.example.museumapplication.utils.AuthUtils;
+import com.example.museumapplication.utils.CloudDBHelper;
 import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectAuthCredential;
 import com.huawei.agconnect.auth.AGConnectUser;
 import com.huawei.agconnect.auth.HwIdAuthProvider;
-import com.huawei.agconnect.auth.SignInResult;
+import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
 import com.huawei.hmf.tasks.OnFailureListener;
-import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.common.ApiException;
 import com.huawei.hms.support.api.entity.auth.Scope;
@@ -72,17 +63,12 @@ public class HuaweiAuth implements IBaseAuth {
     }
 
 
-    @Override
-    public AGConnectUser getCurrentUser() {
-        return auth.getCurrentUser();
-    }
-
-
     public void activityResult(Intent data) {
         Task<AuthHuaweiId> authHuaweiIdTask = HuaweiIdAuthManager.parseAuthResultFromIntent(data);
         if (authHuaweiIdTask.isSuccessful()) {
             AuthHuaweiId huaweiAccount = authHuaweiIdTask.getResult();
-            new UserLoggedIn(huaweiAccount.getUid(), huaweiAccount.getDisplayName(), huaweiAccount.getEmail());
+
+
             Log.i("Huawei Login:", "accessToken:" + huaweiAccount.getAccessToken());
             authWithHuawei(huaweiAccount);
 
@@ -94,17 +80,29 @@ public class HuaweiAuth implements IBaseAuth {
 
     private void authWithHuawei(AuthHuaweiId huaweiAccount) {
         AGConnectAuthCredential credential = HwIdAuthProvider.credentialWithToken(huaweiAccount.getAccessToken());
-        AGConnectAuth.getInstance().signIn(credential).addOnSuccessListener(new OnSuccessListener<SignInResult>() {
-            @Override
-            public void onSuccess(SignInResult signInResult) {
-                // onSuccess
-                AGConnectUser user = signInResult.getUser();
+        AGConnectAuth.getInstance().signIn(credential).addOnSuccessListener(signInResult -> {
+            // onSuccess
+            AGConnectUser agcUser = signInResult.getUser();
 
 
-                Intent home = new Intent(context, HomeActivity.class);
-                context.startActivity(home);
-                AuthUtils.enableAllItems(((LoginActivity) context).findViewById(R.id.linearLayout));
+            if(CloudDBHelper.getInstance().checkFirstTimeUser(huaweiAccount.getEmail()))
+            {
+                User user = new User(agcUser.getUid(), huaweiAccount.getUid(), huaweiAccount.getEmail(),huaweiAccount.getGivenName()+ " "+ huaweiAccount.getFamilyName(), huaweiAccount.getAvatarUriString());
+                CloudDBHelper.getInstance().insertUser(user);
+                UserLoggedIn.getInstance().setUser(user.getUID(), user.getProviderUID() ,user.getEmail(), user.getDisplayName(), user.getPhotoURL());
             }
+            else{
+                try {
+                    User user= CloudDBHelper.getInstance().queryByEmail(huaweiAccount.getEmail());
+                    UserLoggedIn.getInstance().setUser(user.getUID(), user.getProviderUID() ,user.getEmail(), user.getDisplayName(), user.getPhotoURL());
+                } catch (AGConnectCloudDBException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Intent home = new Intent(context, HomeActivity.class);
+            context.startActivity(home);
+            AuthUtils.enableAllItems(((LoginActivity) context).findViewById(R.id.linearLayout));
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception e) {
