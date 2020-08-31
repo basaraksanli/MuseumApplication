@@ -2,7 +2,6 @@ package com.example.museumapplication.ui.home;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -10,12 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,18 +20,15 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.museumapplication.R;
 import com.example.museumapplication.data.UserLoggedIn;
-import com.example.museumapplication.ui.home.map.MapFragment;
 import com.example.museumapplication.utils.AuthProviders.IBaseAuth;
 import com.facebook.login.LoginManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-
-import com.example.museumapplication.R;
 import com.huawei.agconnect.auth.AGConnectAuth;
 
 import java.io.InputStream;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -49,14 +41,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         auth = AGConnectAuth.getInstance();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -81,7 +66,7 @@ public class HomeActivity extends AppCompatActivity {
 
         name.setText(UserLoggedIn.getInstance().getName());
         email.setText(UserLoggedIn.getInstance().getEmail());
-        new DownloadImageTask((de.hdodenhof.circleimageview.CircleImageView)nav.getHeaderView(0).findViewById(R.id.profilePictureView))
+        new DownloadImageTask(nav.getHeaderView(0).findViewById(R.id.profilePictureView))
                 .execute(UserLoggedIn.getInstance().getPhotoUrl());
 
     }
@@ -99,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
                 InputStream in = new java.net.URL(urldisplay).openStream();
                 mIcon11 = BitmapFactory.decodeStream(in);
             } catch (Exception e) {
-                Log.e("Error", e.getMessage());
+                Log.e("Error", Objects.requireNonNull(e.getMessage()));
                 e.printStackTrace();
             }
             return mIcon11;
@@ -107,6 +92,7 @@ public class HomeActivity extends AppCompatActivity {
 
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
+            UserLoggedIn.getInstance().setProfilePicture(result);
         }
     }
 

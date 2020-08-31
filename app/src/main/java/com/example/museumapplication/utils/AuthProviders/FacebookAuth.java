@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.museumapplication.R;
+import com.example.museumapplication.data.LinkedAccount;
 import com.example.museumapplication.data.User;
 import com.example.museumapplication.data.UserLoggedIn;
 import com.example.museumapplication.ui.auth.LoginActivity;
@@ -25,6 +26,7 @@ import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectAuthCredential;
 import com.huawei.agconnect.auth.AGConnectUser;
 import com.huawei.agconnect.auth.FacebookAuthProvider;
+import com.huawei.agconnect.cloud.database.CloudDBZoneTask;
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
 
 import org.json.JSONException;
@@ -82,12 +84,13 @@ public class FacebookAuth implements IBaseAuth {
                 accessToken,
                 (object, response) -> {
                     try {
-                        //UserLoggedIn.getInstance().setUser("",object.getString("id"), object.getString("name") , object.getString("email"), "https://graph.facebook.com/"+ object.getString("id") + "/picture?type=large");
+
                         if(CloudDBHelper.getInstance().checkFirstTimeUser(object.getString("email")))
                         {
                             User user = new User(UserID, object.getString("id"), object.getString("email"),object.getString("name"), "https://graph.facebook.com/"+ object.getString("id") + "/picture?type=large");
-                            CloudDBHelper.getInstance().insertUser(user);
-                            UserLoggedIn.getInstance().setUser(user.getUID(), user.getProviderUID() ,user.getEmail(), user.getDisplayName(), user.getPhotoURL());
+                            CloudDBHelper.getInstance().upsertUser(user);
+                            CloudDBHelper.getInstance().upsertAccountLinkInfo(new LinkedAccount(UserID,user.getUID()));
+                            UserLoggedIn.getInstance().setUser(user);
 
                             Intent home = new Intent(context, HomeActivity.class);
                             context.startActivity(home);
@@ -95,7 +98,8 @@ public class FacebookAuth implements IBaseAuth {
                         else{
                             try {
                                 User user= CloudDBHelper.getInstance().queryByEmail(object.getString("email"));
-                                UserLoggedIn.getInstance().setUser(user.getUID(), user.getProviderUID() ,user.getEmail(), user.getDisplayName(), user.getPhotoURL());
+                                CloudDBHelper.getInstance().upsertAccountLinkInfo(new LinkedAccount(object.getString("id"),user.getUID()));
+                                UserLoggedIn.getInstance().setUser(user);
 
                                 Intent home = new Intent(context, HomeActivity.class);
                                 context.startActivity(home);

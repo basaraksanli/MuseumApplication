@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.museumapplication.data.LinkedAccount;
 import com.example.museumapplication.data.ObjectTypeInfoHelper;
 import com.example.museumapplication.data.User;
 import com.example.museumapplication.data.UserLoggedIn;
@@ -19,8 +20,8 @@ public class CloudDBHelper {
     //Singleton
     private static CloudDBHelper instance = new CloudDBHelper();
 
-    AGConnectCloudDB mCloudDB;
-    CloudDBZone mCloudDBZone;
+    public AGConnectCloudDB mCloudDB;
+    public CloudDBZone mCloudDBZone=null;
 
     public CloudDBHelper(){
 
@@ -32,6 +33,7 @@ public class CloudDBHelper {
 
     public void initAGConnectCloudDB(Context context) {
         AGConnectCloudDB.initialize(context);
+
 
         mCloudDB =AGConnectCloudDB.getInstance();
         try {
@@ -48,14 +50,34 @@ public class CloudDBHelper {
         } catch (AGConnectCloudDBException e) {
             Log.w("Login Activity:", "openCloudDBZone: " + e.getMessage());
         }
-    }
 
-    public void insertUser(User user) {
+
+    }
+    public void closeCloudDBZone() {
+        try {
+            mCloudDB.closeCloudDBZone(mCloudDBZone);
+        } catch (AGConnectCloudDBException e) {
+            Log.w("CLOUD DB:", "closeCloudDBZoneError: " + e.getMessage());
+        }
+    }
+    public void upsertUser(User user) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:","CloudDBZone is null, try re-open it");
             return;
         }
         CloudDBZoneTask<Integer> upsertTask = mCloudDBZone.executeUpsert(user);
+
+        upsertTask.addOnSuccessListener(cloudDBZoneResult -> Log.d("CLOUD DB:", "insert " + cloudDBZoneResult + " records")).addOnFailureListener(e -> {
+            Log.e("CLOUD DB:", "Insert user info failed");
+            e.printStackTrace();
+        });
+    }
+    public void upsertAccountLinkInfo(LinkedAccount account){
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:","CloudDBZone is null, try re-open it");
+            return;
+        }
+        CloudDBZoneTask<Integer> upsertTask = mCloudDBZone.executeUpsert(account);
 
         upsertTask.addOnSuccessListener(cloudDBZoneResult -> Log.d("CLOUD DB:", "insert " + cloudDBZoneResult + " records")).addOnFailureListener(e -> {
             Log.e("CLOUD DB:", "Insert user info failed");
@@ -72,19 +94,62 @@ public class CloudDBHelper {
                 CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
         queryTask.await();
         if (queryTask.getException() != null) {
-            Log.e("CLOUD DB:" ,"Query failed" );
+            Log.e("CLOUD DB:" ,"Query failed" + queryTask.getException() );
+            return null;
+        }
+        return queryTask.getResult();
+    }
+    public CloudDBZoneSnapshot<LinkedAccount> queryAccountInfo(CloudDBZoneQuery<LinkedAccount> query) {
+        if (mCloudDBZone == null) {
+            Log.w("CLOUD DB", "CloudDBZone is null, try re-open it");
+            return null;
+        }
+        CloudDBZoneTask<CloudDBZoneSnapshot<LinkedAccount>> queryTask = mCloudDBZone.executeQuery(query,
+                CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
+        queryTask.await();
+        if (queryTask.getException() != null) {
+            Log.e("CLOUD DB:" ,"Query failed" + queryTask.getException());
             return null;
         }
         return queryTask.getResult();
     }
     public User queryByEmail(String email) throws AGConnectCloudDBException {
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:","CloudDBZone is null, try re-open it");
+            return null;
+        }
         CloudDBZoneQuery<User> query = CloudDBZoneQuery.where(User.class).equalTo("Email", email);
         CloudDBZoneSnapshot<User> result = queryUser(query);
-        return result.getSnapshotObjects().get(0);
+        if (result !=null)
+            return result.getSnapshotObjects().get(0);
+        else return null;
+    }
+    public User queryByID(String ID) throws AGConnectCloudDBException {
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:","CloudDBZone is null, try re-open it");
+            return null;
+        }
+        CloudDBZoneQuery<User> query = CloudDBZoneQuery.where(User.class).equalTo("UID", ID);
+        CloudDBZoneSnapshot<User> result = queryUser(query);
+        if (result !=null)
+            return result.getSnapshotObjects().get(0);
+        else return null;
     }
     public boolean checkFirstTimeUser(String email){
+
         CloudDBZoneQuery<User> query = CloudDBZoneQuery.where(User.class).equalTo("Email", email);
         CloudDBZoneSnapshot<User> result = queryUser(query);
         return result.getSnapshotObjects().size() == 0;
+    }
+    public String getPrimaryAccountID_LinkedAccount(String LinkedID) throws AGConnectCloudDBException {
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:","CloudDBZone is null, try re-open it");
+            return null;
+        }
+        CloudDBZoneQuery<LinkedAccount> query = CloudDBZoneQuery.where(LinkedAccount.class).equalTo("LinkedID", LinkedID);
+        CloudDBZoneSnapshot<LinkedAccount> result = queryAccountInfo(query);
+        if (result !=null)
+            return result.getSnapshotObjects().get(0).getAccountID();
+        else return null;
     }
 }

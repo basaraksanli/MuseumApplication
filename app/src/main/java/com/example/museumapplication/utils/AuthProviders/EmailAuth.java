@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.museumapplication.R;
+import com.example.museumapplication.data.LinkedAccount;
 import com.example.museumapplication.data.User;
 import com.example.museumapplication.data.UserLoggedIn;
 import com.example.museumapplication.ui.auth.LoginActivity;
@@ -27,6 +28,7 @@ import com.huawei.agconnect.auth.EmailAuthProvider;
 import com.huawei.agconnect.auth.EmailUser;
 import com.huawei.agconnect.auth.VerifyCodeResult;
 import com.huawei.agconnect.auth.VerifyCodeSettings;
+import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
 import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hmf.tasks.TaskExecutors;
@@ -34,24 +36,29 @@ import com.huawei.hmf.tasks.TaskExecutors;
 import java.util.Locale;
 import java.util.Objects;
 
-public class EmailAuth implements IBaseAuth{
+public class EmailAuth implements IBaseAuth {
     AGConnectAuth auth;
     String email;
     String password;
     String name;
     String verificationCode;
     Context context;
-    public EmailAuth(String email, String password, String verificationCode, Context context){
-        setCredentialInfo(email,password, name, verificationCode,context);
-        auth= AGConnectAuth.getInstance();
-    }
-    public EmailAuth(String email, String password,Context context){
-        setCredentialInfo(email,password,"", name ,context);
-        auth= AGConnectAuth.getInstance();
-    }
-    public EmailAuth() { auth= AGConnectAuth.getInstance(); }
 
-    public void setCredentialInfo(String email, String password, String verificationCode , String Name, Context context){
+    public EmailAuth(String email, String password, String verificationCode, Context context) {
+        setCredentialInfo(email, password, name, verificationCode, context);
+        auth = AGConnectAuth.getInstance();
+    }
+
+    public EmailAuth(String email, String password, Context context) {
+        setCredentialInfo(email, password, "", name, context);
+        auth = AGConnectAuth.getInstance();
+    }
+
+    public EmailAuth() {
+        auth = AGConnectAuth.getInstance();
+    }
+
+    public void setCredentialInfo(String email, String password, String verificationCode, String Name, Context context) {
         this.email = email;
         this.password = password;
         this.verificationCode = verificationCode;
@@ -64,23 +71,28 @@ public class EmailAuth implements IBaseAuth{
 
         AGConnectAuthCredential credential = EmailAuthProvider.credentialWithPassword(email, password);
 
-        AuthUtils.disableAllItems(((LoginActivity)context).findViewById(R.id.linearLayout));
+        AuthUtils.disableAllItems(((LoginActivity) context).findViewById(R.id.linearLayout));
 
         AGConnectAuth.getInstance().signIn(credential)
                 .addOnSuccessListener(signInResult -> {
                     // Obtain sign-in information.
-                    Log.d("Login:" , "Success");
-                    AGConnectUser user = signInResult.getUser();
-                    //UserLoggedIn.getInstance().setUser(user.getUid(), user.getDisplayName() ,user.getEmail());
+                    Log.d("Login:", "Success");
+                    User user=null;
+                    try {
+                        user = CloudDBHelper.getInstance().queryByEmail(email);
+                    } catch (AGConnectCloudDBException e) {
+                        e.printStackTrace();
+                    }
+                    UserLoggedIn.getInstance().setUser(user);
 
                     Intent home = new Intent(context, HomeActivity.class);
                     context.startActivity(home);
-                    AuthUtils.enableAllItems(((LoginActivity)context).findViewById(R.id.linearLayout));
+                    AuthUtils.enableAllItems(((LoginActivity) context).findViewById(R.id.linearLayout));
                 })
                 .addOnFailureListener(e -> {
                     Log.d("Login:", "Fail " + e);
-                    Toast.makeText(context, e.getMessage() , Toast.LENGTH_LONG).show();
-                    AuthUtils.enableAllItems(((LoginActivity)context).findViewById(R.id.linearLayout));
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                    AuthUtils.enableAllItems(((LoginActivity) context).findViewById(R.id.linearLayout));
                 });
     }
 
@@ -94,22 +106,37 @@ public class EmailAuth implements IBaseAuth{
         AGConnectAuth.getInstance().createUser(emailUser)
                 .addOnSuccessListener(signInResult -> {
                     // After an account is created, the user is signed in by default.
-                    Log.d("Register:", "Success" );
+                    Log.d("Register:", "Success");
                     User user = new User(signInResult.getUser().getUid(), signInResult.getUser().getUid(), email, name, "");
-                    CloudDBHelper.getInstance().insertUser(user);
+                    if (CloudDBHelper.getInstance().checkFirstTimeUser(email)) {
+                        CloudDBHelper.getInstance().upsertUser(user);
+                        CloudDBHelper.getInstance().upsertAccountLinkInfo(new LinkedAccount(user.getUID(), user.getUID()));
+                        UserLoggedIn.getInstance().setUser(user);
+                    } else {
+                        User primaryAccount;
+                        try {
+                            primaryAccount = CloudDBHelper.getInstance().queryByEmail(email);
+                            CloudDBHelper.getInstance().upsertAccountLinkInfo(new LinkedAccount(user.getUID(), primaryAccount.getUID()));
+                            UserLoggedIn.getInstance().setUser(primaryAccount);
+                        } catch (AGConnectCloudDBException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
                     Intent homeActivity = new Intent(context, HomeActivity.class);
                     context.startActivity(homeActivity);
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("Register:", "Fail" + e );
+                    Log.d("Register:", "Fail" + e);
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
-    public void createVerificationCode(final Context context){
+    public void createVerificationCode(final Context context) {
 
-        EditText email = ((SignupActivity)context).findViewById(R.id.emailEditText);
-        if(!AuthUtils.isFieldBlank(email)) {
+        EditText email = ((SignupActivity) context).findViewById(R.id.emailEditText);
+        if (!AuthUtils.isFieldBlank(email)) {
 
             Button toBeSetDisabled = ((SignupActivity) context).findViewById(R.id.requestCodeButton);
             TextView timerText = ((SignupActivity) context).findViewById(R.id.timerText);
@@ -149,20 +176,15 @@ public class EmailAuth implements IBaseAuth{
                     Toast warningMessage = Toast.makeText(context, "You have already requested verification code for this email recently . \n\nPlease wait 2 minutes before requesting new one.", Toast.LENGTH_LONG);
                     warningMessage.setGravity(Gravity.TOP, 0, 135);
                     warningMessage.show();
-                }
-                else
-                {
+                } else {
                     Toast warningMessage = Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG);
                     warningMessage.setGravity(Gravity.TOP, 0, 135);
                     warningMessage.show();
                 }
             });
-        }
-        else
+        } else
             email.setError("Fill this field to get verification code!");
     }
-
-
 
 
 }

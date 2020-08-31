@@ -1,28 +1,23 @@
 package com.example.museumapplication.ui.auth;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.museumapplication.R;
-import com.example.museumapplication.data.UserLoggedIn;
-import com.example.museumapplication.ui.home.HomeActivity;
 import com.example.museumapplication.utils.AuthProviders.EmailAuth;
 import com.example.museumapplication.utils.AuthProviders.FacebookAuth;
 import com.example.museumapplication.utils.AuthProviders.GoogleAuth;
 import com.example.museumapplication.utils.AuthProviders.HuaweiAuth;
 import com.example.museumapplication.utils.AuthProviders.IBaseAuth;
 import com.example.museumapplication.utils.AuthUtils;
-import com.example.museumapplication.utils.CloudDBHelper;
 import com.facebook.login.widget.LoginButton;
-import com.huawei.agconnect.auth.AGConnectAuth;
-import com.huawei.agconnect.auth.AGConnectUser;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,29 +28,25 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        AGConnectAuth agConnectAuth = AGConnectAuth.getInstance();
         ImageButton googleButton= findViewById(R.id.googleButton);
+
 
         if(!AuthUtils.checkGoogleServices(this)) {
             googleButton.setEnabled(false);
             googleButton.setVisibility(View.GONE);
         }
 
-        if (agConnectAuth.getCurrentUser() != null) {
-            AGConnectUser user =agConnectAuth.getCurrentUser();
-            //UserLoggedIn.getInstance().setUser(user.getUid(), user.getDisplayName() ,user.getEmail());
-
-            Intent homeActivity = new Intent(this, HomeActivity.class);
-            startActivity(homeActivity);
-        }
         email = findViewById(R.id.editEmail);
         password = findViewById(R.id.editPassword);
 
-        CloudDBHelper.getInstance().initAGConnectCloudDB(this);
     }
+
+
+
 
     public void registerButtonClicked(View v) {
         Intent register = new Intent(this, SignupActivity.class);
@@ -97,7 +88,12 @@ public class LoginActivity extends AppCompatActivity {
             ((FacebookAuth)auth).activityResult(requestCode,resultCode,data);
         }
     }
-
-
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
 
 }

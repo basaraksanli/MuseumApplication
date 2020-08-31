@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.museumapplication.R;
+import com.example.museumapplication.data.LinkedAccount;
 import com.example.museumapplication.data.User;
 import com.example.museumapplication.data.UserLoggedIn;
 import com.example.museumapplication.ui.auth.LoginActivity;
@@ -89,12 +90,14 @@ public class GoogleAuth implements IBaseAuth, GoogleApiClient.OnConnectionFailed
 
                     if (CloudDBHelper.getInstance().checkFirstTimeUser(account.getEmail())) {
                         User user = new User(agcUser.getUid(), account.getId(), account.getEmail(), account.getGivenName() + " " + account.getFamilyName(), Objects.requireNonNull(account.getPhotoUrl()).toString());
-                        CloudDBHelper.getInstance().insertUser(user);
-                        UserLoggedIn.getInstance().setUser(user.getUID(), user.getProviderUID(), user.getEmail(), user.getDisplayName(), user.getPhotoURL());
+                        CloudDBHelper.getInstance().upsertUser(user);
+                        CloudDBHelper.getInstance().upsertAccountLinkInfo(new LinkedAccount(user.getUID(),user.getUID()));
+                        UserLoggedIn.getInstance().setUser(user);
                     } else {
                         try {
                             User user = CloudDBHelper.getInstance().queryByEmail(account.getEmail());
-                            UserLoggedIn.getInstance().setUser(user.getUID(), user.getProviderUID(), user.getEmail(), user.getDisplayName(), user.getPhotoURL());
+                            CloudDBHelper.getInstance().upsertAccountLinkInfo(new LinkedAccount(agcUser.getUid(),user.getUID()));
+                            UserLoggedIn.getInstance().setUser(user);
                         } catch (AGConnectCloudDBException e) {
                             e.printStackTrace();
                         }

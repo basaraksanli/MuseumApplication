@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="com.huawei.hms.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
 
     <application
         android:allowBackup="true"
@@ -15,19 +20,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <service android:name=".utils.AwarenessService" />
+
+        <activity
+            android:name=".ui.home.splash_screen.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.home.HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity android:name=".ui.auth.SignupActivity" />
-        <activity android:name=".ui.auth.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.auth.LoginActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -42,11 +50,10 @@
             android:name="com.huawei.agconnect.core.provider.AGConnectInitializeProvider"
             android:authorities="${applicationId}.AGCInitializeProvider"
             android:exported="false" />
+
         <service
             android:name="com.huawei.agconnect.core.ServiceDiscovery"
             android:exported="false" />
     </application>
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 </manifest>

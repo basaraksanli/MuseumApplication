@@ -1,5 +1,6 @@
 <resources>
     <string name="google_client_id">332211262049-t34jk3di3plslksj6vm27l6lb6pi0k98.apps.googleusercontent.com</string>
+    <string name="api_key">CgB6e3x9CJLwZFmYaBB4a5BnglIhGyV/XDb0mIuMuVC8PcmLJp1BlHwnbBeNr5Rz4LoFmXUJA0LkGu07uPe4c8Lx</string>
     <string name="app_name">Museum Application</string>
     <string name="email">Email:</string>
     <string name="password">Password:</string>
@@ -28,13 +29,16 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
-    <string name="menu_map">Map</string>
+    <string name="notification_channel_id">MuseumPush</string>
+    <string name="menu_map">Nearby Museums</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_logout">Logout</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="menu_home">Home</string>
+    <string name="menu_home">Explore Inside</string>
 
     <string name="facebook_app_id">788902605252338</string>
     <string name="fb_login_protocol_scheme">fb788902605252338</string>
+    <string name="application_logo">Application Logo</string>
+    <string name="Explore">Explore</string>
+    <string name="notification_title">Explore Nearby Museums</string>
 </resources>

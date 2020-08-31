@@ -1,6 +1,8 @@
 package com.example.museumapplication.data;
 
 
+import android.graphics.Bitmap;
+
 public class UserLoggedIn {
     //Singleton
     private static UserLoggedIn instance = new UserLoggedIn();
@@ -10,14 +12,15 @@ public class UserLoggedIn {
     private String name;
     private String email;
     private String photoUrl;
+    private Bitmap profilePicture;
 
 
-    public void setUser(String UID,String providerUID, String email, String name, String photoUrl) {
-        this.UID = UID;
-        this.providerUID = providerUID;
-        this.name = name;
-        this.email = email;
-        this.photoUrl = photoUrl;
+    public void setUser(User user) {
+        this.UID = user.getUID();
+        this.providerUID = user.getProviderUID();
+        this.name = user.getDisplayName();
+        this.email = user.getEmail();
+        this.photoUrl = user.getPhotoURL();
     }
 
     public static UserLoggedIn getInstance() {
@@ -50,5 +53,13 @@ public class UserLoggedIn {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public Bitmap getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(Bitmap profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }
