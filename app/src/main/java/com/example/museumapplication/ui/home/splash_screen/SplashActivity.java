@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Application;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -17,15 +15,13 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.museumapplication.R;
 import com.example.museumapplication.data.User;
 import com.example.museumapplication.data.UserLoggedIn;
 import com.example.museumapplication.ui.auth.LoginActivity;
 import com.example.museumapplication.ui.home.HomeActivity;
-import com.example.museumapplication.utils.CloudDBHelper;
-import com.example.museumapplication.utils.NotificationUtils;
+import com.example.museumapplication.utils.Services.CloudDBHelper;
 import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectUser;
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;

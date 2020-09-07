@@ -45,13 +45,14 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.0'
     implementation 'com.facebook.android:facebook-login:5.15.3'
     implementation 'com.huawei.hms:maps:4.0.1.301'
-    implementation 'com.huawei.hms:location:4.0.3.301'
+    implementation 'com.huawei.hms:location:5.0.0.302'
     implementation 'com.huawei.agconnect:agconnect-database:1.2.1.301'
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'com.huawei.hms:site:4.0.3.300'
     implementation 'com.huawei.hms:awareness:1.0.4.301'
-    implementation 'com.huawei.hms:nearby:5.0.2.300'
+    implementation 'com.huawei.hms:nearby:5.0.0.301'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 apply plugin: 'com.huawei.agconnect'

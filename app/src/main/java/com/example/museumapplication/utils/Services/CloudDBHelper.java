@@ -1,13 +1,12 @@
-package com.example.museumapplication.utils;
+package com.example.museumapplication.utils.Services;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.museumapplication.data.Artifact;
 import com.example.museumapplication.data.LinkedAccount;
 import com.example.museumapplication.data.ObjectTypeInfoHelper;
 import com.example.museumapplication.data.User;
-import com.example.museumapplication.data.UserLoggedIn;
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
 import com.huawei.agconnect.cloud.database.CloudDBZone;
 import com.huawei.agconnect.cloud.database.CloudDBZoneConfig;
@@ -26,7 +25,6 @@ public class CloudDBHelper {
     public CloudDBHelper(){
 
     }
-
     public static CloudDBHelper getInstance() {
         return instance;
     }
@@ -85,12 +83,26 @@ public class CloudDBHelper {
         });
     }
 
-    public CloudDBZoneSnapshot<User> queryUser(CloudDBZoneQuery<User> query) {
+    private CloudDBZoneSnapshot<User> queryUser(CloudDBZoneQuery<User> query) {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it");
             return null;
         }
         CloudDBZoneTask<CloudDBZoneSnapshot<User>> queryTask = mCloudDBZone.executeQuery(query,
+                CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
+        queryTask.await();
+        if (queryTask.getException() != null) {
+            Log.e("CLOUD DB:" ,"Query failed" + queryTask.getException() );
+            return null;
+        }
+        return queryTask.getResult();
+    }
+    private CloudDBZoneSnapshot<Artifact> queryArtifact(CloudDBZoneQuery<Artifact> query) {
+        if (mCloudDBZone == null) {
+            Log.w("CLOUD DB", "CloudDBZone is null, try re-open it");
+            return null;
+        }
+        CloudDBZoneTask<CloudDBZoneSnapshot<Artifact>> queryTask = mCloudDBZone.executeQuery(query,
                 CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
         queryTask.await();
         if (queryTask.getException() != null) {
@@ -131,6 +143,17 @@ public class CloudDBHelper {
         }
         CloudDBZoneQuery<User> query = CloudDBZoneQuery.where(User.class).equalTo("UID", ID);
         CloudDBZoneSnapshot<User> result = queryUser(query);
+        if (result !=null)
+            return result.getSnapshotObjects().get(0);
+        else return null;
+    }
+    public Artifact queryArtifactByID(int ID) throws AGConnectCloudDBException {
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:","CloudDBZone is null, try re-open it");
+            return null;
+        }
+        CloudDBZoneQuery<Artifact> query = CloudDBZoneQuery.where(Artifact.class).equalTo("artifactID", ID);
+        CloudDBZoneSnapshot<Artifact> result = queryArtifact(query);
         if (result !=null)
             return result.getSnapshotObjects().get(0);
         else return null;

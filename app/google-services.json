@@ -1,1 +1,18 @@
-{"web":{"client_id":"332211262049-t34jk3di3plslksj6vm27l6lb6pi0k98.apps.googleusercontent.com","project_id":"museum-app-283317","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"gedgAxXWbjt--OucLVXozH-G","redirect_uris":["https://museum-app-283317.firebaseapp.com/__/auth/handler"],"javascript_origins":["http://localhost","http://localhost:5000","https://museum-app-283317.firebaseapp.com"]}}
+{
+  "web": {
+    "client_id": "332211262049-t34jk3di3plslksj6vm27l6lb6pi0k98.apps.googleusercontent.com",
+    "project_id": "museum-app-283317",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "gedgAxXWbjt--OucLVXozH-G",
+    "redirect_uris": [
+      "https://museum-app-283317.firebaseapp.com/__/auth/handler"
+    ],
+    "javascript_origins": [
+      "http://localhost",
+      "http://localhost:5000",
+      "https://museum-app-283317.firebaseapp.com"
+    ]
+  }
+}

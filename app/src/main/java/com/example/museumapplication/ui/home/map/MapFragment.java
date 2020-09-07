@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -53,13 +55,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              ViewGroup container, Bundle savedInstanceState) {
         MapViewModel mapViewModel = ViewModelProviders.of(this).get(MapViewModel.class);
         View root = inflater.inflate(R.layout.fragment_map, container, false);
-
+        requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mSavedInstnceState = savedInstanceState;
 
         mapUtils = new MapUtils();
         mapUtils.resetInfo();
         FloatingActionButton fabLocation = root.findViewById(R.id.fabLocation);
         fabLocation.setOnClickListener(view -> mapUtils.animateCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), hMap, 15f));
+
+        Button searchForMuseumButton = root.findViewById(R.id.searchForMuseumButton);
+        searchForMuseumButton.setOnClickListener(v ->
+                mapUtils.searchMuseums(getContext(), currentLocation, 50000, hMap, false));
 
 
 
@@ -125,14 +131,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 if (firstTime) {
                     progressBar.setVisibility(View.GONE);
 
-                    if(requireActivity().getIntent().getExtras()==null ) {
-                        mapUtils.searchMuseums(getContext(), currentLocation, 50000, hMap, false);
+                    if(requireActivity().getIntent().getExtras()==null )
                         mapUtils.moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), hMap, 15f);
-                    }
-                    else
-                    {
-                        mapUtils.searchMuseums(getContext() , currentLocation, 50000, hMap, true);
-                    }
+
                     firstTime = false;
 
                 }
@@ -228,5 +229,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
     }
-
 }

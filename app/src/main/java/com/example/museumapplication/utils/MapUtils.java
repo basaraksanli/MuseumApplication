@@ -24,18 +24,15 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.Barrier;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.museumapplication.data.UserLoggedIn;
+import com.example.museumapplication.utils.Services.AwarenessService;
 import com.huawei.hms.kit.awareness.Awareness;
 import com.huawei.hms.kit.awareness.barrier.AwarenessBarrier;
 import com.huawei.hms.kit.awareness.barrier.BarrierUpdateRequest;
 import com.huawei.hms.kit.awareness.barrier.LocationBarrier;
-import com.huawei.hms.kit.awareness.barrier.TimeBarrier;
 import com.huawei.hms.maps.CameraUpdateFactory;
 import com.huawei.hms.maps.HuaweiMap;
 import com.huawei.hms.maps.model.BitmapDescriptorFactory;
@@ -173,7 +170,7 @@ public class MapUtils {
         request.setPageSize(20);
         request.setQuery("Museum");
 
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i <10 ; i++) {
             request.setPageIndex(i);
 
             SearchResultListener<NearbySearchResponse> resultListener = new SearchResultListener<NearbySearchResponse>() {
@@ -211,6 +208,9 @@ public class MapUtils {
             };
             searchService.nearbySearch(request, resultListener);
         }
+    }
+    public void saveSiteListToDevice(){
+
     }
 
     public Marker drawMuseumMarkers(Context context, Site site, HuaweiMap hMap) {

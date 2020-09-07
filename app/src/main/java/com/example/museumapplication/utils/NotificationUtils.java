@@ -15,9 +15,9 @@ import com.example.museumapplication.R;
 import com.example.museumapplication.ui.home.splash_screen.SplashActivity;
 
 public class NotificationUtils {
-    static final String CHANNEL_ID = "MuseumPush";
+    public static final String CHANNEL_ID = "MuseumPush";
 
-    static void sendNotification(Context context, String content, String label) {
+    public static void sendNotification(Context context, String content, String label) {
         RemoteViews notificationLayout = new RemoteViews(context.getPackageName(), R.layout.view_notification);
         notificationLayout.setTextViewText(R.id.notification_content, content +" "  +label);
         RemoteViews notificationLayoutExpand = new RemoteViews(context.getPackageName(), R.layout.view_notification_expand);

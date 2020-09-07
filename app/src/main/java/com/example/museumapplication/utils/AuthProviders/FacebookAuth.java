@@ -13,7 +13,7 @@ import com.example.museumapplication.data.UserLoggedIn;
 import com.example.museumapplication.ui.auth.LoginActivity;
 import com.example.museumapplication.ui.home.HomeActivity;
 import com.example.museumapplication.utils.AuthUtils;
-import com.example.museumapplication.utils.CloudDBHelper;
+import com.example.museumapplication.utils.Services.CloudDBHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -26,7 +26,6 @@ import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectAuthCredential;
 import com.huawei.agconnect.auth.AGConnectUser;
 import com.huawei.agconnect.auth.FacebookAuthProvider;
-import com.huawei.agconnect.cloud.database.CloudDBZoneTask;
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
 
 import org.json.JSONException;

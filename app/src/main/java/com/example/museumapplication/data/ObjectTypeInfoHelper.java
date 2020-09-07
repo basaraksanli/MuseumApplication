@@ -11,17 +11,17 @@ import java.util.Arrays;
 /**
  * Definition of ObjectType Helper.
  *
- * @since 2020-08-12
+ * @since 2020-09-01
  */
 public class ObjectTypeInfoHelper {
     private final static int FORMAT_VERSION = 1;
-    private final static int OBJECT_TYPE_VERSION = 5;
+    private final static int OBJECT_TYPE_VERSION = 8;
 
     public static ObjectTypeInfo getObjectTypeInfo() {
         ObjectTypeInfo objectTypeInfo = new ObjectTypeInfo();
         objectTypeInfo.setFormatVersion(FORMAT_VERSION);
         objectTypeInfo.setObjectTypeVersion(OBJECT_TYPE_VERSION);
-        objectTypeInfo.setObjectTypes(Arrays.asList(User.class,LinkedAccount.class));
+        objectTypeInfo.setObjectTypes(Arrays.asList(User.class,Artifact.class,LinkedAccount.class));
         return objectTypeInfo;
     }
 }

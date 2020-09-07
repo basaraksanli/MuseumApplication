@@ -1,4 +1,4 @@
-package com.example.museumapplication.utils;
+package com.example.museumapplication.utils.Services;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.museumapplication.utils.NotificationUtils;
 import com.huawei.hms.kit.awareness.barrier.BarrierStatus;
 
 public class AwarenessService extends IntentService {
