@@ -19,7 +19,7 @@
 			"channel_id":""
 		},
 		"cloudstorage":{
-			"storage_url":"https://agc-storage-dre.platform.dbankcloud.cn"
+			"storage_url":"https://ops-dre.agcstorage.link"
 		},
 		"ml":{
 			"mlservice_url":"ml-api-dre.ai.dbankcloud.com,ml-api-dre.ai.dbankcloud.cn"

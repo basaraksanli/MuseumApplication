@@ -19,9 +19,12 @@ public class NotificationUtils {
 
     public static void sendNotification(Context context, String content, String label) {
         RemoteViews notificationLayout = new RemoteViews(context.getPackageName(), R.layout.view_notification);
-        notificationLayout.setTextViewText(R.id.notification_content, content +" "  +label);
+        notificationLayout.setTextViewText(R.id.notification_content, content);
         RemoteViews notificationLayoutExpand = new RemoteViews(context.getPackageName(), R.layout.view_notification_expand);
-        notificationLayoutExpand.setTextViewText(R.id.notification_content, content + " "  +label);
+        notificationLayoutExpand.setTextViewText(R.id.notification_content, content);
+        notificationLayoutExpand.setTextViewText(R.id.notification_museum_name, label);
+        notificationLayoutExpand.setTextViewText(R.id.notification_museum_description, "Click Explore to see the details!");
+
 
         Bundle extra = new Bundle();
         extra.putString("MuseumName", label);

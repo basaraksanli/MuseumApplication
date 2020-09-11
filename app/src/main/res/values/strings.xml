@@ -41,8 +41,9 @@
     <string name="application_logo">Application Logo</string>
     <string name="Explore">Explore</string>
     <string name="notification_title">Explore Nearby Museums</string>
-    <string name="search_for_museums">Search for Museums\n50km</string>
+    <string name="search_for_museums">Search for Museums (50km)</string>
     <string name="artifact_name">Artifact Name:</string>
     <string name="no_nearby_artifact">No nearby artifact</string>
     <string name="description">Description</string>
+    <string name="focus_on_map">Focus on Map</string>
 </resources>

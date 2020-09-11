@@ -2,6 +2,7 @@ package com.example.museumapplication.ui.home.map;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -16,12 +17,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.museumapplication.R;
 import com.example.museumapplication.data.UserLoggedIn;
@@ -43,38 +46,50 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
     private HuaweiMap hMap;
     private MapUtils mapUtils;
-    private Location currentLocation;
+    public static Location currentLocation;
     private boolean firstTime = true;
     private MapView mMapView;
     private boolean mLocationPermissionGranted = false;
     private Bundle mSavedInstnceState;
     private ProgressBar progressBar;
+    private RecyclerView listView;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+
         MapViewModel mapViewModel = ViewModelProviders.of(this).get(MapViewModel.class);
         View root = inflater.inflate(R.layout.fragment_map, container, false);
+
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mSavedInstnceState = savedInstanceState;
 
-        mapUtils = new MapUtils();
-        mapUtils.resetInfo();
-        FloatingActionButton fabLocation = root.findViewById(R.id.fabLocation);
-        fabLocation.setOnClickListener(view -> mapUtils.animateCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), hMap, 15f));
-
-        Button searchForMuseumButton = root.findViewById(R.id.searchForMuseumButton);
-        searchForMuseumButton.setOnClickListener(v ->
-                mapUtils.searchMuseums(getContext(), currentLocation, 50000, hMap, false));
 
 
-
-        // get mapView by layout view
         mMapView = root.findViewById(R.id.mapView);
         LinearLayout mapListLayout = root.findViewById(R.id.mapListLayout);
 
         FloatingActionButton fabScreenSize = root.findViewById(R.id.fabScreenSize);
-        fabScreenSize.setOnClickListener(view -> mapUtils.changeMapSize(mapListLayout));
+        fabScreenSize.setOnClickListener(view -> mapUtils.changeMapSize());
+
+        listView = root.findViewById(R.id.siteList);
+        mapUtils = new MapUtils(root, getContext(), listView,  mapListLayout, fabScreenSize, hMap);
+
+
+        mapUtils.resetInfo();
+
+
+        FloatingActionButton fabLocation = root.findViewById(R.id.fabLocation);
+        fabLocation.setOnClickListener(view -> MapUtils.animateCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 15f));
+
+        Button searchForMuseumButton = root.findViewById(R.id.searchForMuseumButton);
+        searchForMuseumButton.setOnClickListener(v ->
+                mapUtils.searchMuseums( currentLocation, 50000));
+
+
+        // get mapView by layout view
+
 
         progressBar = root.findViewById(R.id.mapProgressBar);
 
@@ -86,6 +101,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             initMap(savedInstanceState);
             Log.d("Location Permission:", "Permission granted");
         }
+
         return root;
     }
 
@@ -96,6 +112,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
         hMap = map;
+        MapUtils.setMap(map);
+
+
         hMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.mapstyle_dark));
 
         hMap.setMaxZoomPreference(20.0f);
@@ -104,6 +123,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         hMap.setIndoorEnabled(true);
 
         getDeviceLocation();
+        mapUtils.retrieveSiteList( );
 
     }
 
@@ -131,12 +151,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 if (firstTime) {
                     progressBar.setVisibility(View.GONE);
 
-                    if(requireActivity().getIntent().getExtras()==null )
-                        mapUtils.moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), hMap, 15f);
+                    if (requireActivity().getIntent().getExtras() == null)
+                        MapUtils.moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), 15f);
 
+                    else
+                    {
+                        String museumName =requireActivity().getIntent().getStringExtra("MuseumName");
+                        Site siteToFocus = mapUtils.findSiteByName(museumName);
+                        if(siteToFocus!=null)
+                            MapUtils.moveCamera(new LatLng(siteToFocus.getLocation().getLat(), siteToFocus.getLocation().getLng()), 15f);
+                        else
+                            MapUtils.moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), 15f);
+                    }
                     firstTime = false;
 
                 }
+                mapUtils.updateRecycleView(currentLocation);
                 if (UserLoggedIn.getInstance().getProfilePicture() == null)
                     mapUtils.drawUserMarker(location, BitmapFactory.decodeResource(getResources(), R.drawable.avatar), getActivity(), hMap);
                 else
@@ -168,7 +198,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if (ActivityCompat.checkSelfPermission(requireContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || ActivityCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||  ActivityCompat.checkSelfPermission(requireContext(), "com.huawei.hms.permission.ACTIVITY_RECOGNITION") !=PackageManager.PERMISSION_GRANTED) {
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), "com.huawei.hms.permission.ACTIVITY_RECOGNITION") != PackageManager.PERMISSION_GRANTED) {
                 String[] strings =
                         {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, "com.huawei.hms.permission.ACTIVITY_RECOGNITION"};
                 requestPermissions(strings, 1);
@@ -180,7 +210,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     || ActivityCompat.checkSelfPermission(requireContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || ActivityCompat.checkSelfPermission(requireContext(),
-                    "android.permission.ACCESS_BACKGROUND_LOCATION") != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), "com.huawei.hms.permission.ACTIVITY_RECOGNITION") !=PackageManager.PERMISSION_GRANTED) {
+                    "android.permission.ACCESS_BACKGROUND_LOCATION") != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), "com.huawei.hms.permission.ACTIVITY_RECOGNITION") != PackageManager.PERMISSION_GRANTED) {
                 String[] strings = {android.Manifest.permission.ACCESS_FINE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         "android.permission.ACCESS_BACKGROUND_LOCATION",

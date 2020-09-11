@@ -39,54 +39,73 @@
                 app:cameraZoom="10">
 
             </com.huawei.hms.maps.MapView>
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabScreenSize"
-                    android:layout_width="368dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:tint="@color/colorWhite"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:srcCompat="@android:drawable/ic_menu_zoom"
-                    tools:ignore="MissingConstraints" />
-
-            <Button
-                android:id="@+id/searchForMuseumButton"
-                android:layout_width="170dp"
-                android:layout_height="wrap_content"
-                android:textAllCaps="false"
-                android:text="@string/search_for_museums"
-                android:textColor="@color/colorWhite"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/fabLocation"
-                app:layout_constraintStart_toEndOf="@+id/fabScreenSize"
-                android:background="@color/colorPrimary"
-                android:layout_marginBottom="20dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:scaleType="center"
-                    android:tint="@color/colorWhite"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:srcCompat="@android:drawable/ic_menu_mylocation"
-                    tools:ignore="MissingConstraints" />
+                android:id="@+id/fabScreenSize"
+                android:layout_width="368dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:tint="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/uparrow"
+                tools:ignore="MissingConstraints"
+                android:focusable="true"
+                android:clickable="true"
+                android:foreground="?actionBarItemBackground"/>
 
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?actionBarItemBackground"
+                android:scaleType="center"
+                android:tint="@color/colorWhite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_mylocation"
+                tools:ignore="MissingConstraints" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/searchForMuseumButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawableTint="@color/colorWhite"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:paddingStart="50dp"
+            android:paddingEnd="50dp"
+            android:text="@string/search_for_museums"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite" />
 
         <LinearLayout
             android:id="@+id/mapListLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"></LinearLayout>
+            android:layout_weight="0"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/siteList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                />
+        </LinearLayout>
     </LinearLayout>
 
 
