@@ -5,4 +5,7 @@
     <color name="colorAccent">#ff5f52</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGrey">#bdbdbd</color>
+    <color name="colorLink">#2196f3</color>
+    <color name="colorBlack">#000000</color>
+    <color name="color_gold">#ffc400</color>
 </resources>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="5"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/museumName_Row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Museum Name"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/museum_address"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="Address"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/museum_telephone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp"
+                android:layout_marginBottom="5dp"/>
+            <TextView
+                android:id="@+id/museum_webpage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorBlack" />
+        <ImageView
+            android:id="@+id/show_onMap"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:contentDescription="@string/focus_on_map"
+            android:focusable="true"
+            android:foreground="?actionBarItemBackground"
+            android:padding="10dp"
+            android:tag="focusOnMapButton"
+            app:srcCompat="@drawable/museum" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorBlack" />
+
+        <ImageView
+            android:id="@+id/delete_favorite"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:contentDescription="@string/focus_on_map"
+            android:focusable="true"
+            android:foreground="?actionBarItemBackground"
+            android:padding="15dp"
+            android:tag="focusOnMapButton"
+            app:srcCompat="@drawable/star"
+            app:tint="@color/color_gold" />
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBlack"/>
+</LinearLayout>

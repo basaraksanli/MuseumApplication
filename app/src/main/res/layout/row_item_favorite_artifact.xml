@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/noimage"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:contentDescription="@string/image"
+                android:id="@+id/artifactImage"/>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/artifactName_row"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/artifactname"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                tools:ignore="RtlSymmetry" />
+
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorBlack" />
+        <ImageView
+            android:id="@+id/showInformation"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:contentDescription="@string/focus_on_map"
+            android:focusable="true"
+            android:foreground="?actionBarItemBackground"
+            android:padding="10dp"
+            android:tag="focusOnMapButton"
+            app:srcCompat="@drawable/information" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorBlack" />
+
+        <ImageView
+            android:id="@+id/delete_favorite"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:contentDescription="@string/focus_on_map"
+            android:focusable="true"
+            android:foreground="?actionBarItemBackground"
+            android:padding="15dp"
+            android:tag="focusOnMapButton"
+            app:srcCompat="@drawable/star"
+            app:tint="@color/color_gold" />
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBlack"/>
+</LinearLayout>

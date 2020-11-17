@@ -7,7 +7,44 @@
     tools:context=".ui.auth.LoginActivity">
 
 
+    <ImageButton
+        android:id="@+id/adminLogin"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary"
+        android:clickable="true"
+        android:contentDescription="@string/museum_login"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/adminlogin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.00999999"
+        android:onClick="museumPanelClick"
+        android:translationZ="1dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:tag="progressBar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.53" />
+
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -18,18 +55,9 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="100dp"
-                android:tag="progressBar"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -87,6 +115,9 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
                 android:background="@color/colorPrimary"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:onClick="signInButtonClicked"
                 android:text="@string/sign_in_with_email"
                 android:textColor="#ffffff" />
@@ -98,6 +129,9 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:background="@color/colorPrimary"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:onClick="registerButtonClicked"
                 android:text="@string/register_with_email"
                 android:textColor="#ffffff" />
@@ -126,7 +160,10 @@
                     android:layout_marginEnd="3dp"
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
+                    android:clickable="true"
                     android:contentDescription="@string/huaweiid_login_Description"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:onClick="huaweiButtonClicked"
                     android:padding="5dp"
                     android:scaleType="fitCenter"
@@ -139,7 +176,10 @@
                     android:layout_marginEnd="3dp"
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
+                    android:clickable="true"
                     android:contentDescription="@string/gmail_login_Description"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:onClick="googleButtonClicked"
                     android:padding="5dp"
                     android:scaleType="fitCenter"
@@ -152,7 +192,10 @@
                     android:layout_marginEnd="75dp"
                     android:layout_weight="1"
                     android:background="@color/colorPrimary"
+                    android:clickable="true"
                     android:contentDescription="@string/facebook_login_Description"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:onClick="facebookButtonClicked"
                     android:padding="5dp"
                     android:scaleType="fitCenter"
@@ -165,9 +208,10 @@
                     android:visibility="invisible" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"/>
+                android:layout_height="150dp" />
         </LinearLayout>
     </ScrollView>
 

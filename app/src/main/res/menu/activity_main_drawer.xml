@@ -10,14 +10,19 @@
             android:title="@string/menu_map" />
 
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/huaweilogo"
+            android:id="@+id/nav_explore"
+            android:icon="@drawable/beacon"
             android:title="@string/menu_home" />
 
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/menu_settings" />
+        <item
+            android:id="@+id/nav_favorites"
+            android:icon="@drawable/star"
+            android:title="@string/favorites"/>
+
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_logout"
