@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType Museum.
  *
- * @since 2020-11-15
+ * @since 2020-11-18
  */
 public class Museum extends CloudDBZoneObject {
     @PrimaryKey

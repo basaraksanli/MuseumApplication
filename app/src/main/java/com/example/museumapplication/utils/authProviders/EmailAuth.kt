@@ -1,5 +1,6 @@
 package com.example.museumapplication.utils.authProviders
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -131,6 +132,7 @@ class EmailAuth : IBaseAuth {
             task.addOnSuccessListener(TaskExecutors.uiThread(), {
                 Log.d("Verification:", "Success")
                 object : CountDownTimer(120000, 1000) {
+                    @SuppressLint("SetTextI18n")
                     override fun onTick(millisUntilFinished: Long) {
                         toBeSetDisabled.isEnabled = false
                         toBeSetDisabled.setBackgroundColor(Color.parseColor("#bdbdbd"))

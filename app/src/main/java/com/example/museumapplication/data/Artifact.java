@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType Artifact.
  *
- * @since 2020-11-15
+ * @since 2020-11-18
  */
 public class Artifact extends CloudDBZoneObject {
     @PrimaryKey

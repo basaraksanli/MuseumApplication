@@ -6,25 +6,24 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.example.museumapplication.R
+import com.example.museumapplication.databinding.GeneralPanelFragmentBinding
 
 class GeneralPanelFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = GeneralPanelFragment()
-    }
 
-    private lateinit var viewModel: GeneralPanelViewModel
+    private lateinit var viewModel: PagerViewModel
+    private lateinit var binding: GeneralPanelFragmentBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.general_panel_fragment, container, false)
-    }
+        binding = DataBindingUtil.inflate(inflater, R.layout.general_panel_fragment, container, false)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(GeneralPanelViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
+        viewModel = ViewModelProvider(requireActivity()).get(PagerViewModel::class.java)
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
 
+        return binding.root
+    }
 }

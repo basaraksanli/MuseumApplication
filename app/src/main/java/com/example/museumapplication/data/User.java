@@ -5,6 +5,9 @@
 package com.example.museumapplication.data;
 
 import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
+import com.huawei.agconnect.cloud.database.annotations.DefaultValue;
+import com.huawei.agconnect.cloud.database.Text;
+import com.huawei.agconnect.cloud.database.annotations.NotNull;
 import com.huawei.agconnect.cloud.database.annotations.IsIndex;
 import com.huawei.agconnect.cloud.database.annotations.PrimaryKey;
 
@@ -13,7 +16,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType User.
  *
- * @since 2020-08-02
+ * @since 2020-11-18
  */
 public class User extends CloudDBZoneObject {
     @PrimaryKey

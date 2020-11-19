@@ -21,6 +21,7 @@ import com.example.museumapplication.data.UserLoggedIn.Companion.instance
 import com.example.museumapplication.utils.TTSUtils
 import com.example.museumapplication.utils.services.CloudDBHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import org.w3c.dom.Text
 import java.util.*
 
 
@@ -58,9 +59,11 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
         //We have initialize our TextViews here.
         private val artifactName: TextView = view.findViewById(R.id.artifactName_row)
         private val artifactImage: ImageView = view.findViewById(R.id.artifactImage)
+        private val museumName : TextView = view.findViewById(R.id.museumName_Row)
 
         private val showInformation : ImageView = view.findViewById(R.id.showInformation)
         private val favoriteButton : ImageView = view.findViewById(R.id.delete_favorite)
+
 
 
         @SuppressLint("SetTextI18n")
@@ -68,6 +71,8 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
 
             artifactName.text = item.artifactName
             artifactImage.setImageBitmap(stringToBitMap(item.artifactImage))
+            museumName.text = item.museumName
+
 
             favoriteButton.setOnClickListener{
                 artifactList.remove(item)
@@ -78,6 +83,8 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
             }
             val sp = PreferenceManager.getDefaultSharedPreferences(context)
             val darkMode: Boolean = sp.getBoolean("darkMode", true)
+
+
 
             showInformation.setOnClickListener{
                 val bottomSheetDialog = BottomSheetDialog(
@@ -90,6 +97,7 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
                     bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_artifactName).setTextColor(Color.BLACK)
                     bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_artifactDesc).setTextColor(Color.BLACK)
                 }
+                bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_museumName).text = item.museumName
                 bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_artifactName).text = item.artifactName
                 bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_artifactDesc).text = item.artifactDescription
                 bottomSheetView.findViewById<ImageView>(R.id.bottom_sheet_artifactImage).setImageBitmap(stringToBitMap(item.artifactImage))

@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType LinkedAccount.
  *
- * @since 2020-08-12
+ * @since 2020-11-18
  */
 public class LinkedAccount extends CloudDBZoneObject {
     @PrimaryKey

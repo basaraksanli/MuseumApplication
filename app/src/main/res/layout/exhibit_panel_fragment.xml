@@ -1,13 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.museumpanel.analyticspanel.ExhibitPanelFragment">
 
-    <TextView
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.example.museumapplication.ui.museumpanel.analyticspanel.PagerViewModel" />
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello" />
+        android:orientation="vertical">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/browser_actions_bg_grey"
+            app:cardCornerRadius="20dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Most Visited"
+                            android:gravity="center"
+                            android:textStyle="bold"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            app:loadImageExhibitMost = "@{viewmodel.mostVisitedArtifactImage}"
+                            android:id="@+id/mostVisitedImage"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@{viewmodel.mostVisitedArtifactName}"
+                            android:gravity="center"
+                            android:id="@+id/mostVisitedText"/>
 
-</FrameLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Longest Stay"
+                            android:gravity="center"
+                            android:textStyle="bold"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            app:loadImageExhibitLongest="@{viewmodel.longestVisitArtifactImage}"
+                            android:id="@+id/longestStayImage" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@{viewmodel.longestVisitArtifactName}"
+                            android:gravity="center"
+                            android:id="@+id/longestStayText"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Least Visited"
+                            android:gravity="center"
+                            android:textStyle="bold"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            app:loadImageExhibitLeast="@{viewmodel.leastVisitedArtifactImage}"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@{viewmodel.leastVisitedArtifactName}"
+                            android:gravity="center"
+                            android:id="@+id/leastVisitedText"/>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Shortest Stay"
+                            android:gravity="center"
+                            android:textStyle="bold"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            app:loadImageExhibitShortest="@{viewmodel.shortestVisitArtifactImage}"
+                            android:id="@+id/shortestStayImage"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="@{viewmodel.shortestVisitArtifactName}"
+                            android:gravity="center"
+                            android:id="@+id/shortestStayText"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerView"/>
+    </LinearLayout>
+
+</layout>

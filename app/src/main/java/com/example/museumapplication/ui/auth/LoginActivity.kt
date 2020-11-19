@@ -80,8 +80,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun museumPanelClick(view: View) {
-        if(CloudDBHelper.instance.checkMuseumIdAndPassword(email!!.text.toString(), password!!.text.toString())) {
+        val museum =CloudDBHelper.instance.checkMuseumIdAndPassword(email!!.text.toString(), password!!.text.toString())
+        if(museum!=null) {
             val museumPanelActivity = Intent(this, MuseumPanelActivity::class.java)
+            val extra = Bundle()
+            extra.putString("museumID", museum.museumID)
+            museumPanelActivity.putExtras(extra)
             startActivity(museumPanelActivity)
         }
         else

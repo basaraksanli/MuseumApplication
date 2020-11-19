@@ -15,6 +15,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/museumNameTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/no_nearby_artifact"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorPrimary"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/colorPrimary"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,6 +64,10 @@
                     android:textAlignment="center"
                     android:textSize="20sp" />
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimary"/>
 
             <ImageView
                 android:id="@+id/imageViewBeacon"
@@ -57,7 +82,7 @@
                 android:background="@color/colorPrimary">
 
                 <TextView
-                    android:layout_width="220dp"
+                    android:layout_width="180dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
@@ -74,11 +99,20 @@
                     android:layout_weight="1"
                     android:src="@drawable/star"
                     android:background="@color/colorPrimary"
-                    android:layout_marginEnd="10dp"
-                    android:padding="6dp"
+
+                    android:padding="1dp"
                     android:focusable="true"
                     android:clickable="true"
                     android:foreground="?android:attr/selectableItemBackground" />
+                <TextView
+                    android:id="@+id/favoriteCount"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorWhite"
+                    android:text="@string/_0"
+                    android:gravity="center"/>
 
                 <ImageView
                     android:layout_width="0dp"

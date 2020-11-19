@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType Visit.
  *
- * @since 2020-11-15
+ * @since 2020-11-18
  */
 public class Visit extends CloudDBZoneObject {
     @PrimaryKey
@@ -30,6 +30,9 @@ public class Visit extends CloudDBZoneObject {
     private Date date;
 
     private Integer visitTime;
+
+    @IsIndex(indexName = "index2")
+    private String museumID;
 
     public Visit() {
         super();
@@ -73,6 +76,14 @@ public class Visit extends CloudDBZoneObject {
 
     public Integer getVisitTime() {
         return visitTime;
+    }
+
+    public void setMuseumID(String museumID) {
+        this.museumID = museumID;
+    }
+
+    public String getMuseumID() {
+        return museumID;
     }
 
 }

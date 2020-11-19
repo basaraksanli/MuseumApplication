@@ -2,13 +2,13 @@ package com.example.museumapplication.ui.splash_screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
+import android.os.*
+import android.os.PowerManager.WakeLock
+import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
@@ -18,21 +18,25 @@ import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.auth.LoginActivity
 import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.utils.services.CloudDBHelper.Companion.instance
 import com.example.museumapplication.utils.SettingsUtils
+import com.example.museumapplication.utils.services.CloudDBHelper.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.AGConnectUser
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
+
 class SplashActivity : AppCompatActivity() {
     var agcuser: AGConnectUser? = null
     var agConnectAuth: AGConnectAuth? = null
     var countDownTimer: CountDownTimer? = null
+
+    @SuppressLint("InvalidWakeLockTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
         SettingsUtils.loadSettings(this)
         UserLoggedIn.instance.retrieveFavoriteMuseumList(this)
         UserLoggedIn.instance.retrieveFavoriteArtifactList(this)

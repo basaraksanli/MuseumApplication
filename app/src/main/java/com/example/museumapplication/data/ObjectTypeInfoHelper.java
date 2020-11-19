@@ -11,11 +11,11 @@ import java.util.Arrays;
 /**
  * Definition of ObjectType Helper.
  *
- * @since 2020-11-15
+ * @since 2020-11-18
  */
 public class ObjectTypeInfoHelper {
     private final static int FORMAT_VERSION = 1;
-    private final static int OBJECT_TYPE_VERSION = 19;
+    private final static int OBJECT_TYPE_VERSION = 22;
 
     public static ObjectTypeInfo getObjectTypeInfo() {
         ObjectTypeInfo objectTypeInfo = new ObjectTypeInfo();

@@ -161,6 +161,7 @@ class BeaconFragment : Fragment(), PermissionInterface {
         val stopButton = root.findViewById<ImageButton>(R.id.stopButton)
         val descriptionTextView = root.findViewById<TextView>(R.id.descriptionTextView)
         val starArtifactButton = root.findViewById<ImageView>(R.id.starArtifact)
+        val favoriteCount = root.findViewById<TextView>(R.id.favoriteCount)
 
         val ttsUtils = UserLoggedIn.instance.ttsUtils
         playButton.setOnClickListener { if (descriptionTextView.text != "No nearby artifact" && descriptionTextView.text != "") ttsUtils.startTTSreading(descriptionTextView.text as String) }
@@ -173,6 +174,8 @@ class BeaconFragment : Fragment(), PermissionInterface {
             if (toBeFavored != null) {
                 val temp = UserLoggedIn.instance.getArtifactFavorite(requireContext(), toBeFavored.artifactID)
                 if (temp == null) {
+                    favoriteCount.text = (favoriteCount.text.toString().toInt() +1).toString()
+                    BeaconUtils.instance.increaseArtifactFavCount(toBeFavored.artifactID)
                     UserLoggedIn.instance.favoriteArtifactList.add(
                             FavoriteArtifact(
                                     toBeFavored.artifactID,
@@ -185,6 +188,9 @@ class BeaconFragment : Fragment(), PermissionInterface {
                     (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(requireContext().resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
                     CloudDBHelper.instance.increaseFavoredCountArtifact(toBeFavored.artifactID)
                 } else {
+                    favoriteCount.text = (favoriteCount.text.toString().toInt() -1).toString()
+                    BeaconUtils.instance.decreaseArtifactFavCount(toBeFavored.artifactID)
+
                     UserLoggedIn.instance.favoriteArtifactList.remove(temp)
                     UserLoggedIn.instance.saveFavoriteArtifactListToDevice(requireContext())
                     (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(requireContext().resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)

@@ -148,6 +148,8 @@ class BeaconUtils {
         val artifactName = root.findViewById<TextView>(R.id.artifactNameTextView)
         val description = root.findViewById<TextView>(R.id.descriptionTextView)
         val imageView = root.findViewById<ImageView>(R.id.imageViewBeacon)
+        val museumText = root.findViewById<TextView>(R.id.museumNameTextView)
+        val favoriteCount = root.findViewById<TextView>(R.id.favoriteCount)
 
 
         val sp = PreferenceManager.getDefaultSharedPreferences(activityContext)
@@ -173,6 +175,8 @@ class BeaconUtils {
                 currentArtifact = closestInfo
                 artifactName.text = closestInfo.artifactName
                 description.text = closestInfo.artifactDescription.toString()
+                museumText.text = CloudDBHelper.instance.getMuseum(closestInfo.museumID)!!.museumName
+                favoriteCount.text= closestInfo.favoriteCount.toString()
                 imageView.setImageBitmap(base64toBitmap(closestInfo.artifactImage))
 
                 if (UserLoggedIn.instance.getArtifactFavorite(root.context, closestInfo.artifactID) != null)
@@ -197,8 +201,10 @@ class BeaconUtils {
                 }
             }
             currentArtifact != null
+            museumText.setText(R.string.no_nearby_artifact)
             artifactName.setText(R.string.no_nearby_artifact)
             description.setText(R.string.no_nearby_artifact)
+            favoriteCount.text = "0"
             imageView.setImageResource(R.drawable.noimage)
             (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
         }
@@ -210,7 +216,9 @@ class BeaconUtils {
             visitObject = Visit()
             visitObject!!.userID = UserLoggedIn.instance.uID
             visitObject!!.artifactID = closestInfo.artifactID
-            visitObject!!.date = Date(System.currentTimeMillis())
+            visitObject!!.date = Calendar.getInstance().time
+            visitObject!!.museumID = closestInfo.museumID
+
         }
     }
 
@@ -234,6 +242,16 @@ class BeaconUtils {
             }
         }
         return closest
+    }
+    public fun increaseArtifactFavCount (artifactID: Int){
+        for(artifact : Artifact in downloadedArtifacts)
+            if(artifactID== artifact.artifactID)
+                artifact.favoriteCount++
+    }
+    public fun decreaseArtifactFavCount (artifactID: Int){
+        for(artifact : Artifact in downloadedArtifacts)
+            if(artifactID== artifact.artifactID)
+                artifact.favoriteCount--
     }
 
     companion object {

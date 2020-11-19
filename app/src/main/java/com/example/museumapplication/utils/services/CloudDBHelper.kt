@@ -3,8 +3,6 @@ package com.example.museumapplication.utils.services
 import android.content.Context
 import android.util.Log
 import com.example.museumapplication.data.*
-import com.example.museumapplication.utils.authProviders.HuaweiAuth
-import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.cloud.database.*
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 
@@ -176,6 +174,7 @@ class CloudDBHelper {
         }
         return queryTask.result
     }
+
     private fun queryVisit(query: CloudDBZoneQuery<Visit>): CloudDBZoneSnapshot<Visit>? {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it")
@@ -192,19 +191,28 @@ class CloudDBHelper {
     }
 
 
-    fun checkMuseumIdAndPassword(ID: String , password :String) : Boolean{
+    fun checkMuseumIdAndPassword(ID: String, password: String): Museum? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
-            return false
+            return null
         }
-        return if(ID.isNotBlank() && password.isNotBlank()) {
+        return if (ID.isNotBlank() && password.isNotBlank()) {
             val query = CloudDBZoneQuery.where(Museum::class.java).equalTo("museumID", ID)
-            val result = queryMuseum(query)!!.snapshotObjects?.get(0)!!
-            result.museumPass == password
-        }
-        else false
+            val snapshot = queryMuseum(query)
+            if(snapshot!!.snapshotObjects.size()!=0) {
+                val result = queryMuseum(query)!!.snapshotObjects?.get(0)!!
+                if (result.museumPass == password)
+                    result
+                else
+                    null
+            }
+            else
+                null
+        } else
+            null
     }
-    fun getMuseum(ID: String) : Museum?{
+
+    fun getMuseum(ID: String): Museum? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return null
@@ -214,61 +222,66 @@ class CloudDBHelper {
     }
 
 
-    fun getArtifactsOfMuseum(museumID: String) : CloudDBZoneObjectList<Artifact>?{
-        if (mCloudDBZone == null) {
-            Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
-            return null
-        }
-        val query = CloudDBZoneQuery.where(Artifact::class.java).equalTo("museumID", museumID)
-        return queryArtifact(query)!!.snapshotObjects
-    }
-    fun increaseFavoredCountArtifact(artifactID :Int)
-    {
+    fun getArtifactsOfMuseum(museumID: String, artifactList: ArrayList<Artifact>) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result =queryArtifactByID(artifactID)
+        val query = CloudDBZoneQuery.where(Artifact::class.java).equalTo("museumID", museumID)
+        val result = queryArtifact(query)!!.snapshotObjects
+        for (i in 0 until result.size()) {
+            artifactList.add(result.get(i))
+        }
+    }
+
+    fun increaseFavoredCountArtifact(artifactID: Int) {
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
+            return
+        }
+        val result = queryArtifactByID(artifactID)
         result!!.favoriteCount++
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
-        upsertTask.addOnSuccessListener{
-            cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
+        upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
+            Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
         }.addOnFailureListener { e: Exception ->
             Log.e("CLOUD DB:", "Insert user info failed")
             e.printStackTrace()
         }
     }
-    fun decreaseFavoredCountArtifact(artifactID :Int)
-    {
+
+    fun decreaseFavoredCountArtifact(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result =queryArtifactByID(artifactID)
+        val result = queryArtifactByID(artifactID)
         result!!.favoriteCount--
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
-        upsertTask.addOnSuccessListener{
-            cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records") }
+        upsertTask.addOnSuccessListener { cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records") }
                 .addOnFailureListener { e: Exception ->
-            Log.e("CLOUD DB:", "Update count failed")
-            e.printStackTrace()
-        }
+                    Log.e("CLOUD DB:", "Update count failed")
+                    e.printStackTrace()
+                }
     }
-    fun upsertVisit(visit: Visit){
+
+    fun upsertVisit(visit: Visit) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
         visit.visitID = findNewVisitID()
         val upsertTask = mCloudDBZone!!.executeUpsert(visit)
-        upsertTask.addOnSuccessListener{
-            cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records") }
+        upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
+            Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
+        }
                 .addOnFailureListener { e: Exception ->
                     Log.e("CLOUD DB:", "Insert visit info failed")
                     e.printStackTrace()
                 }
     }
-    private fun findNewVisitID() : Int{
+
+    private fun findNewVisitID(): Int {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return -1
@@ -276,55 +289,69 @@ class CloudDBHelper {
         val query = CloudDBZoneQuery.where(Visit::class.java).orderByDesc("visitID")
         val result = queryVisit(query)!!.snapshotObjects
 
-        return if (result.size() ==0)
+        return if (result.size() == 0)
             1
         else
             result.get(0).visitID + 1
     }
+
     fun increaseCurrentVisitCount(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result =queryArtifactByID(artifactID)
+        val result = queryArtifactByID(artifactID)
         result!!.currentVisitorCount++
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
-        upsertTask.addOnSuccessListener{
-            cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
+        upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
+            Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
         }.addOnFailureListener { e: Exception ->
             Log.e("CLOUD DB:", "Insert user info failed")
             e.printStackTrace()
         }
     }
+
     fun decreaseCurrentVisitCount(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result =queryArtifactByID(artifactID)
+        val result = queryArtifactByID(artifactID)
         result!!.currentVisitorCount--
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
-        upsertTask.addOnSuccessListener{
-            cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
+        upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
+            Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
         }.addOnFailureListener { e: Exception ->
             Log.e("CLOUD DB:", "Insert user info failed")
             e.printStackTrace()
         }
     }
-    fun decreaseFavArtifact(artifactID: Int){
+
+    fun decreaseFavArtifact(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result =queryArtifactByID(artifactID)
+        val result = queryArtifactByID(artifactID)
         result!!.favoriteCount--
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
-        upsertTask.addOnSuccessListener{
-            cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
+        upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
+            Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
         }.addOnFailureListener { e: Exception ->
             Log.e("CLOUD DB:", "Insert user info failed")
             e.printStackTrace()
         }
+    }
+
+    fun getMuseumVisits(museumID: String, visitList: ArrayList<Visit>) {
+        if (mCloudDBZone == null) {
+            Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
+            return
+        }
+        val query = CloudDBZoneQuery.where(Visit::class.java).equalTo("museumID", museumID)
+        val result = queryVisit(query)!!.snapshotObjects
+        for (i in 0 until result.size())
+            visitList.add(result.get(i))
     }
 
 }

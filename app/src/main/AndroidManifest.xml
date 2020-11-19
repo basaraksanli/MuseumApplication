@@ -21,6 +21,8 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
 
     <application
         android:allowBackup="true"
@@ -32,7 +34,7 @@
         <activity
             android:name=".ui.museumpanel.MuseumPanelActivity"
             android:label="@string/title_activity_museum_panel"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".utils.services.AwarenessService" />
 
