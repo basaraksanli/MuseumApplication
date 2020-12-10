@@ -1,216 +1,293 @@
 package com.example.museumapplication.ui.home.map
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.graphics.*
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import androidx.preference.PreferenceManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.utils.MapUtils
-import com.example.museumapplication.utils.MapUtils.Companion.animateCamera
-import com.example.museumapplication.utils.MapUtils.Companion.moveCamera
-import com.example.museumapplication.utils.MapUtils.Companion.setMap
+import com.example.museumapplication.databinding.FragmentMapBinding
 import com.example.museumapplication.utils.SettingsUtils
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.museumapplication.utils.map.SiteListAdapter
+import com.example.museumapplication.utils.map.MapUtils
+import com.example.museumapplication.utils.permission.PermissionInterface
+import com.google.android.material.snackbar.Snackbar
+import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
 import com.huawei.hms.maps.MapView
 import com.huawei.hms.maps.OnMapReadyCallback
-import com.huawei.hms.maps.model.LatLng
-import com.huawei.hms.maps.model.MapStyleOptions
+import com.huawei.hms.maps.model.*
 import com.huawei.hms.site.api.model.Coordinate
+import com.huawei.hms.site.api.model.Site
+import kotlin.system.exitProcess
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
+
+    companion object {
+        private const val TAG = "MapFragment"
+    }
     private var hMap: HuaweiMap? = null
-    private var mapUtils: MapUtils? = null
-    private var firstTime = true
     private var mMapView: MapView? = null
-    private var mLocationPermissionGranted = false
-    private var mSavedInstnceState: Bundle? = null
-    private var progressBar: ProgressBar? = null
     private var listView: RecyclerView? = null
+    private var siteListAdapter: SiteListAdapter? = null
+    private var isMapReady = false
+
+
+
+    private lateinit var binding: FragmentMapBinding
+    private lateinit var viewModel: MapViewModel
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val mapViewModel = ViewModelProviders.of(this).get(MapViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_map, container, false)
+
+
+
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
+        viewModel = ViewModelProvider(requireActivity()).get(MapViewModel::class.java)
+
+        binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
+
+        viewModel.mapUtils.resetInfo()
+
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        mSavedInstnceState = savedInstanceState
-        mMapView = root.findViewById(R.id.mapView)
-        val mapListLayout = root.findViewById<LinearLayout>(R.id.mapListLayout)
-        val fabScreenSize: FloatingActionButton = root.findViewById(R.id.fabScreenSize)
-        fabScreenSize.setOnClickListener { mapUtils!!.changeMapSize() }
-        listView = root.findViewById(R.id.siteList)
-        mapUtils = MapUtils(root, requireContext(), listView!!, mapListLayout, fabScreenSize, hMap, root)
-        mapUtils!!.resetInfo()
-        val fabLocation: FloatingActionButton = root.findViewById(R.id.fabLocation)
-        fabLocation.setOnClickListener { animateCamera(LatLng(currentLocation!!.latitude, currentLocation!!.longitude), 15f) }
-        val searchForMuseumButton = root.findViewById<Button>(R.id.searchForMuseumButton)
 
-        val sp = PreferenceManager.getDefaultSharedPreferences(activity)
-        val museumRange = sp.getInt("museumRange", 50)
-        searchForMuseumButton.append(" ($museumRange km)")
-        searchForMuseumButton.setOnClickListener { mapUtils!!.searchMuseums(currentLocation!!, museumRange * 1000) }
+        mMapView = binding.root.findViewById(R.id.mapView)
+        listView = binding.root.findViewById(R.id.siteList)
 
-        // get mapView by layout view
-        progressBar = root.findViewById(R.id.mapProgressBar)
-        progressBar!!.visibility = View.VISIBLE
-        progressBar!!.bringToFront()
-        locationPermissions
-        if (mLocationPermissionGranted) {
-            initMap(savedInstanceState)
-            Log.d("Location Permission:", "Permission granted")
+
+        val isSuccess = viewModel.requestPermissions(this, this)
+        if (!isSuccess) {
+            return null
         }
-        return root
-    }
 
-    override fun onMapReady(map: HuaweiMap) {
-        Log.d(TAG, "onMapReady: ")
-        hMap = map
-        setMap(map)
-
-        hMap!!.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), SettingsUtils.mapStyleDark(requireActivity())))
-
-        hMap!!.setMaxZoomPreference(20.0f)
-        hMap!!.setMinZoomPreference(6.0f)
-        hMap!!.isIndoorEnabled = true
-        deviceLocation
-        mapUtils!!.retrieveSiteList()
-    }//Toast.makeText(getContext(), currentLocation.toString(), Toast.LENGTH_SHORT).show();
-
-    // TODO: Consider calling
-    //    ActivityCompat#requestPermissions
-    // here to request the missing permissions, and then overriding
-    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-    //                                          int[] grantResults)
-    // to handle the case where the user grants the permission. See the documentation
-    // for ActivityCompat#requestPermissions for more details.
-    private val deviceLocation: Unit
-        get() {
-            val lm = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return
+        //Scan museum warning
+        viewModel.scanMuseumWarning.observe(viewLifecycleOwner, {
+            if (it == true) {
+                Snackbar.make(binding.root, getString(R.string.please_scan_museum_warning), Snackbar.LENGTH_LONG).show()
+                viewModel.scanMuseumWarning.value = false
             }
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 50, 0f, object : LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    currentLocation = location
-                    //Toast.makeText(getContext(), currentLocation.toString(), Toast.LENGTH_SHORT).show();
-                    Log.d("Current Location", currentLocation.toString())
-                    if (firstTime) {
-                        progressBar!!.visibility = View.GONE
-                        if (requireActivity().intent.extras == null) moveCamera(LatLng(location.latitude, location.longitude), 15f) else {
-                            if (requireActivity().intent.getStringExtra("MuseumName") != null) {
-                                val museumName = requireActivity().intent.getStringExtra("MuseumName")
-                                val siteToFocus = mapUtils!!.findSiteByName(museumName!!)
-                                if (siteToFocus != null) moveCamera(LatLng(siteToFocus.location.lat, siteToFocus.location.lng), 15f) else moveCamera(LatLng(location.latitude, location.longitude), 15f)
-                            }
-                            else
-                            {
-                                val coordinate = Coordinate(requireActivity().intent.getDoubleExtra("favoriteLocationLat", 0.0),requireActivity().intent.getDoubleExtra("favoriteLocationLng", 0.0) )
-                                moveCamera(LatLng(coordinate.lat, coordinate.lng), 15f)
-                            }
-                        }
-                        firstTime = false
-                    }
-                    mapUtils!!.updateRecycleView(currentLocation)
+        })
 
+        viewModel.focusToCurrentLocation.observe(viewLifecycleOwner, {
+            if (it == true) {
+                animateCamera(LatLng(viewModel.currentLocation.value!!.latitude, viewModel.currentLocation.value!!.longitude), 15f)
+                viewModel.focusToCurrentLocation.value = false
+            }
+        })
 
-                    if (activity != null)
-                        if (UserLoggedIn.instance.profilePicture == null)
-                            mapUtils!!.drawUserMarker(location, BitmapFactory.decodeResource(resources, R.drawable.avatar), activity!!, hMap!!)
-                        else
-                            mapUtils!!.drawUserMarker(location, UserLoggedIn.instance.profilePicture, activity!!, hMap!!)
+        viewModel.siteList.observe(viewLifecycleOwner, {
+            if (isMapReady) {
+                setRecyclerViewAdapter(binding.root)
+                for (site: Site in it)
+                    viewModel.activeMarkers.value!!.add(drawMarker(viewModel.mapUtils.createMuseumMarkerOptions(site)))
+            }
+        })
+
+        viewModel.animateCameraLatLng.observe(viewLifecycleOwner, {
+            animateCamera(it, 15f)
+        })
+
+        viewModel.initializeSiteList.observe(viewLifecycleOwner, {
+            if (it == true) {
+                setRecyclerViewAdapter(binding.root)
+                viewModel.changeMapSize(null)
+            }
+        })
+
+        viewModel.currentLocation.observe(viewLifecycleOwner, {
+            if (isMapReady) {
+                Log.d("Current Location", it.toString())
+                if (viewModel.currentPositionMarker.value == null) {
+                    handleFirstLocation(it)
+                } else {
+                    viewModel.animateMarker(LatLng(it.latitude, it.longitude))
                 }
+                updateRecycleView(it)
+            }
+        })
 
-                override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-                override fun onProviderEnabled(provider: String) {}
-                override fun onProviderDisabled(provider: String) {}
-            })
-        }
-    private val locationPermissions: Unit
-        get() {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                Log.i(TAG, "sdk < 28 Q")
-                if (ActivityCompat.checkSelfPermission(requireContext(),
-                                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(),
-                                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), "com.huawei.hms.permission.ACTIVITY_RECOGNITION") != PackageManager.PERMISSION_GRANTED) {
-                    val strings = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, "com.huawei.hms.permission.ACTIVITY_RECOGNITION")
-                    requestPermissions(strings, 1)
-                } else mLocationPermissionGranted = true
-            } else {
-                if (ActivityCompat.checkSelfPermission(requireContext(),
-                                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(),
-                                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(),
-                                "android.permission.ACCESS_BACKGROUND_LOCATION") != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(requireContext(), "com.huawei.hms.permission.ACTIVITY_RECOGNITION") != PackageManager.PERMISSION_GRANTED) {
-                    val strings = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            "android.permission.ACCESS_BACKGROUND_LOCATION",
-                            "com.huawei.hms.permission.ACTIVITY_RECOGNITION")
-                    requestPermissions(strings, 2)
-                } else mLocationPermissionGranted = true
-            }
-        }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1) {
-            if (grantResults.size > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                initMap(mSavedInstnceState)
-                Log.i(TAG, "onRequestPermissionsResult: apply LOCATION PERMISSION successful")
-                mLocationPermissionGranted = true
-            } else {
-                Log.i(TAG, "onRequestPermissionsResult: apply LOCATION PERMISSION  failed")
-                progressBar!!.visibility = View.GONE
-            }
-        }
-        if (requestCode == 2) {
-            if (grantResults.size > 2 && grantResults[2] == PackageManager.PERMISSION_GRANTED && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                initMap(mSavedInstnceState)
-                Log.i(TAG, "onRequestPermissionsResult: apply ACCESS_BACKGROUND_LOCATION successful")
-                mLocationPermissionGranted = true
-            } else {
-                Log.i(TAG, "onRequestPermissionsResult: apply ACCESS_BACKGROUND_LOCATION  failed")
-                progressBar!!.visibility = View.GONE
-            }
-        }
+        return binding.root
     }
 
-    private fun initMap(savedInstanceState: Bundle?) {
-        var mapViewBundle: Bundle? = null
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY)
+    private fun handleFirstLocation(location: Location){
+        if (requireActivity().intent.extras == null)
+            moveCamera(LatLng(location.latitude, location.longitude), 15f)
+        else {
+            if (requireActivity().intent.getStringExtra("MuseumName") != null) {
+                val museumName = requireActivity().intent.getStringExtra("MuseumName")
+                val siteToFocus = viewModel.mapUtils.findSiteByName(museumName!!)
+                if (siteToFocus != null)
+                    moveCamera(LatLng(siteToFocus.location.lat, siteToFocus.location.lng), 15f)
+                else moveCamera(LatLng(location.latitude, location.longitude), 15f)
+            } else {
+                val coordinate = Coordinate(requireActivity().intent.getDoubleExtra("favoriteLocationLat", 0.0),
+                        requireActivity().intent.getDoubleExtra("favoriteLocationLng", 0.0))
+                moveCamera(LatLng(coordinate.lat, coordinate.lng), 15f)
+            }
         }
+        viewModel.currentPositionMarker.value = drawMarker(getUserMarkerOptions(location)!!)
+    }
+
+
+
+    private fun initMap() {
+        val mapViewBundle: Bundle? = null
 
         mMapView!!.onCreate(mapViewBundle)
         mMapView!!.getMapAsync(this)
     }
 
-    companion object {
-        private const val TAG = "MapViewDemoActivity"
-        private const val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
-        var currentLocation: Location? = null
+    override fun onMapReady(map: HuaweiMap) {
+        Log.d(TAG, "onMapReady: ")
+        hMap = map
+        isMapReady= true
+
+        hMap!!.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(),
+                SettingsUtils.mapStyleDark(requireActivity())))
+
+        hMap!!.setMaxZoomPreference(20.0f)
+        hMap!!.setMinZoomPreference(6.0f)
+        hMap!!.isIndoorEnabled = true
+        viewModel.retrieveSiteList()
+        viewModel.startLocationTrack()
     }
+
+    override fun permissionsRequestCode(): Int {
+        return viewModel.permissionsRequestCode()
+    }
+
+    override fun permissions(): Array<String?>? {
+        return viewModel.permissions()
+    }
+
+    override fun requestPermissionsSuccess() {
+        viewModel.isGetPermission = true
+        Log.i(TAG, "requestPermissionsSuccess")
+        initMap()
+    }
+
+    override fun requestPermissionsFail() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(R.string.app_name)
+        builder.setMessage(getString(R.string.permissionsAlert))
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setNeutralButton(getString(R.string.exit)) { _, _ ->
+            requireActivity().finish()
+            exitProcess(0);
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        viewModel.mPermissionHelper!!.requestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+
+    private fun moveCamera(latLng: LatLng?, zoom: Float) {
+        hMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+    }
+
+    private fun animateCamera(latLng: LatLng?, zoom: Float) {
+        hMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+    }
+
+    private fun drawMarker(markerOptions: MarkerOptions): Marker {
+        return hMap!!.addMarker(markerOptions)
+    }
+
+    private fun createUserBitmap(profilePicture: Bitmap?): Bitmap? {
+        var result: Bitmap? = null
+        try {
+            result = Bitmap.createBitmap(MapUtils.dp(62f, requireActivity()), MapUtils.dp(76f, requireActivity()), Bitmap.Config.ARGB_8888)
+            result.eraseColor(Color.TRANSPARENT)
+            val canvas = Canvas(result)
+            @SuppressLint("UseCompatLoadingForDrawables") val drawable = resources.getDrawable(R.drawable.pin)
+            drawable.setBounds(0, 0, MapUtils.dp(62f, requireActivity()), MapUtils.dp(76f, requireActivity()))
+            drawable.draw(canvas)
+            val roundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+            val bitmapRect = RectF()
+            canvas.save()
+
+            //Bitmap bitmap = BitmapFactory.decodeFile(path.toString()); /*generate bitmap here if your image comes from any url*/
+            if (profilePicture != null) {
+                val shader = BitmapShader(profilePicture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+                val matrix = Matrix()
+                val scale = MapUtils.dp(52f, requireActivity()) / profilePicture.width.toFloat()
+                matrix.postTranslate(MapUtils.dp(5f, requireActivity()).toFloat(), MapUtils.dp(5f, requireActivity()).toFloat())
+                matrix.postScale(scale, scale)
+                roundPaint.shader = shader
+                shader.setLocalMatrix(matrix)
+                bitmapRect[MapUtils.dp(5f, requireActivity()).toFloat(), MapUtils.dp(5f, requireActivity()).toFloat(), MapUtils.dp(52 + 5.toFloat(), requireActivity()).toFloat()] = MapUtils.dp(52 + 5.toFloat(), requireActivity()).toFloat()
+                canvas.drawRoundRect(bitmapRect, MapUtils.dp(26f, requireActivity()).toFloat(), MapUtils.dp(26f, requireActivity()).toFloat(), roundPaint)
+            }
+            canvas.restore()
+            try {
+                canvas.setBitmap(null)
+            } catch (ignored: Exception) {
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+        return result
+    }
+
+
+    private fun getUserMarkerOptions(location: Location): MarkerOptions? {
+        val options = MarkerOptions().position(LatLng(location.latitude, location.longitude))
+        val color = Paint()
+        color.textSize = 35f
+        color.color = Color.BLACK
+
+        val profilePicture: Bitmap? = if (UserLoggedIn.instance.profilePicture == null)
+            BitmapFactory.decodeResource(resources, R.drawable.avatar)
+        else
+            UserLoggedIn.instance.profilePicture
+
+
+        val bitmap = createUserBitmap(profilePicture)
+        options.title(UserLoggedIn.instance.name)
+        options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+        options.anchorMarker(0.5f, 0.907f)
+
+
+        return options
+    }
+
+    private fun setRecyclerViewAdapter(view: View) {
+        viewModel.siteList.value!!.sortWith { site1: Site, site2: Site -> (site1.distance - site2.distance).toInt() }
+        siteListAdapter = SiteListAdapter(viewModel.siteList.value!!, requireContext(), view, viewModel)
+        listView!!.adapter = siteListAdapter
+        val linearLayoutManager = LinearLayoutManager(context)
+        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        listView!!.layoutManager = linearLayoutManager
+        val dividerItemDecoration = DividerItemDecoration(listView!!.context,
+                linearLayoutManager.orientation)
+        listView!!.addItemDecoration(dividerItemDecoration)
+    }
+
+    private fun updateRecycleView(currentLocation: Location?) {
+        if (siteListAdapter != null) siteListAdapter!!.calculateAndUpdateDistance(currentLocation)
+    }
+
 }
+
+

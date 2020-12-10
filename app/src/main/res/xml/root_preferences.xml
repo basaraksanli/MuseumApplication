@@ -2,24 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="Personal Settings">
-
         <SwitchPreference
             app:icon="@drawable/darkmode"
             app:key="darkMode"
             app:summary="Tap to switch Dark Mode or Light Mode for the intergface"
             app:title="Dark mode" />
-
         <SwitchPreference
             app:icon="@drawable/darkmap"
             app:key="mapDarkMode"
             app:summary="Tap to switch Night Mode or Day Mode for Map"
             app:title="Night Mode For Map" />
-
-
     </PreferenceCategory>
-
     <PreferenceCategory app:title="Map Settings">
-
         <SeekBarPreference
             android:id="@+id/museum_range"
             android:title="Museum Range"
@@ -32,7 +26,6 @@
             app:seekBarIncrement="10"
             />
     </PreferenceCategory>
-
     <PreferenceCategory app:title="Exhibit Settings">
 
         <SeekBarPreference
@@ -44,9 +37,5 @@
             android:summary="Set detect range for the exhibits"
             app:icon="@drawable/exhibit"
             android:key="exhibitRange"/>
-
     </PreferenceCategory>
-
-
-
 </PreferenceScreen>

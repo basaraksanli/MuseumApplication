@@ -18,10 +18,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.example.museumapplication.R
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.ui.home.beacon.BeaconFragment
-import com.example.museumapplication.utils.authProviders.IBaseAuth.Companion.logout
+import com.example.museumapplication.utils.auth.IBaseAuth.Companion.logout
 import com.example.museumapplication.utils.SettingsUtils
-import com.example.museumapplication.utils.services.CloudDBHelper
 import com.facebook.login.LoginManager
 import com.google.android.material.navigation.NavigationView
 import com.huawei.agconnect.auth.AGConnectAuth

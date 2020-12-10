@@ -10,13 +10,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.data.Visit
-import com.example.museumapplication.utils.services.CloudDBHelper
+import com.example.museumapplication.utils.services.CloudDBManager
 import com.huawei.agconnect.cloud.database.Text
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import com.huawei.hms.common.ApiException
@@ -54,12 +53,10 @@ class BeaconUtils {
                     e.printStackTrace()
                 }
             }
-
             override fun onDistanceChanged(message: Message, distance: Distance) {
                 super.onDistanceChanged(message, distance)
                 doOnDistanceChanged(message, distance, root, activityContext)
             }
-
             override fun onLost(message: Message) {
                 super.onLost(message)
                 doOnLost(message)
@@ -96,7 +93,6 @@ class BeaconUtils {
         if (message == null) {
             return
         }
-        val type = message.type ?: return
         val messageContent = String(message.content)
         val id = messageContent.toInt()
         artifactDistances.remove(id)
@@ -123,7 +119,7 @@ class BeaconUtils {
 
     @Throws(AGConnectCloudDBException::class)
     private fun downloadArtifact(messageContent: String) {
-        val artifact = CloudDBHelper.instance.queryArtifactByID(messageContent.toInt())
+        val artifact = CloudDBManager.instance.queryArtifactByID(messageContent.toInt())
         downloadedArtifacts.add(artifact!!)
     }
 
@@ -151,42 +147,35 @@ class BeaconUtils {
         val museumText = root.findViewById<TextView>(R.id.museumNameTextView)
         val favoriteCount = root.findViewById<TextView>(R.id.favoriteCount)
 
-
         val sp = PreferenceManager.getDefaultSharedPreferences(activityContext)
         val exhibitRange = sp.getInt("exhibitRange", 2)
 
         if (closestIndex!!.value.meters < exhibitRange) {
             val closestInfo = findArtifactInformation(closestIndex.key)
             if (closestInfo != null) {
-
                 startStopwatch(closestInfo)
-
                 if(currentArtifact != closestInfo && visitTime.isStarted && currentArtifact !=null) {
                     visitTime.stop()
                     visitObject!!.visitTime = (visitTime.elapsedTime / 1000).toInt()
                     if(timeout.isStarted)
                         timeout.stop()
                     if(visitObject!!.visitTime> 20)
-                        CloudDBHelper.instance.upsertVisit(visitObject!!)
+                        CloudDBManager.instance.upsertVisit(visitObject!!)
                 }
-
-
-
                 currentArtifact = closestInfo
                 artifactName.text = closestInfo.artifactName
                 description.text = closestInfo.artifactDescription.toString()
-                museumText.text = CloudDBHelper.instance.getMuseum(closestInfo.museumID)!!.museumName
+                museumText.text = CloudDBManager.instance.getMuseum(closestInfo.museumID)!!.museumName
                 favoriteCount.text= closestInfo.favoriteCount.toString()
                 imageView.setImageBitmap(base64toBitmap(closestInfo.artifactImage))
-
                 if (UserLoggedIn.instance.getArtifactFavorite(root.context, closestInfo.artifactID) != null)
-                    (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(root.context.resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
+                    (root.findViewById<View>(R.id.starArtifact) as ImageView).
+                    setColorFilter(root.context.resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
                 else
-                    (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
-
+                    (root.findViewById<View>(R.id.starArtifact) as ImageView)
+                            .setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
             }
         } else {
-
             val oldArtifact = currentArtifact
             timeout.setOnTickListener {
                 if (currentArtifact == oldArtifact) {
@@ -197,7 +186,7 @@ class BeaconUtils {
                     visitObject!!.visitTime = (visitTime.elapsedTime / 1000).toInt()
                     timeout.stop()
                     if(visitObject!!.visitTime> 20)
-                        CloudDBHelper.instance.upsertVisit(visitObject!!)
+                        CloudDBManager.instance.upsertVisit(visitObject!!)
                 }
             }
             currentArtifact != null
@@ -206,7 +195,8 @@ class BeaconUtils {
             description.setText(R.string.no_nearby_artifact)
             favoriteCount.text = "0"
             imageView.setImageResource(R.drawable.noimage)
-            (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
+            (root.findViewById<View>(R.id.starArtifact) as ImageView)
+                    .setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
         }
     }
 

@@ -7,9 +7,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.museumapplication.R
-import com.example.museumapplication.utils.authProviders.EmailAuth
-import com.example.museumapplication.utils.authProviders.IBaseAuth
-import com.example.museumapplication.utils.AuthUtils.checkFields
+import com.example.museumapplication.utils.auth.EmailAuth
+import com.example.museumapplication.utils.auth.IBaseAuth
+import com.example.museumapplication.utils.auth.AuthUtils.checkFields
 
 class SignupActivity : AppCompatActivity() {
     var emailAuth: IBaseAuth? = null

@@ -14,7 +14,7 @@ import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Museum
 import com.example.museumapplication.data.Visit
 import com.example.museumapplication.utils.StatisticsUtils
-import com.example.museumapplication.utils.services.CloudDBHelper
+import com.example.museumapplication.utils.services.CloudDBManager
 import kotlin.collections.ArrayList
 
 
@@ -51,8 +51,8 @@ class PagerViewModel : ViewModel() {
     companion object {
         private val statisticsUtils = StatisticsUtils()
         @JvmStatic
-        @BindingAdapter("museumImage")
-        fun loadImage(view: ImageView, museumImage: String) {
+        @BindingAdapter("loadMuseumImage")
+        fun loadMuseumImage(view: ImageView, museumImage: String) {
             Glide.with(view.context)
                     .load(museumImage)
                     .into(view)
@@ -125,10 +125,17 @@ class PagerViewModel : ViewModel() {
 
     }
 
+    private fun calculateAverageVisit() {
+        var temp = 0
+        for (visit: Visit in visitList.value!!) {
+            temp += visit.visitTime
+        }
+        averageVisitLength.value = (temp / visitList.value!!.size)
+    }
 
     fun initialize() {
-        CloudDBHelper.instance.getMuseumVisits(museum.value!!.museumID, visitList.value!!)
-        CloudDBHelper.instance.getArtifactsOfMuseum(museum.value!!.museumID, artifactList)
+        CloudDBManager.instance.getMuseumVisits(museum.value!!.museumID, visitList.value!!)
+        CloudDBManager.instance.getArtifactsOfMuseum(museum.value!!.museumID, artifactList)
         totalVisits.value = visitList.value!!.size
         progressBarVisibility.value = View.GONE
 
@@ -162,13 +169,7 @@ class PagerViewModel : ViewModel() {
 
     }
 
-    private fun calculateAverageVisit() {
-        var temp = 0
-        for (visit: Visit in visitList.value!!) {
-            temp += visit.visitTime
-        }
-        averageVisitLength.value = (temp / visitList.value!!.size)
-    }
+
 
 
 }

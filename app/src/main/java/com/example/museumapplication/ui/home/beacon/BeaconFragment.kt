@@ -21,16 +21,13 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
-import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.FavoriteArtifact
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.utils.*
 import com.example.museumapplication.utils.permission.PermissionHelper
 import com.example.museumapplication.utils.permission.PermissionInterface
-import com.example.museumapplication.utils.services.CloudDBHelper
-import com.google.gson.Gson
+import com.example.museumapplication.utils.services.CloudDBManager
 import java.util.concurrent.Executors
 
 class BeaconFragment : Fragment(), PermissionInterface {
@@ -43,8 +40,7 @@ class BeaconFragment : Fragment(), PermissionInterface {
         @RequiresApi(api = Build.VERSION_CODES.P)
         override fun onReceive(context: Context, intent: Intent) {
             Log.d("BeaconFragment", "Start StatusMonitoring.onReceive")
-            val action = intent.action
-            when (action) {
+            when (intent.action) {
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     showWarnDialog("Bluetooth Warn")
                 }
@@ -182,11 +178,11 @@ class BeaconFragment : Fragment(), PermissionInterface {
                                     toBeFavored.artifactName,
                                     toBeFavored.artifactDescription.toString(),
                                     toBeFavored.artifactImage.toString(),
-                                    (CloudDBHelper.instance.getMuseum(toBeFavored.museumID))!!.museumName,
+                                    (CloudDBManager.instance.getMuseum(toBeFavored.museumID))!!.museumName,
                                     toBeFavored.category))
                     UserLoggedIn.instance.saveFavoriteArtifactListToDevice(requireContext())
                     (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(requireContext().resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
-                    CloudDBHelper.instance.increaseFavoredCountArtifact(toBeFavored.artifactID)
+                    CloudDBManager.instance.increaseFavoredCountArtifact(toBeFavored.artifactID)
                 } else {
                     favoriteCount.text = (favoriteCount.text.toString().toInt() -1).toString()
                     BeaconUtils.instance.decreaseArtifactFavCount(toBeFavored.artifactID)
@@ -194,12 +190,10 @@ class BeaconFragment : Fragment(), PermissionInterface {
                     UserLoggedIn.instance.favoriteArtifactList.remove(temp)
                     UserLoggedIn.instance.saveFavoriteArtifactListToDevice(requireContext())
                     (root.findViewById<View>(R.id.starArtifact) as ImageView).setColorFilter(requireContext().resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
-                    CloudDBHelper.instance.decreaseFavoredCountArtifact(toBeFavored.artifactID)
+                    CloudDBManager.instance.decreaseFavoredCountArtifact(toBeFavored.artifactID)
                 }
             }
         }
-
-
         requireActivity().application.onTerminate()
         return root
 
@@ -223,7 +217,7 @@ class BeaconFragment : Fragment(), PermissionInterface {
     }
 
     private fun showWarnDialog(content: String) {
-        val onClickListener = DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int -> Process.killProcess(Process.myPid()) }
+        val onClickListener = DialogInterface.OnClickListener { _: DialogInterface?, _: Int -> Process.killProcess(Process.myPid()) }
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Warning")
         builder.setMessage(content)

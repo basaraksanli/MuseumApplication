@@ -4,17 +4,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.alfianyusufabdullah.SPager
 import com.example.museumapplication.R
-import com.example.museumapplication.databinding.MuseumFragmentBinding
 import com.example.museumapplication.databinding.MuseumPanelActivityBinding
 import com.example.museumapplication.ui.museumpanel.analyticspanel.ExhibitPanelFragment
 import com.example.museumapplication.ui.museumpanel.analyticspanel.GeneralPanelFragment
 import com.example.museumapplication.ui.museumpanel.analyticspanel.PagerViewModel
-import com.example.museumapplication.utils.services.CloudDBHelper
+import com.example.museumapplication.utils.services.CloudDBManager
 import com.google.android.material.tabs.TabLayout
 
 
@@ -43,7 +40,7 @@ class MuseumPanelActivity : AppCompatActivity(), LifecycleOwner {
 
         pagerAgentViewModel = ViewModelProviders.of(this)[PagerViewModel::class.java]
         val museumID = intent.getStringExtra("museumID")
-        pagerAgentViewModel!!.museum.value = CloudDBHelper.instance.getMuseum(museumID!!)!!
+        pagerAgentViewModel!!.museum.value = CloudDBManager.instance.getMuseum(museumID!!)!!
         pagerAgentViewModel!!.initialize()
 
         binding.viewmodel = pagerAgentViewModel

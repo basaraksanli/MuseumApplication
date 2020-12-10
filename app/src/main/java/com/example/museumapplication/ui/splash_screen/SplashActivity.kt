@@ -2,13 +2,10 @@ package com.example.museumapplication.ui.splash_screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.*
-import android.os.PowerManager.WakeLock
-import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
@@ -19,12 +16,13 @@ import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.auth.LoginActivity
 import com.example.museumapplication.ui.home.HomeActivity
 import com.example.museumapplication.utils.SettingsUtils
-import com.example.museumapplication.utils.services.CloudDBHelper.Companion.instance
+import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.AGConnectUser
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import kotlin.system.exitProcess
 
 
 class SplashActivity : AppCompatActivity() {
@@ -37,9 +35,12 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+
         SettingsUtils.loadSettings(this)
         UserLoggedIn.instance.retrieveFavoriteMuseumList(this)
         UserLoggedIn.instance.retrieveFavoriteArtifactList(this)
+
+
         try {
             @SuppressLint("PackageManagerGetSignatures") val info = packageManager.getPackageInfo(
                     "com.example.museumapplication",
@@ -54,10 +55,12 @@ class SplashActivity : AppCompatActivity() {
         } catch (e: NoSuchAlgorithmException) {
             e.printStackTrace()
         }
+
+
         instance.initAGConnectCloudDB(this)
         agConnectAuth = AGConnectAuth.getInstance()
-        agcuser = agConnectAuth!!.getCurrentUser()
-        if (agConnectAuth!!.getCurrentUser() != null) {
+        agcuser = agConnectAuth!!.currentUser
+        if (agConnectAuth!!.currentUser != null) {
             val loginTask = LoginTask().execute(this)
             countDownTimer = object : CountDownTimer(10000, 1000) {
                 override fun onTick(millisUntilFinished: Long) {}
@@ -66,11 +69,11 @@ class SplashActivity : AppCompatActivity() {
                     val builder = AlertDialog.Builder(this@SplashActivity)
                     builder.setTitle(resources.getIdentifier("app_name", "string", packageName))
                     builder.setMessage("Could not connect to internet services. Check your network")
-                    builder.setNegativeButton("EXIT") { dialogInterface: DialogInterface?, i: Int ->
+                    builder.setNegativeButton("EXIT") { _: DialogInterface?, _: Int ->
                         finish()
-                        System.exit(0)
+                        exitProcess(0)
                     }
-                    builder.setPositiveButton("RETRY") { dialogInterface: DialogInterface?, i: Int ->
+                    builder.setPositiveButton("RETRY") { _: DialogInterface?, _: Int ->
                         val intent = intent
                         finish()
                         startActivity(intent)
@@ -89,9 +92,6 @@ class SplashActivity : AppCompatActivity() {
 
     @SuppressLint("StaticFieldLeak")
     open inner class LoginTask : AsyncTask<Activity?, Void?, Void?>() {
-        override fun onPreExecute() {
-            super.onPreExecute()
-        }
 
         override fun doInBackground(vararg params: Activity?): Void? {
             var accountID: String?
@@ -114,18 +114,6 @@ class SplashActivity : AppCompatActivity() {
             }
             startActivity(homeActivity)
             return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            super.onPostExecute(result)
-        }
-
-        override fun onProgressUpdate(vararg values: Void?) {
-            super.onProgressUpdate(*values)
-        }
-
-        override fun onCancelled(result: Void?) {
-            super.onCancelled(result)
         }
     }
 }

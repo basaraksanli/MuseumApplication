@@ -38,6 +38,4 @@ class SettingsFragment : PreferenceFragmentCompat() , SharedPreferences.OnShared
         preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onPause()
     }
-
-
 }

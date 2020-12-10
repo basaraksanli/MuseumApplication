@@ -16,12 +16,9 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.FavoriteArtifact
-import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.data.UserLoggedIn.Companion.instance
-import com.example.museumapplication.utils.TTSUtils
-import com.example.museumapplication.utils.services.CloudDBHelper
+import com.example.museumapplication.utils.services.CloudDBManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import org.w3c.dom.Text
 import java.util.*
 
 
@@ -73,18 +70,15 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
             artifactImage.setImageBitmap(stringToBitMap(item.artifactImage))
             museumName.text = item.museumName
 
-
             favoriteButton.setOnClickListener{
                 artifactList.remove(item)
                 instance.favoriteArtifactList.remove(item)
                 instance.saveFavoriteMuseumListToDevice(context)
                 listAdapter.update()
-                CloudDBHelper.instance.decreaseFavArtifact(item.artifactID)
+                CloudDBManager.instance.decreaseFavArtifact(item.artifactID)
             }
             val sp = PreferenceManager.getDefaultSharedPreferences(context)
             val darkMode: Boolean = sp.getBoolean("darkMode", true)
-
-
 
             showInformation.setOnClickListener{
                 val bottomSheetDialog = BottomSheetDialog(
@@ -103,8 +97,6 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
                 bottomSheetView.findViewById<ImageView>(R.id.bottom_sheet_artifactImage).setImageBitmap(stringToBitMap(item.artifactImage))
                 bottomSheetView.findViewById<ImageView>(R.id.starArtifact).setColorFilter(root.context.resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
 
-
-
                 bottomSheetView.findViewById<ImageButton>(R.id.playButton).setOnClickListener{
                     instance.ttsUtils.startTTSreading(item.artifactDescription)
                 }
@@ -122,7 +114,7 @@ class FavoriteArtifactListAdapter(private val context: Context, private val root
                     listAdapter.update()
                     bottomSheetDialog.hide()
                     instance.ttsUtils.stopTTSreading()
-                    CloudDBHelper.instance.decreaseFavArtifact(item.artifactID)
+                    CloudDBManager.instance.decreaseFavArtifact(item.artifactID)
                 }
 
             }

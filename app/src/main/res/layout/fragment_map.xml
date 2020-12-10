@@ -1,112 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mapLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.home.map.MapFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.example.museumapplication.ui.home.map.MapViewModel" />
+    </data>
 
-    <ProgressBar
-        android:id="@+id/mapProgressBar"
-        style="?android:attr/progressBarStyleLargeInverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mapLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <com.huawei.hms.maps.MapView
-                android:id="@+id/mapView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cameraTargetLat="48.893478"
-                app:cameraTargetLng="2.334595"
-                app:cameraZoom="10">
-
-            </com.huawei.hms.maps.MapView>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabScreenSize"
-                android:layout_width="368dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:tint="@color/colorWhite"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:srcCompat="@drawable/uparrow"
-                tools:ignore="MissingConstraints"
-                android:focusable="true"
-                android:clickable="true"
-                android:foreground="?actionBarItemBackground"/>
+        tools:context=".ui.home.map.MapFragment">
 
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="@dimen/fab_margin"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?actionBarItemBackground"
-                android:scaleType="center"
-                android:tint="@color/colorWhite"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@android:drawable/ic_menu_mylocation"
-                tools:ignore="MissingConstraints" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <Button
-            android:id="@+id/searchForMuseumButton"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/colorPrimary"
-            android:clickable="true"
-            android:drawableStart="@android:drawable/ic_menu_search"
-            android:drawableTint="@color/colorWhite"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center"
-            android:paddingStart="50dp"
-            android:paddingEnd="50dp"
-            android:text="@string/search_for_museums"
-            android:textAllCaps="false"
-            android:textColor="@color/colorWhite" />
+        <ProgressBar
+            android:id="@+id/mapProgressBar"
+            style="?android:attr/progressBarStyleLargeInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewmodel.progressBarVisibility}"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout2"
+            app:layout_constraintTop_toTopOf="parent"
+            android:translationZ="1dp"/>
 
         <LinearLayout
-            android:id="@+id/mapListLayout"
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/siteList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
-                />
+                <com.huawei.hms.maps.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cameraTargetLat="48.893478"
+                    app:cameraTargetLng="2.334595"
+                    app:cameraZoom="10">
+
+                </com.huawei.hms.maps.MapView>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabScreenSize"
+                    android:layout_width="368dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:tint="@color/colorWhite"
+                    android:setArrowImage="@{viewmodel.fabImage}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/uparrow"
+                    tools:ignore="MissingConstraints"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:foreground="?actionBarItemBackground"
+                    android:onClick="@{viewmodel.changeMapSize}"
+                    app:setEnabled="@{viewmodel.buttonsIsEnabled}"/>
+
+
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?actionBarItemBackground"
+                    android:scaleType="center"
+                    android:tint="@color/colorWhite"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:srcCompat="@android:drawable/ic_menu_mylocation"
+                    tools:ignore="MissingConstraints"
+                    android:onClick="@{viewmodel.showCurrentLocationFabClicked}"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/searchForMuseumButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/colorPrimary"
+                android:clickable="true"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                android:drawableTint="@color/colorWhite"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center"
+                android:paddingStart="50dp"
+                android:paddingEnd="50dp"
+                android:text="@{viewmodel.searchMuseumButtonRangeString}"
+                android:textAllCaps="false"
+                android:onClick="@{viewmodel.searchMuseumClick}"
+                android:textColor="@color/colorWhite"
+                app:setEnabled="@{viewmodel.buttonsIsEnabled}"/>
+
+            <LinearLayout
+                android:id="@+id/mapListLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:setWeight="@{viewmodel.listWeight}"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/siteList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

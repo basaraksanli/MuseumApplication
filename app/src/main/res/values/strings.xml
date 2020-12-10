@@ -92,4 +92,7 @@
     <string name="average_visit_length">Average Visit Length:</string>
     <string name="visit_count_graph_of_last_week">Visit Count Graph of Last Week</string>
     <string name="average_visit_length_of_last_week">Average Visit Length of Last Week</string>
+    <string name="permissionsAlert">App requires these permissions to run. Application will stop.</string>
+    <string name="exit">Exit</string>
+    <string name="please_scan_museum_warning">Please scan for Museums first</string>
 </resources>

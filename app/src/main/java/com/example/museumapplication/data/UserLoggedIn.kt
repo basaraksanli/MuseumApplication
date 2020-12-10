@@ -1,16 +1,11 @@
 package com.example.museumapplication.data
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.lifecycle.MutableLiveData
-import com.example.museumapplication.utils.MapUtils
 import com.example.museumapplication.utils.TTSUtils
-import com.example.museumapplication.utils.services.CloudDBHelper
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.huawei.hms.site.api.model.Site
 
 class UserLoggedIn {
     var uID: String? = null
@@ -51,6 +46,17 @@ class UserLoggedIn {
         }
     }
 
+    fun retrieveFavoriteArtifactList(context: Context) {
+        val mPrefs = context.getSharedPreferences("FavoriteArtifact", Context.MODE_PRIVATE)
+        val favoriteArtifactListJson = mPrefs.getString("artifactList", "")
+        val typeFavoriteArtifact = object : TypeToken<List<FavoriteArtifact?>?>() {}.type
+        val gsonBuilder = GsonBuilder()
+        val gson = gsonBuilder.create()
+        if (favoriteArtifactListJson!!.isNotEmpty()) {
+            favoriteArtifactList = gson.fromJson(favoriteArtifactListJson, typeFavoriteArtifact)
+        }
+    }
+
     fun saveFavoriteMuseumListToDevice(context: Context) {
         val mPrefs = context.getSharedPreferences("FavoriteMuseum", Context.MODE_PRIVATE)
         val prefsEditor = mPrefs.edit()
@@ -67,16 +73,7 @@ class UserLoggedIn {
         return null
     }
 
-    fun retrieveFavoriteArtifactList(context: Context) {
-        val mPrefs = context.getSharedPreferences("FavoriteArtifact", Context.MODE_PRIVATE)
-        val favoriteArtifactListJson = mPrefs.getString("artifactList", "")
-        val typeFavoriteArtifact = object : TypeToken<List<FavoriteArtifact?>?>() {}.type
-        val gsonBuilder = GsonBuilder()
-        val gson = gsonBuilder.create()
-        if (favoriteArtifactListJson!!.isNotEmpty()) {
-            favoriteArtifactList = gson.fromJson(favoriteArtifactListJson, typeFavoriteArtifact)
-        }
-    }
+
 
     fun saveFavoriteArtifactListToDevice(context: Context) {
         val mPrefs = context.getSharedPreferences("FavoriteArtifact", Context.MODE_PRIVATE)

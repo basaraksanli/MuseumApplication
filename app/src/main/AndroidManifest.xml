@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -36,7 +35,7 @@
             android:label="@string/title_activity_museum_panel"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".utils.services.AwarenessService" />
+        <service android:name=".utils.services.AwarenessServiceManager" />
 
         <activity
             android:name=".ui.splash_screen.SplashActivity"

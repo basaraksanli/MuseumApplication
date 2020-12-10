@@ -9,10 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.museumapplication.R
 import com.example.museumapplication.ui.museumpanel.MuseumPanelActivity
-import com.example.museumapplication.utils.authProviders.*
-import com.example.museumapplication.utils.AuthUtils.checkGoogleServices
-import com.example.museumapplication.utils.AuthUtils.disableAllItems
-import com.example.museumapplication.utils.services.CloudDBHelper
+import com.example.museumapplication.utils.auth.*
+import com.example.museumapplication.utils.auth.AuthUtils.checkGoogleServices
+import com.example.museumapplication.utils.auth.AuthUtils.disableAllItems
+import com.example.museumapplication.utils.services.CloudDBManager
 import com.facebook.login.widget.LoginButton
 
 class LoginActivity : AppCompatActivity() {
@@ -80,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun museumPanelClick(view: View) {
-        val museum =CloudDBHelper.instance.checkMuseumIdAndPassword(email!!.text.toString(), password!!.text.toString())
+        val museum =CloudDBManager.instance.checkMuseumIdAndPassword(email!!.text.toString(), password!!.text.toString())
         if(museum!=null) {
             val museumPanelActivity = Intent(this, MuseumPanelActivity::class.java)
             val extra = Bundle()
