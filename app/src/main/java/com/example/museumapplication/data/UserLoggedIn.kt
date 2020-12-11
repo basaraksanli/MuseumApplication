@@ -2,7 +2,7 @@ package com.example.museumapplication.data
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.example.museumapplication.utils.TTSUtils
+import com.example.museumapplication.utils.virtualGuide.TTSUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -66,7 +66,7 @@ class UserLoggedIn {
         prefsEditor.putString("museumList", museumListJson)
         prefsEditor.apply()
     }
-    fun getMuseumFavorite(context: Context, museumName: String): FavoriteMuseum? {
+    fun getMuseumFavorite(museumName: String): FavoriteMuseum? {
         for (museum : FavoriteMuseum in favoriteMuseumList)
             if(museumName == museum.museumName)
                 return museum
@@ -84,7 +84,7 @@ class UserLoggedIn {
         prefsEditor.putString("artifactList", artifactListJson)
         prefsEditor.apply()
     }
-    fun getArtifactFavorite(context: Context, artifactID: Int): FavoriteArtifact? {
+    fun getArtifactFavorite( artifactID: Int): FavoriteArtifact? {
         for (artifact : FavoriteArtifact in favoriteArtifactList)
             if(artifactID == artifact.artifactID)
                 return artifact

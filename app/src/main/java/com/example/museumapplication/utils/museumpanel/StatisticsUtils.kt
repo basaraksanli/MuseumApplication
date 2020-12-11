@@ -1,4 +1,4 @@
-package com.example.museumapplication.utils
+package com.example.museumapplication.utils.museumpanel
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap

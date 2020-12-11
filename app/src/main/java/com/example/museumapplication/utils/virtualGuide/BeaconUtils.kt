@@ -1,5 +1,6 @@
-package com.example.museumapplication.utils
+package com.example.museumapplication.utils.virtualGuide
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -15,6 +16,7 @@ import com.example.museumapplication.R
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.data.Visit
+import com.example.museumapplication.ui.home.beacon.VirtualGuideViewModel
 import com.example.museumapplication.utils.services.CloudDBManager
 import com.huawei.agconnect.cloud.database.Text
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
@@ -27,16 +29,20 @@ import com.yashovardhan99.timeit.Stopwatch
 import java.util.*
 
 
-class BeaconUtils {
+class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
     var messageEngine: MessageEngine? = null
     var mMessageHandler: MessageHandler? = null
-    var currentArtifact :Artifact? = null
     private var visitTime = Stopwatch()
     private var visitObject: Visit? =null
     private val timeout = Stopwatch()
 
-    fun startScanning(activityContext: Context?, root: View) {
-        messageEngine = Nearby.getMessageEngine(activityContext)
+    companion object {
+        private val downloadedArtifacts: MutableList<Artifact> = ArrayList()
+        private val artifactDistances = HashMap<Int, Distance>()
+    }
+
+    fun startScanning(activity: Activity) {
+        messageEngine = Nearby.getMessageEngine(activity)
         messageEngine!!.registerStatusCallback(
                 object : StatusCallback() {
                     override fun onPermissionChanged(isPermissionGranted: Boolean) {
@@ -55,7 +61,7 @@ class BeaconUtils {
             }
             override fun onDistanceChanged(message: Message, distance: Distance) {
                 super.onDistanceChanged(message, distance)
-                doOnDistanceChanged(message, distance, root, activityContext)
+                doOnDistanceChanged(message, distance)
             }
             override fun onLost(message: Message) {
                 super.onLost(message)
@@ -65,25 +71,25 @@ class BeaconUtils {
         val msgPicker = MessagePicker.Builder().includeAllTypes().build()
         val policy = Policy.Builder().setTtlSeconds(Policy.POLICY_TTL_SECONDS_INFINITE).build()
         val getOption = GetOption.Builder().setPicker(msgPicker).setPolicy(policy).build()
-        Nearby.getMessageEngine(activityContext)[mMessageHandler]
+        Nearby.getMessageEngine(activity)[mMessageHandler]
         val task = messageEngine!!.get(mMessageHandler, getOption)
-        task.addOnSuccessListener { Toast.makeText(activityContext, "SUCCESS", Toast.LENGTH_SHORT).show() }.addOnFailureListener { e: Exception? ->
+        task.addOnSuccessListener { Toast.makeText(context, "SUCCESS", Toast.LENGTH_SHORT).show() }.addOnFailureListener { e: Exception? ->
             Log.e("Beacon", "Login failed:", e)
             if (e is ApiException) {
                 when (e.statusCode) {
                     StatusCode.STATUS_MESSAGE_AUTH_FAILED -> {
-                        Toast.makeText(activityContext, "configuration_error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "configuration_error", Toast.LENGTH_SHORT).show()
                     }
                     StatusCode.STATUS_MESSAGE_APP_UNREGISTERED -> {
-                        Toast.makeText(activityContext, "permission_error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "permission_error", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
-                        Toast.makeText(activityContext, "start_get_beacon_message_failed", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "start_get_beacon_message_failed", Toast.LENGTH_SHORT)
                                 .show()
                     }
                 }
             } else {
-                Toast.makeText(activityContext, "start_get_beacon_message_failed", Toast.LENGTH_SHORT)
+                Toast.makeText(context, "start_get_beacon_message_failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
@@ -123,38 +129,33 @@ class BeaconUtils {
         downloadedArtifacts.add(artifact!!)
     }
 
-    fun doOnDistanceChanged(message: Message?, distance: Distance, root: View, activityContext: Context?) {
+    fun doOnDistanceChanged(message: Message?, distance: Distance) {
         if (message == null) {
             return
         }
         val type = message.type ?: return
         val messageContent = String(message.content)
         Log.wtf("Beacon", "New Message:" + messageContent + " type:" + type + "Distance: " + distance.meters)
-        if (type.equals("No", ignoreCase = true)) operateOnDistanceChanged(messageContent, distance, root, activityContext)
+        if (type.equals("No", ignoreCase = true)) operateOnDistanceChanged(messageContent, distance)
     }
 
-    private fun operateOnDistanceChanged(messageContent: String, distance: Distance, root: View, activityContext: Context?) {
+    private fun operateOnDistanceChanged(messageContent: String, distance: Distance) {
         val id = messageContent.toInt()
         artifactDistances[id] = distance
-        updateUI(root, activityContext)
+        updateUI()
     }
 
-    private fun updateUI(root: View, activityContext: Context?) {
+    private fun updateUI() {
         val closestIndex = findClosest()
-        val artifactName = root.findViewById<TextView>(R.id.artifactNameTextView)
-        val description = root.findViewById<TextView>(R.id.descriptionTextView)
-        val imageView = root.findViewById<ImageView>(R.id.imageViewBeacon)
-        val museumText = root.findViewById<TextView>(R.id.museumNameTextView)
-        val favoriteCount = root.findViewById<TextView>(R.id.favoriteCount)
 
-        val sp = PreferenceManager.getDefaultSharedPreferences(activityContext)
+        val sp = PreferenceManager.getDefaultSharedPreferences(context)
         val exhibitRange = sp.getInt("exhibitRange", 2)
 
         if (closestIndex!!.value.meters < exhibitRange) {
             val closestInfo = findArtifactInformation(closestIndex.key)
             if (closestInfo != null) {
                 startStopwatch(closestInfo)
-                if(currentArtifact != closestInfo && visitTime.isStarted && currentArtifact !=null) {
+                if(viewModel.currentArtifact.value != closestInfo && visitTime.isStarted && viewModel.currentArtifact.value !=null) {
                     visitTime.stop()
                     visitObject!!.visitTime = (visitTime.elapsedTime / 1000).toInt()
                     if(timeout.isStarted)
@@ -162,23 +163,21 @@ class BeaconUtils {
                     if(visitObject!!.visitTime> 20)
                         CloudDBManager.instance.upsertVisit(visitObject!!)
                 }
-                currentArtifact = closestInfo
-                artifactName.text = closestInfo.artifactName
-                description.text = closestInfo.artifactDescription.toString()
-                museumText.text = CloudDBManager.instance.getMuseum(closestInfo.museumID)!!.museumName
-                favoriteCount.text= closestInfo.favoriteCount.toString()
-                imageView.setImageBitmap(base64toBitmap(closestInfo.artifactImage))
-                if (UserLoggedIn.instance.getArtifactFavorite(root.context, closestInfo.artifactID) != null)
-                    (root.findViewById<View>(R.id.starArtifact) as ImageView).
-                    setColorFilter(root.context.resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
+                viewModel.currentArtifact.value = closestInfo
+
+                viewModel.currentArtifact.value = closestInfo
+                viewModel.currentMuseum.value = CloudDBManager.instance.getMuseum(closestInfo.museumID)!!.museumName
+
+                if (UserLoggedIn.instance.getArtifactFavorite( closestInfo.artifactID ) != null)
+                    viewModel.isArtifactFavored.postValue(true)
                 else
-                    (root.findViewById<View>(R.id.starArtifact) as ImageView)
-                            .setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
+                    viewModel.isArtifactFavored.postValue(false)
+
             }
         } else {
-            val oldArtifact = currentArtifact
+            val oldArtifact = viewModel.currentArtifact.value
             timeout.setOnTickListener {
-                if (currentArtifact == oldArtifact) {
+                if (viewModel.currentArtifact.value == oldArtifact) {
                     timeout.stop()
                 }
                 if(it.elapsedTime == 10000L) {
@@ -189,14 +188,8 @@ class BeaconUtils {
                         CloudDBManager.instance.upsertVisit(visitObject!!)
                 }
             }
-            currentArtifact != null
-            museumText.setText(R.string.no_nearby_artifact)
-            artifactName.setText(R.string.no_nearby_artifact)
-            description.setText(R.string.no_nearby_artifact)
-            favoriteCount.text = "0"
-            imageView.setImageResource(R.drawable.noimage)
-            (root.findViewById<View>(R.id.starArtifact) as ImageView)
-                    .setColorFilter(root.context.resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
+            viewModel.currentArtifact.value = null
+            viewModel.isArtifactFavored.postValue(false)
         }
     }
 
@@ -210,11 +203,6 @@ class BeaconUtils {
             visitObject!!.museumID = closestInfo.museumID
 
         }
-    }
-
-    private fun base64toBitmap(imageCode: Text): Bitmap {
-        val decodedString = Base64.decode(imageCode.toString(), Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
     }
 
     private fun findArtifactInformation(ID: Int): Artifact? {
@@ -233,20 +221,5 @@ class BeaconUtils {
         }
         return closest
     }
-    public fun increaseArtifactFavCount (artifactID: Int){
-        for(artifact : Artifact in downloadedArtifacts)
-            if(artifactID== artifact.artifactID)
-                artifact.favoriteCount++
-    }
-    public fun decreaseArtifactFavCount (artifactID: Int){
-        for(artifact : Artifact in downloadedArtifacts)
-            if(artifactID== artifact.artifactID)
-                artifact.favoriteCount--
-    }
 
-    companion object {
-        val instance = BeaconUtils()
-        private val downloadedArtifacts: MutableList<Artifact> = ArrayList()
-        private val artifactDistances = HashMap<Int, Distance>()
-    }
 }

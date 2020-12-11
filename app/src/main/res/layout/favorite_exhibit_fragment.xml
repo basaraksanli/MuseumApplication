@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.favorite.ExhibitFragment">
+    tools:context=".ui.home.favorite.tabs.FavoriteExhibitFragment">
 
     <data>
         <variable
             name="viewmodel"
-            type="com.example.museumapplication.ui.favorite.ExhibitViewModel"/>
+            type="com.example.museumapplication.ui.home.favorite.FavoritePageSharedModelView" />
     </data>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

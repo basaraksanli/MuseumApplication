@@ -95,4 +95,10 @@
     <string name="permissionsAlert">App requires these permissions to run. Application will stop.</string>
     <string name="exit">Exit</string>
     <string name="please_scan_museum_warning">Please scan for Museums first</string>
+    <string name="darkModePreferences">darkMode</string>
+    <string name="mapDarkPreferences">mapDarkMode</string>
+    <string name="network_error">NETWORK ERROR. Please activate internet connection for this feature.</string>
+    <string name="bluetooth_error">BLUETOOTH ERROR. Please activate bluetooth for this feature.</string>
+    <string name="gps_error">GPS ERROR. Please activate GPS for this feature.</string>
+    <string name="thread_sleep_error">Thread sleep error</string>
 </resources>

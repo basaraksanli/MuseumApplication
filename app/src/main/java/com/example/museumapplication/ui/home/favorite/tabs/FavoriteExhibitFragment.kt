@@ -1,4 +1,4 @@
-package com.example.museumapplication.ui.favorite
+package com.example.museumapplication.ui.home.favorite.tabs
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -10,25 +10,26 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
-import com.example.museumapplication.databinding.ExhibitFragmentBinding
-import com.example.museumapplication.databinding.MuseumFragmentBinding
+import com.example.museumapplication.databinding.FavoriteExhibitFragmentBinding
+import com.example.museumapplication.ui.home.favorite.FavoritePageSharedModelView
+import com.example.museumapplication.ui.home.favorite.adapters.FavoriteArtifactListAdapter
 
-class ExhibitFragment : Fragment() {
+class FavoriteExhibitFragment : Fragment() {
 
 
-    private lateinit var viewModel: ExhibitViewModel
+    private lateinit var viewModel: FavoritePageSharedModelView
     private lateinit var favoriteListAdapter: FavoriteArtifactListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val binding: ExhibitFragmentBinding =
-                DataBindingUtil.inflate(inflater, R.layout.exhibit_fragment, container, false)
+        val binding: FavoriteExhibitFragmentBinding =
+                DataBindingUtil.inflate(inflater, R.layout.favorite_exhibit_fragment, container, false)
 
 
-        val viewModel = ViewModelProvider(this ).get(ExhibitViewModel::class.java)
+        val viewModel = ViewModelProvider(this ).get(FavoritePageSharedModelView::class.java)
 
         binding.viewmodel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = requireParentFragment()
 
 
         val recyclerView = binding.root.findViewById<RecyclerView>(R.id.recyclerView)
@@ -36,7 +37,7 @@ class ExhibitFragment : Fragment() {
 
         //Setting Layout manager for recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        favoriteListAdapter = FavoriteArtifactListAdapter(requireContext() , binding.root)
+        favoriteListAdapter = FavoriteArtifactListAdapter(viewModel.artifactList.value!! ,requireContext() , binding.root)
         recyclerView.adapter = favoriteListAdapter
 
 

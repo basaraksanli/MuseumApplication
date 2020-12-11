@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Museum
 import com.example.museumapplication.data.Visit
-import com.example.museumapplication.utils.StatisticsUtils
+import com.example.museumapplication.utils.museumpanel.StatisticsUtils
 import com.example.museumapplication.utils.services.CloudDBManager
 import kotlin.collections.ArrayList
 

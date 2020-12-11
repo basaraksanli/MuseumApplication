@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_explore"
-        android:name="com.example.museumapplication.ui.home.beacon.BeaconFragment"
+        android:name="com.example.museumapplication.ui.home.beacon.VirtualGuildeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_beacon" />
+        tools:layout="@layout/fragment_virtual_guide" />
 
     <fragment
         android:id="@+id/nav_settings"
@@ -24,8 +24,8 @@
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/nav_favorites"
-        android:name="com.example.museumapplication.ui.favorite.FavoriteFragment"
+        android:name="com.example.museumapplication.ui.home.favorite.MainFavoriteFragment"
         android:label="@string/favorites"
-        tools:layout="@layout/favorite_fragment" />
+        tools:layout="@layout/favorite_main_fragment" />
 
 </navigation>

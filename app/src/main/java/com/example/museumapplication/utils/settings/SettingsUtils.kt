@@ -1,4 +1,4 @@
-package com.example.museumapplication.utils
+package com.example.museumapplication.utils.settings
 
 import android.app.Activity
 import androidx.preference.PreferenceManager
@@ -10,29 +10,19 @@ class SettingsUtils {
         fun setTheme(activity: Activity){
             val sp = PreferenceManager.getDefaultSharedPreferences(activity)
 
-            val darkMode = sp.getBoolean("darkMode", true)
+            val darkMode = sp.getBoolean(activity.applicationContext.getString(R.string.darkModePreferences), true)
             if(darkMode)
                 activity.setTheme(R.style.AppThemeDarkNoActionBar)
             else
                 activity.setTheme(R.style.AppThemeNoActionBar)
         }
-        fun loadSettings(activity: Activity){
-            val sp = PreferenceManager.getDefaultSharedPreferences(activity)
 
-            val darkmode = sp.getBoolean("darkMode", false)
-            val mapnightmode = sp.getBoolean("mapDarkMode", true)
-            val museumRange = sp.getInt("museumRange", 50)
-            val exhibitRange = sp.getInt("exhibitRange", 2)
-
-
-        }
         fun mapStyleDark (activity: Activity): Int {
             val sp = PreferenceManager.getDefaultSharedPreferences(activity)
-            return if(sp.getBoolean("mapDarkMode", true))
+            return if(sp.getBoolean(activity.applicationContext.getString(R.string.mapDarkPreferences), true))
                 R.raw.mapstyle_dark
             else
                 R.raw.mapstyle
         }
     }
-
 }

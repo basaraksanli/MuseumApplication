@@ -6,9 +6,8 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import com.example.museumapplication.utils.NotificationUtils
-import com.example.museumapplication.utils.NotificationUtils.createNotificationChannel
-import com.example.museumapplication.utils.NotificationUtils.sendNotification
+import com.example.museumapplication.utils.services.NotificationUtils.createNotificationChannel
+import com.example.museumapplication.utils.services.NotificationUtils.sendNotification
 import com.huawei.hms.kit.awareness.barrier.BarrierStatus
 
 class AwarenessServiceManager

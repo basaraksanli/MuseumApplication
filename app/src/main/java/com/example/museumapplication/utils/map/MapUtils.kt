@@ -1,12 +1,13 @@
 package com.example.museumapplication.utils.map
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.opengl.Visibility
@@ -17,6 +18,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.museumapplication.R
+import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.home.map.MapViewModel
 import com.example.museumapplication.utils.services.AwarenessServiceManager
 import com.facebook.FacebookSdk
@@ -38,6 +40,25 @@ import kotlin.math.ceil
 import kotlin.math.sign
 
 class MapUtils(private val context: Context, private val viewModel: MapViewModel) {
+
+
+    internal interface LatLngInterpolator {
+        fun interpolate(fraction: Float, a: LatLng, b: LatLng): LatLng?
+        class Linear : LatLngInterpolator {
+
+            override fun interpolate(fraction: Float, a: LatLng, b: LatLng): LatLng? {
+                val lat = (b.latitude - a.latitude) * fraction + a.latitude
+                var lngDelta = b.longitude - a.longitude
+
+                // Take the shortest path across the 180th meridian.
+                if (abs(lngDelta) > 180) {
+                    lngDelta -= sign(lngDelta) * 360
+                }
+                val lng = lngDelta * fraction + a.longitude
+                return LatLng(lat, lng)
+            }
+        }
+    }
 
     private val museumMarkerBitmap: Bitmap
         get() {
@@ -195,31 +216,68 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         return null
     }
 
-    companion object {
-
-        @JvmStatic
-        fun dp(value: Float, fragment: Activity): Int {
-            return if (value == 0f) {
-                0
-            } else ceil(fragment.resources.displayMetrics.density * value.toDouble()).toInt()
-        }
+    private fun dp(value: Float, fragment: Activity): Int {
+        return if (value == 0f) {
+            0
+        } else ceil(fragment.resources.displayMetrics.density * value.toDouble()).toInt()
     }
 
-    internal interface LatLngInterpolator {
-        fun interpolate(fraction: Float, a: LatLng, b: LatLng): LatLng?
-        class Linear : LatLngInterpolator {
+    private fun createUserBitmap(profilePicture: Bitmap?, activity: Activity): Bitmap? {
+        var result: Bitmap? = null
+        try {
+            result = Bitmap.createBitmap(dp(62f, activity), dp(76f, activity), Bitmap.Config.ARGB_8888)
+            result.eraseColor(Color.TRANSPARENT)
+            val canvas = Canvas(result)
+            @SuppressLint("UseCompatLoadingForDrawables") val drawable = activity.getDrawable(R.drawable.pin)
+            drawable?.setBounds(0, 0, dp(62f, activity), dp(76f, activity))
+            drawable?.draw(canvas)
+            val roundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+            val bitmapRect = RectF()
+            canvas.save()
 
-            override fun interpolate(fraction: Float, a: LatLng, b: LatLng): LatLng? {
-                val lat = (b.latitude - a.latitude) * fraction + a.latitude
-                var lngDelta = b.longitude - a.longitude
-
-                // Take the shortest path across the 180th meridian.
-                if (abs(lngDelta) > 180) {
-                    lngDelta -= sign(lngDelta) * 360
-                }
-                val lng = lngDelta * fraction + a.longitude
-                return LatLng(lat, lng)
+            //Bitmap bitmap = BitmapFactory.decodeFile(path.toString()); /*generate bitmap here if your image comes from any url*/
+            if (profilePicture != null) {
+                val shader = BitmapShader(profilePicture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+                val matrix = Matrix()
+                val scale = dp(52f, activity) / profilePicture.width.toFloat()
+                matrix.postTranslate(dp(5f, activity).toFloat(), dp(5f, activity).toFloat())
+                matrix.postScale(scale, scale)
+                roundPaint.shader = shader
+                shader.setLocalMatrix(matrix)
+                bitmapRect[dp(5f, activity).toFloat(), dp(5f, activity).toFloat(), dp(52 + 5.toFloat(), activity).toFloat()] = dp(52 + 5.toFloat(), activity).toFloat()
+                canvas.drawRoundRect(bitmapRect, dp(26f, activity).toFloat(), dp(26f, activity).toFloat(), roundPaint)
             }
+            canvas.restore()
+            try {
+                canvas.setBitmap(null)
+            } catch (ignored: Exception) {
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
         }
+        return result
     }
+
+
+    fun getUserMarkerOptions(location: Location, activity: Activity): MarkerOptions? {
+        val options = MarkerOptions().position(LatLng(location.latitude, location.longitude))
+        val color = Paint()
+        color.textSize = 35f
+        color.color = Color.BLACK
+
+        val profilePicture: Bitmap? = if (UserLoggedIn.instance.profilePicture == null)
+            BitmapFactory.decodeResource(activity.resources, R.drawable.avatar)
+        else
+            UserLoggedIn.instance.profilePicture
+
+
+        val bitmap = viewModel.mapUtils.createUserBitmap(profilePicture, activity)
+        options.title(UserLoggedIn.instance.name)
+        options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+        options.anchorMarker(0.5f, 0.907f)
+
+        return options
+    }
+
+
 }

@@ -15,7 +15,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
-import com.example.museumapplication.utils.map.LocationListener
+import com.example.museumapplication.utils.resultListeners.LocationListener
 import com.example.museumapplication.utils.map.LocationManager
 import com.example.museumapplication.utils.map.MapUtils
 import com.example.museumapplication.utils.permission.PermissionHelper
@@ -54,7 +54,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var focusToCurrentLocation = MutableLiveData(false)
 
     var isGetPermission = false
-    var mPermissionHelper: PermissionHelper? = null
+
 
     var animateCameraLatLng = MutableLiveData<LatLng>()
 
@@ -126,11 +126,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    fun requestPermissions(fragment: Fragment, permissionInterface: PermissionInterface): Boolean {
-        mPermissionHelper = PermissionHelper(fragment, permissionInterface)
-        mPermissionHelper!!.requestPermissions()
-        return true
-    }
 
     fun showCurrentLocationFabClicked(view: View){
         focusToCurrentLocation.value = true

@@ -15,11 +15,11 @@ import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.auth.LoginActivity
 import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.utils.SettingsUtils
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.AGConnectUser
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
+import java.lang.Exception
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.system.exitProcess
@@ -35,8 +35,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-
-        SettingsUtils.loadSettings(this)
         UserLoggedIn.instance.retrieveFavoriteMuseumList(this)
         UserLoggedIn.instance.retrieveFavoriteArtifactList(this)
 
@@ -58,6 +56,8 @@ class SplashActivity : AppCompatActivity() {
 
 
         instance.initAGConnectCloudDB(this)
+
+
         agConnectAuth = AGConnectAuth.getInstance()
         agcuser = agConnectAuth!!.currentUser
         if (agConnectAuth!!.currentUser != null) {

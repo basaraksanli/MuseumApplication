@@ -1,4 +1,4 @@
-package com.example.museumapplication.ui.favorite
+package com.example.museumapplication.ui.home.favorite.adapters
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -16,10 +16,8 @@ import com.example.museumapplication.data.FavoriteMuseum
 import com.example.museumapplication.data.UserLoggedIn.Companion.instance
 import com.example.museumapplication.ui.home.HomeActivity
 
-class FavoriteMuseumListAdapter(private val context: Context, private val activity: Activity): RecyclerView.Adapter<FavoriteMuseumListAdapter.ModelViewHolder>() {
+class FavoriteMuseumListAdapter(private val museumList: ArrayList<FavoriteMuseum>, private val context: Context, private val activity: Activity): RecyclerView.Adapter<FavoriteMuseumListAdapter.ModelViewHolder>() {
 
-
-    private var museumList = instance.favoriteMuseumList
 
 
     fun update() {

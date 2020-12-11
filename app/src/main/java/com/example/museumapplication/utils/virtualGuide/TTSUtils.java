@@ -1,4 +1,4 @@
-package com.example.museumapplication.utils;
+package com.example.museumapplication.utils.virtualGuide;
 
 import android.os.Bundle;
 

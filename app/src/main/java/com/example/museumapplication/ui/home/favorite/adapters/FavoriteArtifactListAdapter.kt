@@ -1,4 +1,4 @@
-package com.example.museumapplication.ui.favorite
+package com.example.museumapplication.ui.home.favorite.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,11 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.util.*
 
 
-class FavoriteArtifactListAdapter(private val context: Context, private val root: View): RecyclerView.Adapter<FavoriteArtifactListAdapter.ModelViewHolder>() {
-
-
-    private var artifactList = instance.favoriteArtifactList
-
+class FavoriteArtifactListAdapter(private val artifactList: ArrayList<FavoriteArtifact>, private val context: Context, private val root: View): RecyclerView.Adapter<FavoriteArtifactListAdapter.ModelViewHolder>() {
 
 
     fun update() {

@@ -1,4 +1,4 @@
-package com.example.museumapplication.utils.map
+package com.example.museumapplication.utils.resultListeners
 
 import android.location.Location
 

@@ -10,10 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
-import com.example.museumapplication.databinding.ExhibitFragmentBinding
 import com.example.museumapplication.databinding.ExhibitPanelFragmentBinding
-import com.example.museumapplication.databinding.GeneralPanelFragmentBinding
-import com.example.museumapplication.ui.favorite.FavoriteArtifactListAdapter
 
 class ExhibitPanelFragment : Fragment() {
 

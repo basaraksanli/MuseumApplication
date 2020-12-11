@@ -5,11 +5,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anychart.APIlib
@@ -18,12 +16,9 @@ import com.anychart.AnyChartView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Visit
-import com.example.museumapplication.utils.StatisticsUtils
+import com.example.museumapplication.utils.museumpanel.StatisticsUtils
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.yashovardhan99.timeit.Timer
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 
 class ExhibitPanelAdapter(private val context: Context, private val root: View, private val artifactList: ArrayList<Artifact>, private val visitList: ArrayList<Visit>) : RecyclerView.Adapter<ExhibitPanelAdapter.ModelViewHolder>() {

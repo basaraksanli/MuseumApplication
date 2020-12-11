@@ -1,7 +1,6 @@
 package com.example.museumapplication.ui.home.map
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.graphics.*
 import android.location.Location
 import android.os.Bundle
@@ -13,7 +12,6 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,9 +19,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.databinding.FragmentMapBinding
-import com.example.museumapplication.utils.SettingsUtils
+import com.example.museumapplication.utils.settings.SettingsUtils
 import com.example.museumapplication.utils.map.SiteListAdapter
 import com.example.museumapplication.utils.map.MapUtils
+import com.example.museumapplication.utils.permission.PermissionHelper
 import com.example.museumapplication.utils.permission.PermissionInterface
 import com.google.android.material.snackbar.Snackbar
 import com.huawei.hms.maps.CameraUpdateFactory
@@ -45,7 +44,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
     private var listView: RecyclerView? = null
     private var siteListAdapter: SiteListAdapter? = null
     private var isMapReady = false
-
+    private var mPermissionHelper: PermissionHelper? = null
 
 
     private lateinit var binding: FragmentMapBinding
@@ -70,7 +69,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         listView = binding.root.findViewById(R.id.siteList)
 
 
-        val isSuccess = viewModel.requestPermissions(this, this)
+        val isSuccess = requestPermissions(this, this)
         if (!isSuccess) {
             return null
         }
@@ -141,7 +140,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
                 moveCamera(LatLng(coordinate.lat, coordinate.lng), 15f)
             }
         }
-        viewModel.currentPositionMarker.value = drawMarker(getUserMarkerOptions(location)!!)
+        viewModel.currentPositionMarker.value = drawMarker(viewModel.mapUtils.getUserMarkerOptions(location, requireActivity())!!)
     }
 
 
@@ -181,6 +180,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         Log.i(TAG, "requestPermissionsSuccess")
         initMap()
     }
+    fun requestPermissions(fragment: Fragment, permissionInterface: PermissionInterface): Boolean {
+        mPermissionHelper = PermissionHelper(fragment, permissionInterface)
+        mPermissionHelper!!.requestPermissions()
+        return true
+    }
 
     override fun requestPermissionsFail() {
         val builder = AlertDialog.Builder(requireContext())
@@ -198,7 +202,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
-        viewModel.mPermissionHelper!!.requestPermissionsResult(requestCode, permissions, grantResults)
+        mPermissionHelper!!.requestPermissionsResult(requestCode, permissions, grantResults)
     }
 
 
@@ -214,63 +218,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         return hMap!!.addMarker(markerOptions)
     }
 
-    private fun createUserBitmap(profilePicture: Bitmap?): Bitmap? {
-        var result: Bitmap? = null
-        try {
-            result = Bitmap.createBitmap(MapUtils.dp(62f, requireActivity()), MapUtils.dp(76f, requireActivity()), Bitmap.Config.ARGB_8888)
-            result.eraseColor(Color.TRANSPARENT)
-            val canvas = Canvas(result)
-            @SuppressLint("UseCompatLoadingForDrawables") val drawable = resources.getDrawable(R.drawable.pin)
-            drawable.setBounds(0, 0, MapUtils.dp(62f, requireActivity()), MapUtils.dp(76f, requireActivity()))
-            drawable.draw(canvas)
-            val roundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-            val bitmapRect = RectF()
-            canvas.save()
-
-            //Bitmap bitmap = BitmapFactory.decodeFile(path.toString()); /*generate bitmap here if your image comes from any url*/
-            if (profilePicture != null) {
-                val shader = BitmapShader(profilePicture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-                val matrix = Matrix()
-                val scale = MapUtils.dp(52f, requireActivity()) / profilePicture.width.toFloat()
-                matrix.postTranslate(MapUtils.dp(5f, requireActivity()).toFloat(), MapUtils.dp(5f, requireActivity()).toFloat())
-                matrix.postScale(scale, scale)
-                roundPaint.shader = shader
-                shader.setLocalMatrix(matrix)
-                bitmapRect[MapUtils.dp(5f, requireActivity()).toFloat(), MapUtils.dp(5f, requireActivity()).toFloat(), MapUtils.dp(52 + 5.toFloat(), requireActivity()).toFloat()] = MapUtils.dp(52 + 5.toFloat(), requireActivity()).toFloat()
-                canvas.drawRoundRect(bitmapRect, MapUtils.dp(26f, requireActivity()).toFloat(), MapUtils.dp(26f, requireActivity()).toFloat(), roundPaint)
-            }
-            canvas.restore()
-            try {
-                canvas.setBitmap(null)
-            } catch (ignored: Exception) {
-            }
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
-        return result
-    }
-
-
-    private fun getUserMarkerOptions(location: Location): MarkerOptions? {
-        val options = MarkerOptions().position(LatLng(location.latitude, location.longitude))
-        val color = Paint()
-        color.textSize = 35f
-        color.color = Color.BLACK
-
-        val profilePicture: Bitmap? = if (UserLoggedIn.instance.profilePicture == null)
-            BitmapFactory.decodeResource(resources, R.drawable.avatar)
-        else
-            UserLoggedIn.instance.profilePicture
-
-
-        val bitmap = createUserBitmap(profilePicture)
-        options.title(UserLoggedIn.instance.name)
-        options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-        options.anchorMarker(0.5f, 0.907f)
-
-
-        return options
-    }
 
     private fun setRecyclerViewAdapter(view: View) {
         viewModel.siteList.value!!.sortWith { site1: Site, site2: Site -> (site1.distance - site2.distance).toInt() }
