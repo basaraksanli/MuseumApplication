@@ -158,7 +158,7 @@ public class SiteListAdapter extends RecyclerView.Adapter<SiteListAdapter.SiteVi
                     bottomSheetDialog.hide();
                 });
                 bottomSheetView.findViewById(R.id.favorite_button).setOnClickListener(v12 -> {
-                    FavoriteMuseum temp=UserLoggedIn.Companion.getInstance().getMuseumFavorite(data.getName());
+                    FavoriteMuseum temp=UserLoggedIn.Companion.getInstance().getMuseumFavoriteByName(data.getName());
                     if(temp==null) {
                         UserLoggedIn.Companion.getInstance().getFavoriteMuseumList().add(new FavoriteMuseum(data.getName(), data.getFormatAddress(), data.getPoi().getPhone(), data.getPoi().getWebsiteUrl(), data.getLocation()));
                         UserLoggedIn.Companion.getInstance().saveFavoriteMuseumListToDevice(context);
@@ -171,7 +171,7 @@ public class SiteListAdapter extends RecyclerView.Adapter<SiteListAdapter.SiteVi
                         ((ImageView)bottomSheetView.findViewById(R.id.starImage)).setColorFilter(context.getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN);
                     }
                 });
-                if(UserLoggedIn.Companion.getInstance().getMuseumFavorite(data.getName())!=null)
+                if(UserLoggedIn.Companion.getInstance().getMuseumFavoriteByName(data.getName())!=null)
                     ((ImageView)bottomSheetView.findViewById(R.id.starImage)).setColorFilter(context.getResources().getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN);
 
                 bottomSheetDialog.setContentView(bottomSheetView);

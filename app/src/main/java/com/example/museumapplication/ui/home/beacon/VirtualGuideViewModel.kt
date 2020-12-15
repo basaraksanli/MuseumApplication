@@ -26,16 +26,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Artifact
+import com.example.museumapplication.data.Constant
 import com.example.museumapplication.data.FavoriteArtifact
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.utils.services.CloudDBManager
 import com.example.museumapplication.utils.virtualGuide.BeaconUtils
 
+/**
+ * Virtual Guide Page View Model
+ */
 class VirtualGuideViewModel(application: Application) : AndroidViewModel(application) {
 
 
-    val REQUEST_CODE = 8488
-    val THREAD_SLEEP_TIME = 500
+    val REQUEST_CODE = Constant.PERMISSION_REQUEST_CODE_VIRTUAL_GUIDE
+    val THREAD_SLEEP_TIME = Constant.THREAD_SLEEP_TIME
 
     val context: Context = application.applicationContext
     val beaconUtils = BeaconUtils(context, this)
@@ -48,6 +52,10 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
     var navigateToHome = MutableLiveData(false)
 
     companion object {
+
+        /**
+         * Set Image of the Exhibit
+         */
         @SuppressLint("UseCompatLoadingForDrawables")
         @BindingAdapter("image")
         @JvmStatic
@@ -60,6 +68,9 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
             }
         }
 
+        /**
+         * Favorite Button Color Change Control
+         */
         @BindingAdapter("currentArtifactId")
         @JvmStatic
         fun favoriteButtonChangeColor(view: ImageView, isArtifactFavored: Boolean) {
@@ -70,20 +81,29 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /**
+     * Text to Speech Start Reading
+     */
     fun startTTS(view: View) {
         if (currentArtifact.value != null)
             ttsUtils.startTTSreading(currentArtifact.value!!.artifactDescription.toString())
     }
 
+    /**
+     * Text to Speech Stop Reading
+     */
     fun stopTTS(view: View) {
         ttsUtils.stopTTSreading()
     }
 
+    /**
+     * This Button is used to favorite the Exhibit, and saves to the shared preferences.
+     */
     fun favoriteButtonClick(view: View) {
         val toBeFavored = currentArtifact.value
 
         if (toBeFavored != null) {
-            val temp = UserLoggedIn.instance.getArtifactFavorite(toBeFavored.artifactID)
+            val temp = UserLoggedIn.instance.getArtifactFavoriteByName(toBeFavored.artifactID)
             if (temp == null) {
                 toBeFavored.favoriteCount += 1
                 currentArtifact.postValue(currentArtifact.value)
@@ -115,6 +135,9 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /**
+     * Permissions for Virtual Guide
+     */
     fun permissions(): Array<String?> {
         return arrayOf(
                 Manifest.permission.BLUETOOTH,
@@ -147,6 +170,10 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /**
+     * In the virtual guide page application listens for the state changes of WIFI, BLUETOOTH, GPS and INTERNET
+     * If an issue is detected, user is directed back to home page
+     */
     val stateChangeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @RequiresApi(api = Build.VERSION_CODES.P)
         override fun onReceive(context: Context, intent: Intent) {
@@ -177,6 +204,10 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
             }
         }
     }
+
+    /**
+     * Warning Dialog Builder for the issues
+     */
     fun showWarnDialog(content: String , context: Context) {
         DialogInterface.OnClickListener { _: DialogInterface?, _: Int -> Process.killProcess(Process.myPid()) }
         val builder = AlertDialog.Builder(context)

@@ -25,6 +25,10 @@ class MuseumPanelActivity : AppCompatActivity(), LifecycleOwner {
         super.onCreate(savedInstanceState)
         val binding =DataBindingUtil.setContentView<MuseumPanelActivityBinding>(this, R.layout.museum_panel_activity)
 
+        pagerAgentViewModel = ViewModelProviders.of(this)[PagerViewModel::class.java]
+
+        binding.viewmodel = pagerAgentViewModel
+        binding.lifecycleOwner = this
 
 
 
@@ -38,13 +42,12 @@ class MuseumPanelActivity : AppCompatActivity(), LifecycleOwner {
         viewPager.addTabLayout(tabLayout)
         viewPager.build()
 
-        pagerAgentViewModel = ViewModelProviders.of(this)[PagerViewModel::class.java]
+
         val museumID = intent.getStringExtra("museumID")
         pagerAgentViewModel!!.museum.value = CloudDBManager.instance.getMuseum(museumID!!)!!
         pagerAgentViewModel!!.initialize()
 
-        binding.viewmodel = pagerAgentViewModel
-        binding.lifecycleOwner = this
+
     }
 
 }

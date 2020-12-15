@@ -100,7 +100,10 @@ class StatisticsUtils {
             result += (lengthEntries[i]!!.getValue("value").toString().toInt()) * visitEntries[i]!!.getValue("value").toString().toInt()
             count += visitEntries[i]!!.getValue("value").toString().toInt()
         }
-        return result / count
+        return if (result!=0)
+            result / count
+        else
+            0
     }
 
 

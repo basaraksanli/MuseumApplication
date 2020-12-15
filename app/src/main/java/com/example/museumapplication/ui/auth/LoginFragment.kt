@@ -20,6 +20,11 @@ import com.facebook.login.widget.LoginButton
 class LoginFragment : Fragment() {
 
     lateinit var viewModel : SharedAuthViewModel
+
+    /**
+     * Login fragment for login tasks
+     * It uses Shared Auth View Model of Auth Activity
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
 
@@ -31,12 +36,18 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
 
+        /**
+         * Sign Up activity navigation
+         */
         viewModel.navigateToSignUpFragment.observe(viewLifecycleOwner, {
             if (it) {
                 parentFragmentManager.beginTransaction().replace(R.id.container, SignupFragment()).commit()
                 viewModel.navigateToSignUpFragment.value = false
             }
         })
+        /**
+         * Museum panel navigation
+         */
         viewModel.navigateToMuseumPanel.observe(viewLifecycleOwner, {
             if (it){
                 val newIntent = Intent(activity, MuseumPanelActivity::class.java)
@@ -45,10 +56,17 @@ class LoginFragment : Fragment() {
             }
         })
 
+        /**
+         * Whenever an intent is assigned to the signInIntent variable in Shared Auth View Model
+         * it starts activity for the result
+         */
         viewModel.signInIntent.observe(viewLifecycleOwner, {
             startActivityForResult(it , viewModel.RC_SIGN_IN)
         })
 
+        /**
+         * Custom Facebook Login Button Click observation
+         */
         viewModel.facebookLoginClicked.observe(viewLifecycleOwner, {
             if(it)
             {
@@ -58,6 +76,9 @@ class LoginFragment : Fragment() {
             }
         })
 
+        /**
+         * Navigation to Home Page
+         */
         viewModel.navigateToHomePage.observe(viewLifecycleOwner, {
             if (it) {
                 startActivity(Intent(activity, HomeActivity::class.java))
@@ -69,7 +90,9 @@ class LoginFragment : Fragment() {
     }
 
 
-
+    /**
+     * onActivityResult for Login Methods
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val viewModel = ViewModelProvider(requireActivity()).get(SharedAuthViewModel::class.java)
 

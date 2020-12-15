@@ -1,42 +1,38 @@
 package com.example.museumapplication.data
 
+import android.Manifest
+
 object Constant {
     /**
-     * Canteen Name Str
-     *
-     *
+     * Verification timer to wait before sending another request
      */
-    const val NOTICE = "notice"
+    const val VERIFICATION_TIMER = 120
 
     /**
-     * Canteen Str
+     * Virtual Guide Thread Sleep
      */
-    const val NOTIFICATION_SUBTITLE = "Click \"View Details\" for more information."
+    const val THREAD_SLEEP_TIME = 500
 
     /**
-     * Bluetooth warn
+     * Virtual Guide Permission Request Code
      */
-    const val BLUETOOTH_WARN = "Bluetooth is disconnected, this operation will cause the application to be out of normal use!"
+    const val  PERMISSION_REQUEST_CODE_VIRTUAL_GUIDE = 8488
 
     /**
-     * Bluetooth error
+     * MAP ZOON
      */
-    const val BLUETOOTH_ERROR = "Bluetooth is invalid! Turn on Bluetooth and run this app again."
+    const val MAP_ZOOM = 15f
+
 
     /**
-     * Network error
+     * Max Zoom
      */
-    const val NETWORK_ERROR = "No Internet access! Make sure you have Internet access and run this app again."
+    const val MAX_ZOOM = 20.0f
 
     /**
-     * Network warn
+     * Min ZOOM
      */
-    const val NETWORK_WARN = "The network is disconnected, this operation will cause the application to be out of normal use!"
-
-    /**
-     * Gps warn
-     */
-    const val GPS_WARN = "GPS is turned off, this operation will cause the application to be out of normal use!"
+    const val MIN_ZOOM = 6.0f
 
     /**
      * Gps error

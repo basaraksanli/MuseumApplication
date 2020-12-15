@@ -1,7 +1,6 @@
 package com.example.museumapplication.utils.auth
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -10,9 +9,9 @@ import com.example.museumapplication.R
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.ui.auth.LoginActivity
+import com.example.museumapplication.ui.auth.LoginFragment
+import com.example.museumapplication.ui.auth.SharedAuthViewModel
 import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.utils.auth.AuthUtils.enableAllItems
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -25,29 +24,46 @@ import com.huawei.agconnect.auth.SignInResult
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import java.util.*
 
-class GoogleAuth(var context: Context) : IBaseAuth, GoogleApiClient.OnConnectionFailedListener {
+class GoogleAuth(var viewModel: SharedAuthViewModel) : IBaseAuth {
+
     var auth: AGConnectAuth = AGConnectAuth.getInstance()
     private var client: GoogleApiClient
-    override fun login() {
-        val signIntent = Auth.GoogleSignInApi.getSignInIntent(client)
-        (context as LoginActivity).startActivityForResult(signIntent, RC_SIGN_IN)
+    companion object {
+        const val RC_SIGN_IN = 9001
     }
 
-    fun activityResult(data: Intent?, activity: Activity?) {
+    init {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(viewModel.mContext!!.getString(R.string.google_client_id))
+                .requestEmail()
+                .requestProfile()
+                .build()
+
+        client = GoogleApiClient.Builder(viewModel.mContext!!)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build()
+        client.connect()
+    }
+
+    override fun login() {
+        viewModel.RC_SIGN_IN= RC_SIGN_IN
+        viewModel.signInIntent.value = Auth.GoogleSignInApi.getSignInIntent(client)
+    }
+
+    fun activityResult(data: Intent?) {
         val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
         Log.d("Login Google", "handleSignInResult:" + result!!.status)
         if (result.isSuccess) {
-            enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
+            viewModel.itemClickableOrEnabled.postValue(true)
             val account = result.signInAccount
             account?.let { authWithGoogle(it) }
         } else {
-            enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
-            client.stopAutoManage((activity as FragmentActivity?)!!)
+            viewModel.itemClickableOrEnabled.postValue(true)
             client.disconnect()
         }
     }
 
-    fun authWithGoogle(account: GoogleSignInAccount) {
+    private fun authWithGoogle(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.credentialWithToken(account.idToken)
         AGConnectAuth.getInstance().signIn(credential)
                 .addOnSuccessListener { signInResult: SignInResult ->
@@ -67,32 +83,15 @@ class GoogleAuth(var context: Context) : IBaseAuth, GoogleApiClient.OnConnection
                             e.printStackTrace()
                         }
                     }
-                    val home = Intent(context, HomeActivity::class.java)
-                    context.startActivity(home)
-                    enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
+                    viewModel.navigateToHomePage.postValue(true)
+                    viewModel.itemClickableOrEnabled.postValue(true)
                 }
                 .addOnFailureListener { e: Exception ->
                     // onFail
-                    enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
-                    Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                    viewModel.itemClickableOrEnabled.postValue(true)
+                    Toast.makeText(viewModel.mContext, e.message, Toast.LENGTH_LONG).show()
                 }
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {}
 
-    companion object {
-        private const val RC_SIGN_IN = 9001
-    }
-
-    init {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.google_client_id))
-                .requestEmail()
-                .requestProfile()
-                .build()
-        client = GoogleApiClient.Builder(context.applicationContext)
-                .enableAutoManage((context as LoginActivity), this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build()
-    }
 }

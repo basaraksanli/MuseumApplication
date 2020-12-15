@@ -20,6 +20,9 @@ class FavoriteMuseumFragment : Fragment() {
     private lateinit var viewModel: FavoritePageSharedModelView
     private lateinit var favoriteListAdapter: FavoriteMuseumListAdapter
 
+    /**
+     * FavoriteMuseum Fragment -- Adapter is set for recycler view here
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val binding: FavoriteMuseumFragmentBinding =

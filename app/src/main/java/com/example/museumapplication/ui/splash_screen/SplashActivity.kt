@@ -13,13 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.museumapplication.R
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.ui.auth.LoginActivity
+import com.example.museumapplication.ui.auth.AuthActivity
+import com.example.museumapplication.ui.auth.LoginFragment
 import com.example.museumapplication.ui.home.HomeActivity
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.AGConnectUser
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
-import java.lang.Exception
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.system.exitProcess
@@ -83,7 +83,7 @@ class SplashActivity : AppCompatActivity() {
             }.start()
         } else {
             Handler().postDelayed({
-                val loginActivity = Intent(this@SplashActivity, LoginActivity::class.java)
+                val loginActivity = Intent(this@SplashActivity, AuthActivity::class.java)
                 startActivity(loginActivity)
             }, 500)
         }

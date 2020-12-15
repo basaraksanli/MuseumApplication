@@ -10,11 +10,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import com.alfianyusufabdullah.SPager
 import com.example.museumapplication.R
-import com.example.museumapplication.databinding.FavoriteExhibitFragmentBinding
 import com.example.museumapplication.databinding.FavoriteMainFragmentBinding
 import com.example.museumapplication.ui.home.favorite.tabs.FavoriteExhibitFragment
 import com.example.museumapplication.ui.home.favorite.tabs.FavoriteMuseumFragment
-
 import com.google.android.material.tabs.TabLayout
 
 class MainFavoriteFragment : Fragment() , LifecycleOwner{
@@ -23,6 +21,11 @@ class MainFavoriteFragment : Fragment() , LifecycleOwner{
     lateinit var tabLayout: TabLayout
     lateinit var viewPager: SPager
 
+    /**
+     * Favorite Main Fragment
+     * There are nested fragments inside with tabs
+     * This fragment is the owner of Favorite Page Shared Model View
+     */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val binding: FavoriteMainFragmentBinding =
@@ -33,6 +36,9 @@ class MainFavoriteFragment : Fragment() , LifecycleOwner{
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
+        /**
+         * SPager Library Usage
+         */
         tabLayout = binding.root.findViewById(R.id.tabLayout)
         viewPager = binding.root.findViewById(R.id.viewPager)
         viewPager.initFragmentManager(childFragmentManager)

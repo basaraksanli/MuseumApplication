@@ -34,6 +34,9 @@ class VirtualGuildeFragment : Fragment(), PermissionInterface {
     val TAG = "Virtual Guide Fragment"
 
 
+    /**
+     * Virtual Guide Fragment
+     */
     @RequiresApi(api = Build.VERSION_CODES.P)
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,10 +49,16 @@ class VirtualGuildeFragment : Fragment(), PermissionInterface {
         binding.lifecycleOwner = this
 
 
+        /**
+         * At the beginning permissions are checked
+         */
         val isSuccess = requestPermissions(this, this)
         if (!isSuccess) {
             return null
         }
+        /**
+         * Network Bluetooth and GPS are checked
+         */
         Log.i(TAG, "requestPermissions success")
         if (!NetCheckUtils.isNetworkAvailable(requireContext())) {
             viewModel!!.showWarnDialog(getString(R.string.network_error), requireContext())
@@ -61,17 +70,6 @@ class VirtualGuildeFragment : Fragment(), PermissionInterface {
             viewModel!!.showWarnDialog(getString(R.string.gps_error), requireContext())
         }
         mContext = context
-        val executorService = Executors.newFixedThreadPool(1)
-        executorService.submit {
-            while (!isGetPermission) {
-                try {
-                    Thread.sleep(viewModel!!.THREAD_SLEEP_TIME.toLong())
-                } catch (e: InterruptedException) {
-                    Log.i(TAG, getString(R.string.thread_sleep_error), e)
-                }
-            }
-            registerStatusReceiver()
-        }
 
         viewModel!!.navigateToHome.observe(viewLifecycleOwner, Observer {
             if (it) {
@@ -86,7 +84,9 @@ class VirtualGuildeFragment : Fragment(), PermissionInterface {
     }
 
 
-
+    /**
+     * State Changes are listened in this fragment
+     */
     private fun registerStatusReceiver() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
@@ -96,11 +96,19 @@ class VirtualGuildeFragment : Fragment(), PermissionInterface {
         intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION)
         mContext!!.registerReceiver(viewModel!!.stateChangeReceiver, intentFilter)
     }
+
+    /**
+     * Beacon detection is disabled whenever this fragment is destroyed
+     */
     override fun onDestroy() {
         super.onDestroy()
         viewModel!!.beaconUtils.ungetMessageEngine()
     }
 
+    /**
+     * Check permissions and then Register the state listener
+     * Start Scanning for Beacons
+     */
     override fun onResume() {
         super.onResume()
         val executorService = Executors.newFixedThreadPool(1)

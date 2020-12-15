@@ -2,23 +2,14 @@ package com.example.museumapplication.utils.virtualGuide
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.PorterDuff
-import android.util.Base64
 import android.util.Log
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.preference.PreferenceManager
-import com.example.museumapplication.R
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.data.Visit
 import com.example.museumapplication.ui.home.beacon.VirtualGuideViewModel
 import com.example.museumapplication.utils.services.CloudDBManager
-import com.huawei.agconnect.cloud.database.Text
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 import com.huawei.hms.common.ApiException
 import com.huawei.hms.nearby.Nearby
@@ -168,7 +159,7 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
                 viewModel.currentArtifact.value = closestInfo
                 viewModel.currentMuseum.value = CloudDBManager.instance.getMuseum(closestInfo.museumID)!!.museumName
 
-                if (UserLoggedIn.instance.getArtifactFavorite( closestInfo.artifactID ) != null)
+                if (UserLoggedIn.instance.getArtifactFavoriteByName( closestInfo.artifactID ) != null)
                     viewModel.isArtifactFavored.postValue(true)
                 else
                     viewModel.isArtifactFavored.postValue(false)

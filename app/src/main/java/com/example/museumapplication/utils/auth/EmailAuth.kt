@@ -1,26 +1,14 @@
 package com.example.museumapplication.utils.auth
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
-import android.graphics.Color
-import android.os.CountDownTimer
 import android.util.Log
 import android.view.Gravity
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import com.example.museumapplication.R
+import com.example.museumapplication.data.Constant
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.ui.auth.LoginActivity
-import com.example.museumapplication.ui.auth.SignupActivity
-import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.utils.auth.AuthUtils.disableAllItems
-import com.example.museumapplication.utils.auth.AuthUtils.enableAllItems
+import com.example.museumapplication.ui.auth.SharedAuthViewModel
 import com.example.museumapplication.utils.auth.AuthUtils.isFieldBlank
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.*
@@ -29,40 +17,37 @@ import com.huawei.hmf.tasks.TaskExecutors
 import java.util.*
 
 class EmailAuth : IBaseAuth {
-    var auth: AGConnectAuth
-    var email: String? = null
-    var password: String? = null
+    private var email: String?  = null
+    private var password: String? = null
+    var viewModel: SharedAuthViewModel? = null
     var name: String? = null
-    var verificationCode: String? = null
-    var context: Context? = null
+    private var verificationCode: String? = null
 
-    constructor(email: String?, password: String?, verificationCode: String?, context: Context?) {
-        setCredentialInfo(email, password, name, verificationCode, context)
-        auth = AGConnectAuth.getInstance()
+    var auth: AGConnectAuth = AGConnectAuth.getInstance()
+
+    constructor(viewModel: SharedAuthViewModel){
+        this.viewModel =viewModel
     }
 
-    constructor(email: String?, password: String?, context: Context?) {
-        setCredentialInfo(email, password, "", name, context)
-        auth = AGConnectAuth.getInstance()
+    constructor(email: String?, password: String?, viewModel: SharedAuthViewModel){
+        this.email= email
+        this.password = password
+        this.viewModel = viewModel
     }
 
-    constructor() {
-        auth = AGConnectAuth.getInstance()
-    }
-
-    fun setCredentialInfo(email: String?, password: String?, verificationCode: String?, Name: String?, context: Context?) {
+    fun setCredentialInfo(email: String , password: String, verificationCode : String, name : String){
         this.email = email
         this.password = password
         this.verificationCode = verificationCode
-        name = Name
-        this.context = context
+        this.name = name
     }
 
     override fun login() {
         val credential = EmailAuthProvider.credentialWithPassword(email, password)
-        disableAllItems((context as LoginActivity?)!!.findViewById(R.id.linearLayout))
+        viewModel!!.itemClickableOrEnabled.postValue(false)
+
         AGConnectAuth.getInstance().signIn(credential)
-                .addOnSuccessListener { signInResult: SignInResult? ->
+                .addOnSuccessListener {
                     // Obtain sign-in information.
                     Log.d("Login:", "Success")
                     var user: User? = null
@@ -72,14 +57,13 @@ class EmailAuth : IBaseAuth {
                         e.printStackTrace()
                     }
                     UserLoggedIn.instance.setUser(user!!)
-                    val home = Intent(context, HomeActivity::class.java)
-                    context!!.startActivity(home)
-                    enableAllItems((context as LoginActivity?)!!.findViewById(R.id.linearLayout))
+                    viewModel!!.navigateToHomePage.postValue(true)
+                    viewModel!!.itemClickableOrEnabled.postValue(true)
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.d("Login:", "Fail $e")
-                    Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-                    enableAllItems((context as LoginActivity?)!!.findViewById(R.id.linearLayout))
+                    Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG).show()
+                    viewModel!!.itemClickableOrEnabled.postValue(true)
                 }
     }
 
@@ -109,56 +93,40 @@ class EmailAuth : IBaseAuth {
                             e.printStackTrace()
                         }
                     }
-                    val homeActivity = Intent(context, HomeActivity::class.java)
-                    context!!.startActivity(homeActivity)
+                    viewModel!!.navigateToHomePage.postValue(true)
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.d("Register:", "Fail$e")
-                    Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG).show()
                 }
     }
 
-    fun createVerificationCode(context: Context) {
-        val email = (context as SignupActivity).findViewById<EditText>(R.id.emailEditText)
-        if (!isFieldBlank(email)) {
-            val toBeSetDisabled = context.findViewById<Button>(R.id.requestCodeButton)
-            val timerText = context.findViewById<TextView>(R.id.timerText)
+    fun createVerificationCode() {
+        if (!isFieldBlank(viewModel!!.registerEmailText.value)) {
+
             val settings = VerifyCodeSettings.newBuilder()
                     .action(VerifyCodeSettings.ACTION_REGISTER_LOGIN) //ACTION_REGISTER_LOGIN/ACTION_RESET_PASSWORD
-                    .sendInterval(120) // Minimum sending interval, ranging from 30s to 120s.
+                    .sendInterval(Constant.Verification_timer) // Minimum sending interval, ranging from 30s to 120s.
                     .locale(Locale.getDefault()) // Language in which a verification code is sent, which is optional. The default value is Locale.getDefault.
                     .build()
-            val task = EmailAuthProvider.requestVerifyCode(email.text.toString(), settings)
+            val task = EmailAuthProvider.requestVerifyCode(viewModel!!.registerEmailText.value, settings)
             task.addOnSuccessListener(TaskExecutors.uiThread(), {
                 Log.d("Verification:", "Success")
-                object : CountDownTimer(120000, 1000) {
-                    @SuppressLint("SetTextI18n")
-                    override fun onTick(millisUntilFinished: Long) {
-                        toBeSetDisabled.isEnabled = false
-                        toBeSetDisabled.setBackgroundColor(Color.parseColor("#bdbdbd"))
-                        toBeSetDisabled.setText(R.string.resend_verification_code)
-                        timerText.visibility = View.VISIBLE
-                        timerText.text = "Wait " + millisUntilFinished / 1000 + " seconds to resend the Verification Code"
-                    }
+                viewModel!!.startCodeTimer()
 
-                    override fun onFinish() {
-                        timerText.visibility = View.GONE
-                        toBeSetDisabled.isEnabled = true
-                        toBeSetDisabled.setBackgroundColor(Color.parseColor("#c62828"))
-                    }
-                }.start()
             }).addOnFailureListener(TaskExecutors.uiThread(), { e: Exception ->
                 Log.d("Verification:", "Fail:$e")
                 if (e.message!!.contains("203818048")) {
-                    val warningMessage = Toast.makeText(context, "You have already requested verification code for this email recently . \n\nPlease wait 2 minutes before requesting new one.", Toast.LENGTH_LONG)
+                    val warningMessage = Toast.makeText(viewModel!!.mContext, viewModel!!.mContext!!.getString(R.string.verification_already_requested) +
+                            "\n\nPlease wait 2 minutes before requesting new one.", Toast.LENGTH_LONG)
                     warningMessage.setGravity(Gravity.TOP, 0, 135)
                     warningMessage.show()
                 } else {
-                    val warningMessage = Toast.makeText(context, e.message, Toast.LENGTH_LONG)
+                    val warningMessage = Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG)
                     warningMessage.setGravity(Gravity.TOP, 0, 135)
                     warningMessage.show()
                 }
             })
-        } else email.error = "Fill this field to get verification code!"
+        } else Toast.makeText(viewModel!!.mContext , context.getString(R.string.fill_verification_email_warning), Toast.LENGTH_LONG).show()
     }
 }

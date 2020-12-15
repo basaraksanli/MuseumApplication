@@ -14,10 +14,14 @@ import com.example.museumapplication.databinding.FavoriteExhibitFragmentBinding
 import com.example.museumapplication.ui.home.favorite.FavoritePageSharedModelView
 import com.example.museumapplication.ui.home.favorite.adapters.FavoriteArtifactListAdapter
 
+
+
+/**
+ * FavoriteExhibit Fragment -- Adapter is set for recycler view here
+ */
 class FavoriteExhibitFragment : Fragment() {
 
 
-    private lateinit var viewModel: FavoritePageSharedModelView
     private lateinit var favoriteListAdapter: FavoriteArtifactListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

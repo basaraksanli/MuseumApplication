@@ -101,4 +101,6 @@
     <string name="bluetooth_error">BLUETOOTH ERROR. Please activate bluetooth for this feature.</string>
     <string name="gps_error">GPS ERROR. Please activate GPS for this feature.</string>
     <string name="thread_sleep_error">Thread sleep error</string>
+    <string name="verification_already_requested">You have already requested verification code for this email recently .</string>
+    <string name="fill_verification_email_warning">Fill this field to get verification code!</string>
 </resources>

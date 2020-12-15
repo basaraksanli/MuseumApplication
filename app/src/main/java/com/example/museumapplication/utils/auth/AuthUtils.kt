@@ -2,58 +2,54 @@ package com.example.museumapplication.utils.auth
 
 import android.content.Context
 import android.util.Patterns
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 
 object AuthUtils {
-    fun isEmailValid(email: String?): Boolean {
+    private fun isEmailValid(email: String?): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    fun isPasswordLengthGreaterThan5(password: String): Boolean {
+    private fun isPasswordLengthGreaterThan5(password: String): Boolean {
         return password.length > 5
     }
 
     @JvmStatic
-    fun isFieldBlank(textView: TextView): Boolean {
-        val textString = textView.text.toString().trim { it <= ' ' }
-        return textString.isEmpty()
+    fun isFieldBlank(string: String?): Boolean {
+        return if (string == null)
+            true
+        else
+            return string.isBlank()
+
+
     }
 
     @JvmStatic
-    fun checkFields(email: TextView, password: TextView, repeatPass: TextView, verificationCode: TextView, name: TextView): Boolean {
+    fun checkFields(email: String?, password: String?, repeatPass: String?, verificationCode: String?, name: String?): Boolean {
         var result = true
+        if(email ==null || password == null || repeatPass ==null || verificationCode ==null || name == null)
+            return false
+
         if (isFieldBlank(email)) {
             result = false
-            email.error = "Email is required to register!"
-        } else if (!isEmailValid(email.text.toString())) {
+        } else if (!isEmailValid(email)) {
             result = false
-            email.error = "Email is not valid!"
         }
         if (isFieldBlank(password)) {
             result = false
-            password.error = "Password is required to register!"
-        } else if (!isPasswordLengthGreaterThan5(password.text.toString())) {
+        } else if (!isPasswordLengthGreaterThan5(password)) {
             result = false
-            password.error = "Password length must be greater than 5 and must contain at least one character!"
         }
         if (isFieldBlank(repeatPass)) {
             result = false
-            repeatPass.error = "Repeat Password is required to register!"
-        } else if (repeatPass.text.toString() != password.text.toString()) {
+        } else if (repeatPass != password) {
             result = false
-            repeatPass.error = "Passwords does not match!"
         }
         if (isFieldBlank(verificationCode)) {
             result = false
-            verificationCode.error = "Fill here with the verification code you received to your mail!"
         }
         if (isFieldBlank(name)) {
             result = false
-            name.error = "This field is mandatory!"
         }
         return result
     }
@@ -62,28 +58,6 @@ object AuthUtils {
     fun checkGoogleServices(context: Context?): Boolean {
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
-        return if (resultCode != ConnectionResult.SUCCESS) {
-            false
-        } else true
-    }
-
-    @JvmStatic
-    fun disableAllItems(layout: LinearLayout) {
-        for (i in 0 until layout.childCount) {
-            val v = layout.getChildAt(i)
-            if (v.tag != null) {
-                if (v.tag.toString() == "progressBar") v.visibility = View.VISIBLE
-            } else v.isEnabled = false
-        }
-    }
-
-    @JvmStatic
-    fun enableAllItems(layout: LinearLayout) {
-        for (i in 0 until layout.childCount) {
-            val v = layout.getChildAt(i)
-            if (v.tag != null) {
-                if (v.tag.toString() == "progressBar") v.visibility = View.GONE
-            } else v.isEnabled = true
-        }
+        return resultCode == ConnectionResult.SUCCESS
     }
 }

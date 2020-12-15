@@ -39,12 +39,16 @@ class HomeActivity : AppCompatActivity() {
         auth = AGConnectAuth.getInstance()
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
+
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = AppBarConfiguration.Builder(
                 R.id.nav_explore, R.id.nav_settings, R.id.nav_map, R.id.nav_favorites)
                 .setDrawerLayout(drawer)
                 .build()
+
+
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration!!)
         NavigationUI.setupWithNavController(navigationView, navController)
@@ -53,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    fun setNavViewHeader(nav: NavigationView) {
+    private fun setNavViewHeader(nav: NavigationView) {
         val email = nav.getHeaderView(0).findViewById<TextView>(R.id.emailTextView)
         val name = nav.getHeaderView(0).findViewById<TextView>(R.id.nameTextView)
         name.text = UserLoggedIn.instance.name
@@ -108,11 +112,6 @@ class HomeActivity : AppCompatActivity() {
         startMain.addCategory(Intent.CATEGORY_HOME)
         startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(startMain)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
     }
 
 

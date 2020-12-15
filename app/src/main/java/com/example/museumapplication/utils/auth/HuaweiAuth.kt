@@ -1,16 +1,13 @@
 package com.example.museumapplication.utils.auth
 
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import com.example.museumapplication.R
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.ui.auth.LoginActivity
-import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.utils.auth.AuthUtils.enableAllItems
+import com.example.museumapplication.ui.auth.LoginFragment
+import com.example.museumapplication.ui.auth.SharedAuthViewModel
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.HwIdAuthProvider
@@ -23,12 +20,23 @@ import com.huawei.hms.support.hwid.request.HuaweiIdAuthParamsHelper
 import com.huawei.hms.support.hwid.result.AuthHuaweiId
 import com.huawei.hms.support.hwid.service.HuaweiIdAuthService
 
-class HuaweiAuth(var context: Context) : IBaseAuth {
+class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
     var auth: AGConnectAuth = AGConnectAuth.getInstance()
     var service: HuaweiIdAuthService
+
+    companion object {
+        const val RC_SIGN_IN = 8888
+    }
+
+    init {
+        val huaweiIdAuthParamsHelper = HuaweiIdAuthParamsHelper(HuaweiIdAuthParams.DEFAULT_AUTH_REQUEST_PARAM)
+        val authParams = huaweiIdAuthParamsHelper.setEmail().setAccessToken().setIdToken().createParams()
+        service = HuaweiIdAuthManager.getService(viewModel.mContext, authParams)
+    }
+
     override fun login() {
-        val signIntent = service.signInIntent
-        (context as LoginActivity).startActivityForResult(signIntent, RC_SIGN_IN)
+        viewModel.RC_SIGN_IN=  RC_SIGN_IN
+        viewModel.signInIntent.value = service.signInIntent
     }
 
     fun activityResult(data: Intent?) {
@@ -39,7 +47,7 @@ class HuaweiAuth(var context: Context) : IBaseAuth {
             authWithHuawei(huaweiAccount)
         } else {
             Log.e("Huawei ID Fail", "sign in failed : " + (authHuaweiIdTask.exception as ApiException).statusCode)
-            enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
+            viewModel.itemClickableOrEnabled.postValue(true)
         }
     }
 
@@ -64,23 +72,12 @@ class HuaweiAuth(var context: Context) : IBaseAuth {
                     e.printStackTrace()
                 }
             }
-            val home = Intent(context, HomeActivity::class.java)
-            context.startActivity(home)
-            enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
+            viewModel.navigateToHomePage.postValue(true)
+            viewModel.itemClickableOrEnabled.postValue(true)
         }.addOnFailureListener { e ->
-            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(viewModel.mContext, e.message, Toast.LENGTH_LONG).show()
             Log.d("HuaweiID Fail:", e.message!!)
-            enableAllItems((context as LoginActivity).findViewById(R.id.linearLayout))
+            viewModel.itemClickableOrEnabled.postValue(true)
         }
-    }
-
-    companion object {
-        private const val RC_SIGN_IN = 8888
-    }
-
-    init {
-        val huaweiIdAuthParamsHelper = HuaweiIdAuthParamsHelper(HuaweiIdAuthParams.DEFAULT_AUTH_REQUEST_PARAM)
-        val authParams = huaweiIdAuthParamsHelper.setEmail().setAccessToken().setIdToken().createParams()
-        service = HuaweiIdAuthManager.getService(context as LoginActivity, authParams)
     }
 }

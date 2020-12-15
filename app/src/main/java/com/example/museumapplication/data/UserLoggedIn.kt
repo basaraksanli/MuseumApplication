@@ -7,6 +7,11 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 
+/**
+ * Singleton for Logged in user
+ * This class is shared all around the appliaction
+ * Contains Shared preferences functions
+ */
 class UserLoggedIn {
     var uID: String? = null
     private var providerUID: String? = null
@@ -21,7 +26,13 @@ class UserLoggedIn {
     val ttsUtils = TTSUtils()
 
 
-
+    companion object {
+        //Singleton
+        val instance = UserLoggedIn()
+    }
+    /**
+     * Sets user
+     */
     fun setUser(user: User) {
         uID = user.uid
         providerUID = user.providerUID
@@ -30,11 +41,9 @@ class UserLoggedIn {
         photoUrl = user.photoURL
     }
 
-    companion object {
-        //Singleton
-        val instance = UserLoggedIn()
-    }
-
+    /**
+     * retrieves the favorite museum list from the shared preferences
+     */
     fun retrieveFavoriteMuseumList(context: Context) {
         val mPrefs = context.getSharedPreferences("FavoriteMuseum", Context.MODE_PRIVATE)
         val favoriteMuseumListJson = mPrefs.getString("museumList", "")
@@ -46,6 +55,9 @@ class UserLoggedIn {
         }
     }
 
+    /**
+     * retrieves the favorite artifact list from the shared preferences
+     */
     fun retrieveFavoriteArtifactList(context: Context) {
         val mPrefs = context.getSharedPreferences("FavoriteArtifact", Context.MODE_PRIVATE)
         val favoriteArtifactListJson = mPrefs.getString("artifactList", "")
@@ -57,6 +69,9 @@ class UserLoggedIn {
         }
     }
 
+    /**
+     * saves the favored museums to the shared preferences
+     */
     fun saveFavoriteMuseumListToDevice(context: Context) {
         val mPrefs = context.getSharedPreferences("FavoriteMuseum", Context.MODE_PRIVATE)
         val prefsEditor = mPrefs.edit()
@@ -66,7 +81,11 @@ class UserLoggedIn {
         prefsEditor.putString("museumList", museumListJson)
         prefsEditor.apply()
     }
-    fun getMuseumFavorite(museumName: String): FavoriteMuseum? {
+
+    /**
+     * returns the favored museum by name
+     */
+    fun getMuseumFavoriteByName(museumName: String): FavoriteMuseum? {
         for (museum : FavoriteMuseum in favoriteMuseumList)
             if(museumName == museum.museumName)
                 return museum
@@ -74,7 +93,9 @@ class UserLoggedIn {
     }
 
 
-
+    /**
+     * Saves the favored artifact list to the shared preferences
+     */
     fun saveFavoriteArtifactListToDevice(context: Context) {
         val mPrefs = context.getSharedPreferences("FavoriteArtifact", Context.MODE_PRIVATE)
         val prefsEditor = mPrefs.edit()
@@ -84,7 +105,11 @@ class UserLoggedIn {
         prefsEditor.putString("artifactList", artifactListJson)
         prefsEditor.apply()
     }
-    fun getArtifactFavorite( artifactID: Int): FavoriteArtifact? {
+
+    /**
+     * get the artifact by name
+     */
+    fun getArtifactFavoriteByName(artifactID: Int): FavoriteArtifact? {
         for (artifact : FavoriteArtifact in favoriteArtifactList)
             if(artifactID == artifact.artifactID)
                 return artifact

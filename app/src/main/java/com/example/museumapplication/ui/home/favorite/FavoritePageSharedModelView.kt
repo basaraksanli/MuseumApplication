@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import com.example.museumapplication.data.UserLoggedIn
 
 class FavoritePageSharedModelView(application: Application) : AndroidViewModel(application) {
-
+    /**
+     * Related lists are stored here
+     */
     var museumList = MutableLiveData(UserLoggedIn.instance.favoriteMuseumList)
     var artifactList = MutableLiveData(UserLoggedIn.instance.favoriteArtifactList)
 }
