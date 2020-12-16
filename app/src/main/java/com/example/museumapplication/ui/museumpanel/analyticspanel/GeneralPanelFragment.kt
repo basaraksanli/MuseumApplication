@@ -13,6 +13,9 @@ import com.example.museumapplication.databinding.GeneralPanelFragmentBinding
 class GeneralPanelFragment : Fragment() {
 
 
+    /**
+     * General Panel Fragment
+     */
     private lateinit var viewModel: PagerViewModel
     private lateinit var binding: GeneralPanelFragmentBinding
 

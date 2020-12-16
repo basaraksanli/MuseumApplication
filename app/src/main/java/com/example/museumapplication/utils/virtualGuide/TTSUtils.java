@@ -2,6 +2,7 @@ package com.example.museumapplication.utils.virtualGuide;
 
 import android.os.Bundle;
 
+import com.example.museumapplication.data.Constant;
 import com.huawei.hms.mlsdk.tts.MLTtsCallback;
 import com.huawei.hms.mlsdk.tts.MLTtsConfig;
 import com.huawei.hms.mlsdk.tts.MLTtsConstants;
@@ -13,12 +14,15 @@ public class TTSUtils {
     MLTtsConfig mlTtsConfig;
     MLTtsEngine mlTtsEngine;
 
+    /**
+     * Text to speech service initialization
+     */
     public TTSUtils() {
         mlTtsConfig = new MLTtsConfig()
                 .setLanguage(MLTtsConstants.TTS_EN_US)
                 .setPerson(MLTtsConstants.TTS_SPEAKER_FEMALE_EN)
-                .setSpeed(1.0f)
-                .setVolume(1.0f);
+                .setSpeed(Constant.TTS_SPEED)
+                .setVolume(Constant.TTS_VOLUME);
         mlTtsEngine = new MLTtsEngine(mlTtsConfig);
         mlTtsEngine.updateConfig(mlTtsConfig);
 
@@ -60,6 +64,11 @@ public class TTSUtils {
         };
         mlTtsEngine.setTtsCallback(callback);
     }
+
+    /**
+     * Starts TTS reading
+     * @param text
+     */
     public void startTTSreading(String text){
         mlTtsEngine.stop();
         String[] sentences= text.split("\n|\\.(?!\\d)|(?<!\\d)\\.");
@@ -67,9 +76,17 @@ public class TTSUtils {
         for(String sentence: sentences)
             mlTtsEngine.speak(sentence, MLTtsEngine.QUEUE_APPEND);
     }
+
+    /**
+     * Stops TTS reading
+     */
     public void stopTTSreading(){
         mlTtsEngine.stop();
     }
+
+    /**
+     * Shutdowns TTS
+     */
     public void destroyTTSreading(){
         mlTtsEngine.shutdown();
     }

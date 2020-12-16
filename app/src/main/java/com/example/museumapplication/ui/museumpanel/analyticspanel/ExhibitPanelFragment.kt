@@ -15,6 +15,10 @@ import com.example.museumapplication.databinding.ExhibitPanelFragmentBinding
 class ExhibitPanelFragment : Fragment() {
 
 
+    /**
+     * Exhibit Panel Fragment
+     */
+
     private lateinit var viewModel: PagerViewModel
     private lateinit var binding: ExhibitPanelFragmentBinding
 
@@ -26,6 +30,9 @@ class ExhibitPanelFragment : Fragment() {
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
+        /**
+         * Initialize Recycler view for exhibits
+         */
         val recyclerView = binding.root.findViewById<RecyclerView>(R.id.recyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)

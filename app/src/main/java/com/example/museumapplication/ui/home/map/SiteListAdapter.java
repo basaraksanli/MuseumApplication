@@ -1,4 +1,4 @@
-package com.example.museumapplication.utils.map;
+package com.example.museumapplication.ui.home.map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.museumapplication.R;
 import com.example.museumapplication.data.FavoriteMuseum;
 import com.example.museumapplication.data.UserLoggedIn;
-import com.example.museumapplication.ui.home.map.MapViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.huawei.hms.maps.model.LatLng;
 import com.huawei.hms.maps.model.Marker;

@@ -15,6 +15,11 @@ import com.example.museumapplication.ui.splash_screen.SplashActivity
 
 object NotificationUtils {
     const val CHANNEL_ID = "MuseumPush"
+
+    /**
+     * Creation of the notification
+     * Sends notification
+     */
     @JvmStatic
     fun sendNotification(context: Context, content: String?, label: String?) {
         val notificationLayout = RemoteViews(context.packageName, R.layout.view_notification)
@@ -40,6 +45,9 @@ object NotificationUtils {
         managerCompat.notify(0, builder.build())
     }
 
+    /**
+     * Creates Notification Channel
+     */
     @JvmStatic
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -10,69 +10,74 @@ import android.location.Location
 import android.view.View
 import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
+import com.example.museumapplication.data.Constant
 import com.example.museumapplication.utils.resultListeners.LocationListener
 import com.example.museumapplication.utils.map.LocationManager
 import com.example.museumapplication.utils.map.MapUtils
-import com.example.museumapplication.utils.permission.PermissionHelper
-import com.example.museumapplication.utils.permission.PermissionInterface
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.site.api.model.Site
+import kotlinx.coroutines.channels.consumesAll
 
 @SuppressLint("UseCompatLoadingForDrawables")
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-
+    /**
+     * Initialization
+     */
     private val context = getApplication<Application>().applicationContext
-    private val REQUEST_CODE = 9001
+    private val REQUEST_CODE = Constant.PERMISSION_REQUEST_CODE_MAP
     val mapUtils = MapUtils(context, this)
-
+    var isGetPermission = false
     var currentLocation = MutableLiveData<Location>()
     var siteList = MutableLiveData<ArrayList<Site>>(arrayListOf())
+    private val mLocationManager = LocationManager(context)
 
-    //markers
+    /**
+     * UI adjustments
+     */
+    var initializeSiteList = MutableLiveData(false)
+    var searchMuseumButtonRangeString =  MutableLiveData(context.getString(R.string.search_for_museums))
+    var buttonsIsEnabled = MutableLiveData(true)
+    var scanMuseumWarning = MutableLiveData(false)
+    var progressBarVisibility = MutableLiveData(View.VISIBLE)
+    var listWeight = MutableLiveData(0f)
+    var fabImage = MutableLiveData(context.getDrawable(R.drawable.uparrow))
+    private var museumRange = 50
+    /**
+     * Camera variables
+     */
+    var focusToCurrentLocation = MutableLiveData(false)
+    var animateCameraLatLng = MutableLiveData<LatLng>()
+
+    /**
+     * Markers
+     */
     var currentPositionMarker =  MutableLiveData<Marker> ()
     var activeMarkers =  MutableLiveData<ArrayList<Marker>>(arrayListOf())
 
-    var scanMuseumWarning = MutableLiveData(false)
-    var progressBarVisibility = MutableLiveData(View.VISIBLE)
 
-    var searchMuseumButtonRangeString =  MutableLiveData(context.getString(R.string.search_for_museums))
-
-    var listWeight = MutableLiveData(0f)
-
-    var fabImage = MutableLiveData(context.getDrawable(R.drawable.uparrow))
-
-    var focusToCurrentLocation = MutableLiveData(false)
-
-    var isGetPermission = false
-
-
-    var animateCameraLatLng = MutableLiveData<LatLng>()
-
-    var initializeSiteList = MutableLiveData(false)
-
-    var buttonsIsEnabled = MutableLiveData(true)
-
-    private var museumRange = 50
-
-    private val mLocationManager = LocationManager(context)
 
     companion object{
+        /**
+         * Expand Nearby Site List Fab button image assignment
+         */
         @JvmStatic
         @BindingAdapter("android:setArrowImage")
         fun setArrowImage1(view: FloatingActionButton, drawable: Drawable){
             view.setImageDrawable(drawable)
         }
 
+        /**
+         * UI map and site list separation adjustment
+         */
         @JvmStatic
         @BindingAdapter("android:setWeight")
         fun setWeight1(view: LinearLayout, weight: Float){
@@ -82,7 +87,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 view.layoutParams = it
             }
         }
-
         @JvmStatic
         @BindingAdapter("app:setEnabled")
         fun setEnabled1(view: LinearLayout, isEnabled: Boolean){
@@ -92,16 +96,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         mapUtils.resetInfo()
-
         val sp = PreferenceManager.getDefaultSharedPreferences(context)
         museumRange = sp.getInt("museumRange", 50)
-
         searchMuseumButtonRangeString.value = searchMuseumButtonRangeString.value + " ($museumRange km)"
-
 
     }
 
 
+    /**
+     * Location Kit Location Track initialization
+     */
     fun startLocationTrack(){
         mLocationManager.startLocationTrack(object : LocationListener {
             override fun onLocationChange(location: Location?) {
@@ -122,20 +126,28 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 "android.permission.ACCESS_BACKGROUND_LOCATION",
-                "com.huawei.hms.permission.ACTIVITY_RECOGNITION"
+                "com.huawei.hms.permission.ACTIVITY_RECOGNITION",
         )
     }
 
 
-    fun showCurrentLocationFabClicked(view: View){
+    /**
+     * Focus current location on map. it is observed in fragment
+     */
+    fun focusCurrentLocationFabClicked(view: View){
         focusToCurrentLocation.value = true
     }
 
+    /**
+     * Change Map size adjustments. Map can be full sized, or half sized with site list
+     * Value animator is used for smooth movement
+     * Map weight is always 1, Site list weight differ 0 to 1
+     */
     @SuppressLint("UseCompatLoadingForDrawables")
     fun changeMapSize(view: View?) {
         if (listWeight.value == 1f) {
             val va = ValueAnimator.ofFloat(1f, 0f)
-            va.duration = 100
+            va.duration = Constant.MAP_SIZE_ANIMATION_DURATION
             va.addUpdateListener { animation: ValueAnimator ->
                 listWeight.value = (animation.animatedValue as Float)
             }
@@ -144,7 +156,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             if (siteList.value!!.size != 0) {
                 val va = ValueAnimator.ofFloat(0f, 1f)
-                va.duration = 100
+                va.duration = Constant.MAP_SIZE_ANIMATION_DURATION
                 va.addUpdateListener { animation: ValueAnimator ->
                     listWeight.value = (animation.animatedValue as Float)
                 }
@@ -155,6 +167,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    /**
+     * Marker movements according to device location
+     * value animator is used for smooth movement
+     */
     fun animateMarker(finalLocation: LatLng){
         val latLngInterpolator: MapUtils.LatLngInterpolator = MapUtils.LatLngInterpolator.Linear()
         val startPosition = currentPositionMarker.value!!.position
@@ -167,11 +184,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             if(currentPositionMarker.value!=null)
                 currentPositionMarker.value!!.position = newPosition
         }
-        valueAnimator.setFloatValues(0F, 1F); // Ignored.
-        valueAnimator.duration = 500;
-        valueAnimator.start();
+        valueAnimator.setFloatValues(0F, 1F) // Ignored.
+        valueAnimator.duration = Constant.MARKER_MOVEMENT_ANIMATION_DURATION
+        valueAnimator.start()
     }
 
+    /**
+     * This function gets the site list from the last session
+     * Whenever the user searches for the museums, these locations are recorded to shared preferences
+     */
     fun retrieveSiteList() {
         val mPrefs = context.getSharedPreferences("SiteData", Context.MODE_PRIVATE)
         val siteListJson = mPrefs.getString("siteList", "")

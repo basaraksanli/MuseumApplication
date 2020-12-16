@@ -29,7 +29,7 @@ object NetCheckUtils {
      * @param context Context
      * @return true:Mobile is connection
      */
-    fun isMobileConnection(context: Context): Boolean {
+    private fun isMobileConnection(context: Context): Boolean {
         val `object` = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
                 ?: return false
         val networkInfo = `object`.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
@@ -42,7 +42,7 @@ object NetCheckUtils {
      * @param context Context
      * @return true:wifi is connection
      */
-    fun isWifiConnection(context: Context): Boolean {
+    private fun isWifiConnection(context: Context): Boolean {
         val `object` = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
                 ?: return false
         val networkInfo = `object`.getNetworkInfo(ConnectivityManager.TYPE_WIFI)

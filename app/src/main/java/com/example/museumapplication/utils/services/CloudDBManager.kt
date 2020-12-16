@@ -6,9 +6,25 @@ import com.example.museumapplication.data.*
 import com.huawei.agconnect.cloud.database.*
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
 
+/**
+ * Cloud DB processes
+ */
 class CloudDBManager {
     var mCloudDB: AGConnectCloudDB? = null
     var mCloudDBZone: CloudDBZone? = null
+
+    /**
+     * Singleton implementation of Cloud Db Manager
+     */
+    companion object {
+        //Singleton
+        @JvmStatic
+        val instance = CloudDBManager()
+    }
+
+    /**
+     * Cloud Db initialization
+     */
     fun initAGConnectCloudDB(context: Context?) {
         AGConnectCloudDB.initialize(context!!)
         mCloudDB = AGConnectCloudDB.getInstance()
@@ -28,6 +44,9 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * Close Cloud Db zone
+     */
     fun closeCloudDBZone() {
         try {
             mCloudDB!!.closeCloudDBZone(mCloudDBZone)
@@ -36,6 +55,9 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * Upsert user ( update and insert)
+     */
     fun upsertUser(user: User?) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
@@ -48,6 +70,10 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * upsert Account link info - Account Link objects are used to link the accounts
+     * It contains original login method ID and the side login methods IDs
+     */
     fun upsertAccountLinkInfo(account: LinkedAccount?) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
@@ -60,6 +86,9 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * Query user Function
+     */
     private fun queryUser(query: CloudDBZoneQuery<User>): CloudDBZoneSnapshot<User>? {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it")
@@ -75,6 +104,9 @@ class CloudDBManager {
         return queryTask.result
     }
 
+    /**
+     * Query Artifact Function
+     */
     private fun queryArtifact(query: CloudDBZoneQuery<Artifact>): CloudDBZoneSnapshot<Artifact>? {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it")
@@ -90,6 +122,9 @@ class CloudDBManager {
         return queryTask.result
     }
 
+    /**
+     * queryAccountInfo function
+     */
     fun queryAccountInfo(query: CloudDBZoneQuery<LinkedAccount>): CloudDBZoneSnapshot<LinkedAccount>? {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it")
@@ -104,8 +139,11 @@ class CloudDBManager {
         return queryTask.result
     }
 
+    /**
+     * queries user by email
+     */
     @Throws(AGConnectCloudDBException::class)
-    fun queryByEmail(email: String?): User? {
+    fun getUserByEmail(email: String?): User? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return null
@@ -115,8 +153,11 @@ class CloudDBManager {
         return result?.snapshotObjects?.get(0)
     }
 
+    /**
+     * queries user by ID
+     */
     @Throws(AGConnectCloudDBException::class)
-    fun queryByID(ID: String?): User? {
+    fun getUserByID(ID: String?): User? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return null
@@ -126,8 +167,11 @@ class CloudDBManager {
         return result?.snapshotObjects?.get(0)
     }
 
+    /**
+     * query artifact by id
+     */
     @Throws(AGConnectCloudDBException::class)
-    fun queryArtifactByID(ID: Int): Artifact? {
+    fun getArtifactByID(ID: Int): Artifact? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return null
@@ -137,12 +181,18 @@ class CloudDBManager {
         return result?.snapshotObjects?.get(0)
     }
 
+    /**
+     * Checks if it is the new user
+     */
     fun checkFirstTimeUser(email: String?): Boolean {
         val query = CloudDBZoneQuery.where(User::class.java).equalTo("Email", email)
         val result = queryUser(query)
         return result!!.snapshotObjects.size() == 0
     }
 
+    /**
+     * Checks the Linked Account table, and get the original account's ID
+     */
     @Throws(AGConnectCloudDBException::class)
     fun getPrimaryAccountID_LinkedAccount(LinkedID: String?): String? {
         if (mCloudDBZone == null) {
@@ -154,12 +204,10 @@ class CloudDBManager {
         return result?.snapshotObjects?.get(0)?.accountID
     }
 
-    companion object {
-        //Singleton
-        @JvmStatic
-        val instance = CloudDBManager()
-    }
 
+    /**
+     * Query Museum
+     */
     private fun queryMuseum(query: CloudDBZoneQuery<Museum>): CloudDBZoneSnapshot<Museum>? {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it")
@@ -175,6 +223,9 @@ class CloudDBManager {
         return queryTask.result
     }
 
+    /**
+     * Query Visit
+     */
     private fun queryVisit(query: CloudDBZoneQuery<Visit>): CloudDBZoneSnapshot<Visit>? {
         if (mCloudDBZone == null) {
             Log.w("CLOUD DB", "CloudDBZone is null, try re-open it")
@@ -191,6 +242,9 @@ class CloudDBManager {
     }
 
 
+    /**
+     * Museum panel login control
+     */
     fun checkMuseumIdAndPassword(ID: String, password: String): Museum? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
@@ -212,6 +266,9 @@ class CloudDBManager {
             null
     }
 
+    /**
+     * query museum by ID
+     */
     fun getMuseum(ID: String): Museum? {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
@@ -222,6 +279,9 @@ class CloudDBManager {
     }
 
 
+    /**
+     * Get all artifacts of the specific museum
+     */
     fun getArtifactsOfMuseum(museumID: String, artifactList: ArrayList<Artifact>) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
@@ -234,12 +294,15 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * This function is increases the favored count of the artifact
+     */
     fun increaseFavoredCountArtifact(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result = queryArtifactByID(artifactID)
+        val result = getArtifactByID(artifactID)
         result!!.favoriteCount++
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
         upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
@@ -249,13 +312,15 @@ class CloudDBManager {
             e.printStackTrace()
         }
     }
-
+    /**
+     * This function is decreases the favored count of the artifact
+     */
     fun decreaseFavoredCountArtifact(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result = queryArtifactByID(artifactID)
+        val result = getArtifactByID(artifactID)
         result!!.favoriteCount--
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
         upsertTask.addOnSuccessListener { cloudDBZoneResult: Int -> Log.d("CLOUD DB:", "update $cloudDBZoneResult records") }
@@ -265,12 +330,15 @@ class CloudDBManager {
                 }
     }
 
+    /**
+     * Visit upsert function update and insert
+     */
     fun upsertVisit(visit: Visit) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        visit.visitID = findNewVisitID()
+        visit.visitID = generateNewVisitID()
         val upsertTask = mCloudDBZone!!.executeUpsert(visit)
         upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
             Log.d("CLOUD DB:", "update $cloudDBZoneResult records")
@@ -281,7 +349,10 @@ class CloudDBManager {
                 }
     }
 
-    private fun findNewVisitID(): Int {
+    /**
+     * Generates primary key for visit entry
+     */
+    private fun generateNewVisitID(): Int {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return -1
@@ -295,12 +366,15 @@ class CloudDBManager {
             result.get(0).visitID + 1
     }
 
+    /**
+     * increases current visit count of the artifact
+     */
     fun increaseCurrentVisitCount(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result = queryArtifactByID(artifactID)
+        val result = getArtifactByID(artifactID)
         result!!.currentVisitorCount++
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
         upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
@@ -311,12 +385,15 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * decreases current visit count of the artifact
+     */
     fun decreaseCurrentVisitCount(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result = queryArtifactByID(artifactID)
+        val result = getArtifactByID(artifactID)
         result!!.currentVisitorCount--
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
         upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
@@ -327,12 +404,16 @@ class CloudDBManager {
         }
     }
 
+
+    /**
+     * decreases favorite count of the artifact
+     */
     fun decreaseFavArtifact(artifactID: Int) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")
             return
         }
-        val result = queryArtifactByID(artifactID)
+        val result = getArtifactByID(artifactID)
         result!!.favoriteCount--
         val upsertTask = mCloudDBZone!!.executeUpsert(result)
         upsertTask.addOnSuccessListener { cloudDBZoneResult: Int ->
@@ -343,6 +424,9 @@ class CloudDBManager {
         }
     }
 
+    /**
+     * get all visit entries of the museum
+     */
     fun getMuseumVisits(museumID: String, visitList: ArrayList<Visit>) {
         if (mCloudDBZone == null) {
             Log.d("CLOUD DB:", "CloudDBZone is null, try re-open it")

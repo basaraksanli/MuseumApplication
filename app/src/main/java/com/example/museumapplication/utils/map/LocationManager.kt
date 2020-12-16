@@ -3,6 +3,7 @@ package com.example.museumapplication.utils.map
 import android.content.Context
 import android.location.Location
 import android.os.Looper
+import com.example.museumapplication.data.Constant
 import com.example.museumapplication.utils.resultListeners.LocationListener
 import com.huawei.hms.location.*
 
@@ -14,14 +15,16 @@ class LocationManager(val context: Context) {
 
     var currentLocation: Location? = null
 
-    private var firstTime = true
 
+    /**
+     * This function starts listening the location of the device
+     */
     fun startLocationTrack(locationListener: LocationListener) {
 
         mLocationRequest = LocationRequest()
         // Set the location update interval (in milliseconds).
         // Set the location update interval (in milliseconds).
-        mLocationRequest!!.interval = 10000
+        mLocationRequest!!.interval = Constant.LOCATION_INTERVAL
         // Set the weight.
         // Set the weight.
         mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY

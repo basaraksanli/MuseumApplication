@@ -12,7 +12,7 @@ import com.huawei.hms.kit.awareness.barrier.BarrierStatus
 
 class AwarenessServiceManager
 /**
- * Creates an IntentService.  Invoked by your subclass's constructor.
+ * Creates an IntentService.  Invoked by the subclass's constructor.
  */
     : IntentService("AwarenessService") {
     override fun onHandleIntent(intent: Intent?) {
@@ -30,6 +30,9 @@ class AwarenessServiceManager
         }
     }
 
+    /**
+     * Create notification channel for Awareness Barriers
+     */
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

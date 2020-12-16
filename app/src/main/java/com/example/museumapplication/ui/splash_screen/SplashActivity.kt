@@ -4,24 +4,18 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.*
-import android.util.Base64
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.museumapplication.R
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.auth.AuthActivity
-import com.example.museumapplication.ui.auth.LoginFragment
 import com.example.museumapplication.ui.home.HomeActivity
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.AGConnectUser
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import kotlin.system.exitProcess
 
 
@@ -38,26 +32,15 @@ class SplashActivity : AppCompatActivity() {
         UserLoggedIn.instance.retrieveFavoriteMuseumList(this)
         UserLoggedIn.instance.retrieveFavoriteArtifactList(this)
 
-
-        try {
-            @SuppressLint("PackageManagerGetSignatures") val info = packageManager.getPackageInfo(
-                    "com.example.museumapplication",
-                    PackageManager.GET_SIGNATURES)
-            for (signature in info.signatures) {
-                val md = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT))
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        }
-
-
+        //initialize Cloud DB
         instance.initAGConnectCloudDB(this)
 
 
+        /**
+         * Cloud db needs at least 1 second delay for running queries
+         * Also if cloud db can not be initialized, it tries over an over. If it can not succeed in 10 minutes, an alert dialog is shown to the user.
+         * In this case application won't start. User can retry to connect
+         */
         agConnectAuth = AGConnectAuth.getInstance()
         agcuser = agConnectAuth!!.currentUser
         if (agConnectAuth!!.currentUser != null) {
@@ -99,7 +82,7 @@ class SplashActivity : AppCompatActivity() {
                 var user: User?
                 do {
                     accountID = instance.getPrimaryAccountID_LinkedAccount(agcuser!!.uid)
-                    user = instance.queryByID(accountID)
+                    user = instance.getUserByID(accountID)
                     if (user != null) UserLoggedIn.instance.setUser(user)
                 } while (user == null)
             } catch (e: AGConnectCloudDBException) {

@@ -72,6 +72,9 @@ class ExhibitPanelAdapter(private val context: Context, private val root: View, 
             visitCount.text = visitCountTemp.toString()
 
 
+            /**
+             * Exhibit information is shown with Bottom Sheet Dialog
+             */
             buttonView.setOnClickListener {
                 val bottomSheetDialog = BottomSheetDialog(
                         context, R.style.BottomSheetDialogTheme)
@@ -79,6 +82,10 @@ class ExhibitPanelAdapter(private val context: Context, private val root: View, 
                         .inflate(R.layout.layout_bottom_sheet_panel_artifact, root.findViewById(R.id.bottom_sheet_container)
                         )
 
+
+                /**
+                 * UI assignments
+                 */
                 bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_artifactName).text = item.artifactName
 
                 bottomSheetView.findViewById<ImageView>(R.id.bottom_sheet_artifactImage).setImageBitmap(
@@ -87,7 +94,7 @@ class ExhibitPanelAdapter(private val context: Context, private val root: View, 
                 bottomSheetView.findViewById<TextView>(R.id.totalVisitsPanelBottom).text = visitCountTemp.toString()
 
                 val lastWeekVisitCountData = statisticUtils.getLastWeekVisits(artifactVisitList)
-                bottomSheetView.findViewById<TextView>(R.id.lastWeekVisits).text = statisticUtils.getLastWeekTotalVisit(lastWeekVisitCountData).toString()
+                bottomSheetView.findViewById<TextView>(R.id.lastWeekVisits).text = statisticUtils.findLastWeekTotalVisit(lastWeekVisitCountData).toString()
                 bottomSheetView.findViewById<TextView>(R.id.favoriteCount).text = item.favoriteCount.toString()
 
                 bottomSheetView.findViewById<TextView>(R.id.totalVisitLength).text = (statisticUtils.findTotalVisitLength(artifactVisitList)/60).toString() + " m"
@@ -100,6 +107,9 @@ class ExhibitPanelAdapter(private val context: Context, private val root: View, 
                 APIlib.getInstance().setActiveAnyChartView(anyChartViewVisit)
 
 
+                /**
+                 * last week visit count graph with any chart library
+                 */
                 val barVisit = AnyChart.bar3d()
                 barVisit.data(lastWeekVisitCountData)
                 barVisit.palette().items("Red", "#ff6f60")
@@ -115,6 +125,9 @@ class ExhibitPanelAdapter(private val context: Context, private val root: View, 
                 APIlib.getInstance().setActiveAnyChartView(anyChartViewLength)
 
 
+                /**
+                 * last week visit length with any chart library
+                 */
                 val barLength = AnyChart.bar3d()
                 barLength.data(lastWeekVisitLengthData)
                 barLength.palette().items("Red", "#ff6f60")

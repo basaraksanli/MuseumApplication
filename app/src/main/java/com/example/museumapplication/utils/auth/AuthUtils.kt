@@ -6,14 +6,28 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 
 object AuthUtils {
+
+    /**
+     * Auth Utilities
+     */
+
+    /**
+     * Checks if the email is valid
+     */
     private fun isEmailValid(email: String?): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    /**
+     * checks password length
+     */
     private fun isPasswordLengthGreaterThan5(password: String): Boolean {
         return password.length > 5
     }
 
+    /**
+     * checks if the field blank
+     */
     @JvmStatic
     fun isFieldBlank(string: String?): Boolean {
         return if (string == null)
@@ -24,10 +38,13 @@ object AuthUtils {
 
     }
 
+    /**
+     * check all the fields in registration page
+     */
     @JvmStatic
     fun checkFields(email: String?, password: String?, repeatPass: String?, verificationCode: String?, name: String?): Boolean {
         var result = true
-        if(email ==null || password == null || repeatPass ==null || verificationCode ==null || name == null)
+        if (email == null || password == null || repeatPass == null || verificationCode == null || name == null)
             return false
 
         if (isFieldBlank(email)) {
@@ -54,6 +71,9 @@ object AuthUtils {
         return result
     }
 
+    /**
+     * check google services availability
+     */
     @JvmStatic
     fun checkGoogleServices(context: Context?): Boolean {
         val googleApiAvailability = GoogleApiAvailability.getInstance()

@@ -21,6 +21,10 @@ class MuseumPanelActivity : AppCompatActivity(), LifecycleOwner {
     private var pagerAgentViewModel: PagerViewModel? = null
 
 
+    /**
+     * Museum Panel Activity
+     * contains 2 fragments - Exhibit Panel - General Panel
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding =DataBindingUtil.setContentView<MuseumPanelActivityBinding>(this, R.layout.museum_panel_activity)
@@ -31,16 +35,18 @@ class MuseumPanelActivity : AppCompatActivity(), LifecycleOwner {
         binding.lifecycleOwner = this
 
 
-
+        /**
+         * Pager assignment and initialization
+         */
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
-
 
         viewPager.initFragmentManager(supportFragmentManager)
         viewPager.addPages("General", GeneralPanelFragment())
         viewPager.addPages("Exhibits", ExhibitPanelFragment())
         viewPager.addTabLayout(tabLayout)
         viewPager.build()
+
 
 
         val museumID = intent.getStringExtra("museumID")

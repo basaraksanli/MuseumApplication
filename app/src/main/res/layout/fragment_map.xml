@@ -86,7 +86,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:srcCompat="@android:drawable/ic_menu_mylocation"
                     tools:ignore="MissingConstraints"
-                    android:onClick="@{viewmodel.showCurrentLocationFabClicked}"/>
+                    android:onClick="@{viewmodel.focusCurrentLocationFabClicked}"/>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,16 +21,26 @@ import kotlin.collections.ArrayList
 class PagerViewModel : ViewModel() {
     // TODO: Implement the ViewModel
     var museum = MutableLiveData<Museum>()
+
+    /**
+     * list initializations
+     */
     var visitList = MutableLiveData<ArrayList<Visit>>()
     var artifactList = arrayListOf<Artifact>()
 
 
+    /**
+     * variable initializations
+     */
     var totalVisits = MutableLiveData(0)
     var progressBarVisibility = MutableLiveData(View.VISIBLE)
     var averageVisitLength = MutableLiveData(0)
     var totalFavorites = MutableLiveData(0)
     var totalExhibits = MutableLiveData(0)
 
+    /**
+     * Least, Most visited and Longest, Shortest Visited Exhibits
+     */
     var mostVisitedArtifactName = MutableLiveData<String>()
     var mostVisitedArtifactImage = MutableLiveData<String>()
 
@@ -42,6 +52,7 @@ class PagerViewModel : ViewModel() {
 
     var shortestVisitArtifactName = MutableLiveData<String>()
     var shortestVisitArtifactImage = MutableLiveData<String>()
+    //Statistics utils
     private val statisticsUtils = StatisticsUtils()
 
     init {
@@ -50,6 +61,10 @@ class PagerViewModel : ViewModel() {
 
     companion object {
         private val statisticsUtils = StatisticsUtils()
+
+        /**
+         * Museum Image load
+         */
         @JvmStatic
         @BindingAdapter("loadMuseumImage")
         fun loadMuseumImage(view: ImageView, museumImage: String) {
@@ -58,6 +73,9 @@ class PagerViewModel : ViewModel() {
                     .into(view)
         }
 
+        /**
+         * Total visit graph with Any Chart Library
+         */
         @SuppressLint("SimpleDateFormat")
         @JvmStatic
         @BindingAdapter("loadPlotTotalVisit")
@@ -80,6 +98,9 @@ class PagerViewModel : ViewModel() {
             view.setChart(bar)
         }
 
+        /**
+         * Visit Length graph with any chart library
+         */
         @SuppressLint("SimpleDateFormat")
         @JvmStatic
         @BindingAdapter("loadPlotVisitLength")
@@ -102,6 +123,9 @@ class PagerViewModel : ViewModel() {
             view.setChart(bar)
         }
 
+        /**
+         * Top exhibits load images
+         */
         @JvmStatic
         @BindingAdapter("loadImageExhibitMost")
         fun loadImageExhibitMost(view: ImageView, artifactImage: String) {
@@ -125,6 +149,11 @@ class PagerViewModel : ViewModel() {
 
     }
 
+    /**
+     * Average visit calculation.
+     * All visit lengths are summed
+     * then divided by the size of the visit list
+     */
     private fun calculateAverageVisit() {
         var temp = 0
         for (visit: Visit in visitList.value!!) {
@@ -134,8 +163,15 @@ class PagerViewModel : ViewModel() {
     }
 
     fun initialize() {
+        /**
+         * Cloud Db operations for getting artifact and museum information for specific partner museum
+         */
         CloudDBManager.instance.getMuseumVisits(museum.value!!.museumID, visitList.value!!)
         CloudDBManager.instance.getArtifactsOfMuseum(museum.value!!.museumID, artifactList)
+
+        /**
+         * statistics calculations
+         */
         totalVisits.value = visitList.value!!.size
         progressBarVisibility.value = View.GONE
 

@@ -35,6 +35,10 @@ class EmailAuth : IBaseAuth {
         this.viewModel = viewModel
     }
 
+
+    /**
+     * sets variables from out of the class
+     */
     fun setCredentialInfo(email: String , password: String, verificationCode : String, name : String){
         this.email = email
         this.password = password
@@ -42,6 +46,9 @@ class EmailAuth : IBaseAuth {
         this.name = name
     }
 
+    /**
+     * login task with email and password
+     */
     override fun login() {
         val credential = EmailAuthProvider.credentialWithPassword(email, password)
         viewModel!!.itemClickableOrEnabled.postValue(false)
@@ -52,7 +59,7 @@ class EmailAuth : IBaseAuth {
                     Log.d("Login:", "Success")
                     var user: User? = null
                     try {
-                        user = instance.queryByEmail(email)
+                        user = instance.getUserByEmail(email)
                     } catch (e: AGConnectCloudDBException) {
                         e.printStackTrace()
                     }
@@ -67,6 +74,9 @@ class EmailAuth : IBaseAuth {
                 }
     }
 
+    /**
+     * registration task in the registration page
+     */
     fun register() {
         val emailUser = EmailUser.Builder()
                 .setEmail(email)
@@ -86,7 +96,7 @@ class EmailAuth : IBaseAuth {
                     } else {
                         val primaryAccount: User?
                         try {
-                            primaryAccount = instance.queryByEmail(email)
+                            primaryAccount = instance.getUserByEmail(email)
                             instance.upsertAccountLinkInfo(LinkedAccount(user.uid, primaryAccount!!.uid))
                             UserLoggedIn.instance.setUser(primaryAccount)
                         } catch (e: AGConnectCloudDBException) {
@@ -101,12 +111,17 @@ class EmailAuth : IBaseAuth {
                 }
     }
 
+    /**
+     * This function creates verification code for the new registration
+     * Requesting verification code interval is Constant.VerificationTimer value - default 120 second
+     * Verification code is sent to email of the new user
+     */
     fun createVerificationCode() {
         if (!isFieldBlank(viewModel!!.registerEmailText.value)) {
 
             val settings = VerifyCodeSettings.newBuilder()
                     .action(VerifyCodeSettings.ACTION_REGISTER_LOGIN) //ACTION_REGISTER_LOGIN/ACTION_RESET_PASSWORD
-                    .sendInterval(Constant.Verification_timer) // Minimum sending interval, ranging from 30s to 120s.
+                    .sendInterval(Constant.VERIFICATION_TIMER) // Minimum sending interval, ranging from 30s to 120s.
                     .locale(Locale.getDefault()) // Language in which a verification code is sent, which is optional. The default value is Locale.getDefault.
                     .build()
             val task = EmailAuthProvider.requestVerifyCode(viewModel!!.registerEmailText.value, settings)
@@ -127,6 +142,6 @@ class EmailAuth : IBaseAuth {
                     warningMessage.show()
                 }
             })
-        } else Toast.makeText(viewModel!!.mContext , context.getString(R.string.fill_verification_email_warning), Toast.LENGTH_LONG).show()
+        } else Toast.makeText(viewModel!!.mContext , viewModel!!.mContext!!.getString(R.string.fill_verification_email_warning), Toast.LENGTH_LONG).show()
     }
 }

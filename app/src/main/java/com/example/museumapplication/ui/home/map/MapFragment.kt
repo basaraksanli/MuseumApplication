@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
 import com.example.museumapplication.databinding.FragmentMapBinding
-import com.example.museumapplication.utils.map.SiteListAdapter
 import com.example.museumapplication.utils.permission.PermissionHelper
 import com.example.museumapplication.utils.permission.PermissionInterface
 import com.example.museumapplication.utils.settings.SettingsUtils

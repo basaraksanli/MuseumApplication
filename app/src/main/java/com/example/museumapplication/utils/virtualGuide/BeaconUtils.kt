@@ -27,11 +27,21 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
     private var visitObject: Visit? =null
     private val timeout = Stopwatch()
 
+    /**
+     * Downloaded artifact List
+     * artifact distances to the user list
+     */
     companion object {
         private val downloadedArtifacts: MutableList<Artifact> = ArrayList()
         private val artifactDistances = HashMap<Int, Distance>()
     }
 
+    /**
+     * Start Scanning Beacons nearby
+     * Message engine is defined and registered here
+     * 3 function of the message handler are used
+     * OnFound OnDistanceChanged OnLost
+     */
     fun startScanning(activity: Activity) {
         messageEngine = Nearby.getMessageEngine(activity)
         messageEngine!!.registerStatusCallback(
@@ -64,6 +74,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         val getOption = GetOption.Builder().setPicker(msgPicker).setPolicy(policy).build()
         Nearby.getMessageEngine(activity)[mMessageHandler]
         val task = messageEngine!!.get(mMessageHandler, getOption)
+        /**
+         * Message Handler is registered to message engine here
+         */
         task.addOnSuccessListener { Toast.makeText(context, "SUCCESS", Toast.LENGTH_SHORT).show() }.addOnFailureListener { e: Exception? ->
             Log.e("Beacon", "Login failed:", e)
             if (e is ApiException) {
@@ -86,6 +99,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         }
     }
 
+    /**
+     * Do on lost function. It removes the beacon and its artifact's information
+     */
     private fun doOnLost(message: Message?) {
         if (message == null) {
             return
@@ -96,6 +112,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         downloadedArtifacts.removeAt(id)
     }
 
+    /**
+     * Disable searching nearby beacons
+     */
     fun ungetMessageEngine() {
         if (messageEngine != null && mMessageHandler != null) {
             Log.i("Beacon", "unget")
@@ -103,6 +122,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         }
     }
 
+    /**
+     * doOnFound downloads the beacon's artifact's information
+     */
     @Throws(AGConnectCloudDBException::class)
     fun doOnFound(message: Message?) {
         if (message == null) {
@@ -114,12 +136,18 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         if (type.equals("No", ignoreCase = true)) downloadArtifact(messageContent)
     }
 
+    /**
+     * Download Artifact Information
+     */
     @Throws(AGConnectCloudDBException::class)
     private fun downloadArtifact(messageContent: String) {
-        val artifact = CloudDBManager.instance.queryArtifactByID(messageContent.toInt())
+        val artifact = CloudDBManager.instance.getArtifactByID(messageContent.toInt())
         downloadedArtifacts.add(artifact!!)
     }
 
+    /**
+     * doOnDistanceChanged, calculates every artifact's distance to the user. If the user close enough to closest beacon, UI updates and shows the related artifact info
+     */
     fun doOnDistanceChanged(message: Message?, distance: Distance) {
         if (message == null) {
             return
@@ -130,12 +158,18 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         if (type.equals("No", ignoreCase = true)) operateOnDistanceChanged(messageContent, distance)
     }
 
+    /**
+     * extension of doOnDistanceChanged
+     */
     private fun operateOnDistanceChanged(messageContent: String, distance: Distance) {
         val id = messageContent.toInt()
         artifactDistances[id] = distance
         updateUI()
     }
 
+    /**
+     * Updates Virtual Guide UI
+     */
     private fun updateUI() {
         val closestIndex = findClosest()
 
@@ -184,6 +218,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         }
     }
 
+    /**
+     * Starts the stopwatch for calculating the visit length
+     */
     private fun startStopwatch(closestInfo: Artifact){
         if(!visitTime.isStarted) {
             visitTime.start()
@@ -196,6 +233,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         }
     }
 
+    /**
+     * find the artifact in the downloaded artifacts
+     */
     private fun findArtifactInformation(ID: Int): Artifact? {
         for (o in downloadedArtifacts) {
             if (o.artifactID == ID) return o
@@ -203,6 +243,9 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         return null
     }
 
+    /**
+     * find the closes artifact in the list
+     */
     private fun findClosest(): Map.Entry<Int, Distance>? {
         var closest: Map.Entry<Int, Distance>? = null
         for (entry in artifactDistances.entries) {

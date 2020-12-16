@@ -14,6 +14,10 @@ import kotlin.collections.HashMap
 
 class StatisticsUtils {
 
+    /**
+     * assigning numbers to the days for the calender
+     * this is generally used in the graphs
+     */
     private fun getDay(dayNo: Int): String {
         when (dayNo) {
             1 -> return "Monday"
@@ -27,6 +31,9 @@ class StatisticsUtils {
         return ""
     }
 
+    /**
+     * Statistical last week visit length calculations
+     */
     @SuppressLint("SimpleDateFormat")
     fun getLastWeekVisitLengths(visitList: ArrayList<Visit>): MutableList<DataEntry?> {
         val lengths = mutableListOf(0, 0, 0, 0, 0, 0, 0)
@@ -53,6 +60,9 @@ class StatisticsUtils {
         return data
     }
 
+    /**
+     * Statistical last week visit counts calculations
+     */
     @SuppressLint("SimpleDateFormat")
     fun getLastWeekVisits(visitList: ArrayList<Visit>): MutableList<DataEntry?> {
         val counts = mutableListOf(0, 0, 0, 0, 0, 0, 0)
@@ -72,7 +82,10 @@ class StatisticsUtils {
         return data
     }
 
-    fun getLastWeekTotalVisit(dataEntry: MutableList<DataEntry?>): Int {
+    /**
+     * last week total visit calculation
+     */
+    fun findLastWeekTotalVisit(dataEntry: MutableList<DataEntry?>): Int {
         var result = 0
         for (entry: DataEntry? in dataEntry) {
             result += entry!!.getValue("value").toString().toInt()
@@ -80,6 +93,9 @@ class StatisticsUtils {
         return result
     }
 
+    /**
+     * last week total visit length calculation
+     */
     fun findTotalVisitLength(visitList: ArrayList<Visit>): Int {
         var result = 0
         for (visit: Visit in visitList)
@@ -87,10 +103,16 @@ class StatisticsUtils {
         return result
     }
 
+    /**
+     * total average visit length calculation
+     */
     fun findAverageVisitLength(visitList: ArrayList<Visit>): Int {
         return findTotalVisitLength(visitList) / visitList.size
     }
 
+    /**
+     * last week average visit length calculation
+     */
     @SuppressLint("SimpleDateFormat")
     fun findLastWeekAverageVisitLength(visitEntries: MutableList<DataEntry?>, lengthEntries: MutableList<DataEntry?>): Int {
         var result = 0
@@ -107,11 +129,17 @@ class StatisticsUtils {
     }
 
 
+    /**
+     * String to bitmap function
+     */
     fun stringToBitMap(encodedString: String?): Bitmap? {
         val imageBytes = Base64.getDecoder().decode(encodedString)
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
+    /**
+     * Top exhibits calculations
+     */
     fun findMostAndLeastVisited(visitList: ArrayList<Visit>, artifactList: ArrayList<Artifact>): Pair<Artifact, Artifact> {
         val map = HashMap<Int, Int>()
         for (visit: Visit in visitList) {

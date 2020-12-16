@@ -28,7 +28,10 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
 
     var mCallbackManager: CallbackManager = CallbackManager.Factory.create()
 
-
+    /**
+     * Login task for facebook
+     * Login Manager with a callback is used to login task
+     */
     override fun login() {
         LoginManager.getInstance().registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
@@ -53,6 +56,10 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
         })
     }
 
+    /**
+     * graphRequest function is used to retrieve user information from the Facebook
+     * facebook credential does not provide user information without graph request
+     */
     private fun graphRequest(accessToken: AccessToken?, UserID: String?) {
         val request = GraphRequest.newMeRequest(
                 accessToken
@@ -66,7 +73,7 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
                     viewModel.navigateToHomePage.postValue(true)
                 } else {
                     try {
-                        val user = instance.queryByEmail(`object`.getString("email"))
+                        val user = instance.getUserByEmail(`object`.getString("email"))
                         instance.upsertAccountLinkInfo(LinkedAccount(`object`.getString("id"), user!!.uid))
                         UserLoggedIn.instance.setUser(user)
                         viewModel.navigateToHomePage.postValue(true)
@@ -84,6 +91,9 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
         request.executeAsync()
     }
 
+    /**
+     * Facebook- Huawei Auth Service integration
+     */
     fun authWithFacebook(accessToken: AccessToken) {
         val credential = FacebookAuthProvider.credentialWithToken(accessToken.token)
         AGConnectAuth.getInstance().signIn(credential)

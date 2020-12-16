@@ -6,7 +6,6 @@ import android.widget.Toast
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
-import com.example.museumapplication.ui.auth.LoginFragment
 import com.example.museumapplication.ui.auth.SharedAuthViewModel
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
@@ -28,17 +27,26 @@ class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
         const val RC_SIGN_IN = 8888
     }
 
+    /**
+     * Huawei ID- Account kit initialization
+     */
     init {
         val huaweiIdAuthParamsHelper = HuaweiIdAuthParamsHelper(HuaweiIdAuthParams.DEFAULT_AUTH_REQUEST_PARAM)
         val authParams = huaweiIdAuthParamsHelper.setEmail().setAccessToken().setIdToken().createParams()
         service = HuaweiIdAuthManager.getService(viewModel.mContext, authParams)
     }
 
+    /**
+     * Huawei intent is requested here
+     */
     override fun login() {
         viewModel.RC_SIGN_IN=  RC_SIGN_IN
         viewModel.signInIntent.value = service.signInIntent
     }
 
+    /**
+     * Huawei activity result is processed here
+     */
     fun activityResult(data: Intent?) {
         val authHuaweiIdTask = HuaweiIdAuthManager.parseAuthResultFromIntent(data)
         if (authHuaweiIdTask.isSuccessful) {
@@ -51,6 +59,9 @@ class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
         }
     }
 
+    /**
+     * Account Kit - Auth Service integration
+     */
     private fun authWithHuawei(huaweiAccount: AuthHuaweiId) {
         val credential = HwIdAuthProvider.credentialWithToken(huaweiAccount.accessToken)
         AGConnectAuth.getInstance().signIn(credential).addOnSuccessListener { signInResult: SignInResult ->
@@ -65,7 +76,7 @@ class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
                 UserLoggedIn.instance.setUser(user)
             } else {
                 try {
-                    val user = instance.queryByEmail(huaweiAccount.email)
+                    val user = instance.getUserByEmail(huaweiAccount.email)
                     instance.upsertAccountLinkInfo(LinkedAccount(agcUser.uid, user!!.uid))
                     UserLoggedIn.instance.setUser(user)
                 } catch (e: AGConnectCloudDBException) {

@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
-import android.opengl.Visibility
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -42,6 +41,9 @@ import kotlin.math.sign
 class MapUtils(private val context: Context, private val viewModel: MapViewModel) {
 
 
+    /**
+     * Marker movement path calculation for the User Marker Animation
+     */
     internal interface LatLngInterpolator {
         fun interpolate(fraction: Float, a: LatLng, b: LatLng): LatLng?
         class Linear : LatLngInterpolator {
@@ -60,6 +62,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         }
     }
 
+    /**
+     * Creating Museum Marker Template
+     */
     private val museumMarkerBitmap: Bitmap
         get() {
             val bitmapDraw = (ContextCompat.getDrawable(context, R.drawable.museum_icon) as BitmapDrawable?)!!
@@ -67,6 +72,13 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
             return Bitmap.createScaledBitmap(bigMarker, 190, 190, false)
         }
 
+    /**
+     * Search Nearby Museums
+     * Site Kit - Nearby Search works with pagination logic
+     * This function checks for every page of the result(maximum 20 pages)
+     * Results of the every page are retrieved async
+     * Therefore if the result count 20, search will be assumed finished
+     */
     fun searchMuseums(location: Location, radius: Int) {
         viewModel.progressBarVisibility.value = View.VISIBLE
         for (marker: Marker in viewModel.activeMarkers.value!!)
@@ -129,6 +141,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         }
     }
 
+    /**
+     * Shared preferences save of the current nearby museums
+     */
     fun saveSiteListToDevice() {
         val mPrefs = context.getSharedPreferences("SiteData", Context.MODE_PRIVATE)
         val prefsEditor = mPrefs.edit()
@@ -139,6 +154,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         prefsEditor.apply()
     }
 
+    /**
+     * Create Museum Marker Options
+     */
     fun createMuseumMarkerOptions(site: Site): MarkerOptions {
         val location = site.location
         val position = LatLng(location.lat, location.lng)
@@ -150,6 +168,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
     }
 
 
+    /**
+     * This function checks the if there is duplicate museums in the list
+     */
     fun checkDuplicateSite(toCompare: Site): Boolean {
         for (site in viewModel.siteList.value!!) {
             if (site.name == toCompare.name) return true
@@ -157,6 +178,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         return false
     }
 
+    /**
+     * reset all the information in the view model
+     */
     fun resetInfo() {
         viewModel.progressBarVisibility.value = View.VISIBLE
         viewModel.buttonsIsEnabled.value = true
@@ -167,6 +191,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         viewModel.siteList.value!!.clear()
     }
 
+    /**
+     * For every museum nearby, Awareness barriers are added in order to notify the user when he is close
+     */
     fun addBarrierToAwarenessKit(site: Site, radius: Double, duration: Long) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return
@@ -182,10 +209,13 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         } else {
             PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-        addBarrier(site.name, combinedBarrier, pendingIntent)
+        updateBarrier(site.name, combinedBarrier, pendingIntent)
     }
 
-    private fun addBarrier(label: String, barrier: AwarenessBarrier, pendingIntent: PendingIntent) {
+    /**
+     * Update the barriers
+     */
+    private fun updateBarrier(label: String, barrier: AwarenessBarrier, pendingIntent: PendingIntent) {
         val request = BarrierUpdateRequest.Builder()
                 .addBarrier(label, barrier, pendingIntent)
                 .build()
@@ -200,6 +230,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
                 }
     }
 
+    /**
+     * Delete all barriers from the app
+     */
     private fun deleteAllBarriers(context: Context) {
         val request = BarrierUpdateRequest.Builder()
                 .deleteAll()
@@ -209,6 +242,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
                 .addOnFailureListener { e: Exception? -> Log.e("DeleteAllBarriers", "delete all barriers failed ", e) }
     }
 
+    /**
+     * Finds museums by name
+     */
     fun findSiteByName(name: String): Site? {
         for (i in viewModel.siteList.value!!.indices) {
             if (viewModel.siteList.value!![i].name == name) return viewModel.siteList.value!![i]
@@ -216,12 +252,18 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         return null
     }
 
+    /**
+     * This is a function to calculate and draw circle like marker with an image inside
+     */
     private fun dp(value: Float, fragment: Activity): Int {
         return if (value == 0f) {
             0
         } else ceil(fragment.resources.displayMetrics.density * value.toDouble()).toInt()
     }
 
+    /**
+     * Create circle like marker with profile picture inside
+     */
     private fun createUserBitmap(profilePicture: Bitmap?, activity: Activity): Bitmap? {
         var result: Bitmap? = null
         try {
@@ -259,6 +301,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
     }
 
 
+    /**
+     * Creates User Marker Options
+     */
     fun getUserMarkerOptions(location: Location, activity: Activity): MarkerOptions? {
         val options = MarkerOptions().position(LatLng(location.latitude, location.longitude))
         val color = Paint()

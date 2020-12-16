@@ -8,10 +8,17 @@ import com.example.museumapplication.ui.auth.LoginFragment
 import com.huawei.agconnect.auth.AGConnectAuth
 
 interface IBaseAuth {
+
+
+    /**
+     * Strategy Pattern for Auth methods.
+     * With this pattern new auth methods can be added easily
+     * All methods are implemented according to this interface
+     */
     fun login()
 
     companion object {
-        val currentUser: UserLoggedIn?
+        val currentUser: UserLoggedIn
             get() = UserLoggedIn.instance
 
         @JvmStatic
