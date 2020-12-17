@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.auth.EmailLoginFragment">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.example.museumapplication.ui.auth.SharedAuthViewModel" />
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/test"
+        android:paddingTop="100dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:text="@={viewmodel.emailText}"
+                android:autofillHints="@string/email"
+                android:hint="@string/email"
+                tools:ignore="LabelFor"
+                android:enabled="@{viewmodel.itemClickableOrEnabled}"
+                android:textColor="@color/colorWhite"
+                android:backgroundTint="@color/colorWhite"
+                android:textColorHint="@color/colorWhite"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="@={viewmodel.passwordText}"
+                android:autofillHints="Password"
+                tools:ignore="LabelFor"
+                android:enabled="@{viewmodel.itemClickableOrEnabled}"
+                android:hint="@string/password"
+                android:backgroundTint="@color/colorWhite"
+                android:textColorHint="@color/colorWhite"
+                android:textColor="@color/colorWhite"/>
+        </LinearLayout>
+
+
+        <Button
+            android:layout_width="256dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorPrimary"
+            android:clickable="@{viewmodel.itemClickableOrEnabled}"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="@{viewmodel.signInButtonClicked}"
+            android:text="@string/sign_in_with_email"
+            android:textColor="#ffffff"
+            android:textAllCaps="false"/>
+
+        <Button
+            android:layout_width="256dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorPrimary"
+            android:clickable="@{viewmodel.itemClickableOrEnabled}"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="@{viewmodel.registerButtonClicked}"
+            android:text="@string/register_with_email"
+            android:textColor="#ffffff"
+            android:textAllCaps="false"
+            android:layout_marginBottom="100dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/or_are_you_a_museum_staff"
+            android:gravity="center"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="256dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorPrimary"
+            android:clickable="@{viewmodel.itemClickableOrEnabled}"
+            android:contentDescription="@string/museum_login"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:onClick="@{viewmodel.museumPanelClick}"
+            android:padding="5dp"
+            android:textAllCaps="false"
+            android:text="@string/museum_staff_login"
+            android:scaleType="fitCenter" />
+
+
+    </LinearLayout>
+
+
+
+</layout>

@@ -15,9 +15,10 @@ import com.example.museumapplication.ui.museumpanel.MuseumPanelActivity
 import com.example.museumapplication.utils.auth.FacebookAuth
 import com.example.museumapplication.utils.auth.GoogleAuth
 import com.example.museumapplication.utils.auth.HuaweiAuth
+import com.facebook.login.LoginManager
 import com.facebook.login.widget.LoginButton
 
-class LoginFragment : Fragment() {
+class AccountLoginFragment : Fragment() {
 
     lateinit var viewModel : SharedAuthViewModel
 
@@ -39,22 +40,11 @@ class LoginFragment : Fragment() {
         /**
          * Sign Up activity navigation
          */
-        viewModel.navigateToSignUpFragment.observe(viewLifecycleOwner, {
-            if (it) {
-                parentFragmentManager.beginTransaction().replace(R.id.container, SignupFragment()).commit()
-                viewModel.navigateToSignUpFragment.value = false
-            }
-        })
+
         /**
          * Museum panel navigation
          */
-        viewModel.navigateToMuseumPanel.observe(viewLifecycleOwner, {
-            if (it){
-                val newIntent = Intent(activity, MuseumPanelActivity::class.java)
-                newIntent.putExtras(viewModel.extra)
-                requireActivity().startActivity(newIntent)
-            }
-        })
+
 
         /**
          * Whenever an intent is assigned to the signInIntent variable in Shared Auth View Model
@@ -70,8 +60,7 @@ class LoginFragment : Fragment() {
         viewModel.facebookLoginClicked.observe(viewLifecycleOwner, {
             if(it)
             {
-                val facebookButton = binding.root.findViewById<LoginButton>(R.id.facebookButton)
-                facebookButton.performClick()
+                LoginManager.getInstance().logInWithReadPermissions(this, arrayListOf("public_profile", "user_friends"));
                 viewModel.facebookLoginClicked.postValue(false)
             }
         })
@@ -84,6 +73,15 @@ class LoginFragment : Fragment() {
                 startActivity(Intent(activity, HomeActivity::class.java))
                 viewModel.navigateToHomePage.postValue(false)
             }
+        })
+
+        viewModel.navigateToEmailLogin.observe(viewLifecycleOwner,{
+            if(it)
+            {
+                parentFragmentManager.beginTransaction().replace(R.id.container, EmailLoginFragment()).commit()
+                viewModel.navigateToEmailLogin.value = false
+            }
+
         })
 
         return binding.root

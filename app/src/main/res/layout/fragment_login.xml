@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewmodel"
             type="com.example.museumapplication.ui.auth.SharedAuthViewModel" />
@@ -12,43 +13,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.auth.LoginFragment">
+        tools:context=".ui.auth.AccountLoginFragment"
+        android:background="@drawable/test">
 
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:clickable="@{viewmodel.itemClickableOrEnabled}"
-            android:contentDescription="@string/museum_login"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:onClick="@{viewmodel.museumPanelClick}"
-            android:padding="5dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/adminlogin"
-            android:translationZ="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.98"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.00999999" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:tag="progressBar"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
-            app:layout_constraintEnd_toEndOf="@+id/scrollView2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.53" />
 
         <ScrollView
             android:id="@+id/scrollView2"
@@ -59,162 +26,125 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+
+
+
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="vertical">
-
-
-                <LinearLayout
+                <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
+                    android:layout_height="250dp"
+                    android:src="@drawable/museum2"
+                    android:layout_marginBottom="100dp"
                     android:layout_marginTop="100dp"
-                    android:layout_marginEnd="20dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textViewEmail"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/email" />
-
-                    <View style="@style/Divider.Vertical" />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:inputType="textEmailAddress"
-                        android:text="@={viewmodel.emailText}"
-                        android:autofillHints="@string/email"
-                        tools:ignore="LabelFor"
-                        android:enabled="@{viewmodel.itemClickableOrEnabled}"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textViewPassword"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="@string/password" />
-
-                    <View style="@style/Divider.Vertical" />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:inputType="textPassword"
-                        android:text="@={viewmodel.passwordText}"
-                        android:autofillHints="Password"
-                        tools:ignore="LabelFor"
-                        android:enabled="@{viewmodel.itemClickableOrEnabled}"/>
-                </LinearLayout>
-
-
-                <Button
-                    android:layout_width="256dp"
-                    android:layout_height="46dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="50dp"
-                    android:background="@color/colorPrimary"
-                    android:clickable="@{viewmodel.itemClickableOrEnabled}"
-                    android:focusable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:onClick="@{viewmodel.signInButtonClicked}"
-                    android:text="@string/sign_in_with_email"
-                    android:textColor="#ffffff" />
-
-                <Button
-                    android:layout_width="256dp"
-                    android:layout_height="46dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/colorPrimary"
-                    android:clickable="@{viewmodel.itemClickableOrEnabled}"
-                    android:focusable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:onClick="@{viewmodel.registerButtonClicked}"
-                    android:text="@string/register_with_email"
-                    android:textColor="#ffffff" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/or_login_with"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="20sp" />
+                    android:backgroundTint = "@color/hwid_auth_button_color_red"
+                    android:contentDescription="@string/image" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:paddingEnd="50dp"
+                    android:paddingStart="50dp">
 
-                    <ImageButton
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginStart="75dp"
-                        android:layout_marginEnd="3dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@color/colorPrimary"
-                        android:clickable="@{viewmodel.itemClickableOrEnabled}"
-                        android:contentDescription="@string/huaweiid_login_Description"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:onClick="@{viewmodel.huaweiButtonClicked}"
-                        android:padding="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/huaweilogo" />
+                        android:layout_gravity="center">
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:clickable="@{viewmodel.itemClickableOrEnabled}"
+                            app:backgroundTint="@color/hwid_auth_button_color_red"
+                            app:icon="@drawable/hwid_auth_button_white"
+                            app:iconSize="20dp"
+                            app:iconGravity="start"
+                            app:cornerRadius="15dp"
+                            app:iconPadding="10dp"
+                            app:iconTintMode="multiply"
+                            android:text="@string/continue_with_huawei_text"
+                            android:textAllCaps="false"
+                            android:contentDescription="@string/huaweiid_login_Description"
+                            android:focusable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            android:onClick="@{viewmodel.huaweiButtonClicked}"
+                            android:scaleType="fitCenter" />
+                    </LinearLayout>
 
-                    <ImageButton
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginEnd="3dp"
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@color/colorPrimary"
+                        android:layout_gravity="center">
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        app:cornerRadius="15dp"
+                        android:layout_gravity="center"
                         android:clickable="@{viewmodel.itemClickableOrEnabled}"
-                        android:contentDescription="@string/gmail_login_Description"
-                        android:focusable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
                         android:onClick="@{viewmodel.googleButtonClicked}"
-                        android:padding="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/googlelogo"
-                        app:mContext="@{viewmodel.mContext}"/>
-
-                    <ImageButton
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginEnd="75dp"
-                        android:layout_weight="1"
-                        android:background="@color/colorPrimary"
-                        android:clickable="@{viewmodel.itemClickableOrEnabled}"
-                        android:contentDescription="@string/facebook_login_Description"
+                        app:backgroundTint="@color/colorWhite"
+                        app:icon="@drawable/googlelogo"
+                        app:iconTintMode="multiply"
+                        app:iconGravity="start"
+                        app:iconPadding="10dp"
+                        app:iconSize="20dp"
                         android:focusable="true"
+                        android:textAllCaps="false"
+                        android:text= "@string/continue_with_google_text"
+                        android:textColor="@color/colorBlack"
                         android:foreground="?android:attr/selectableItemBackground"
-                        android:onClick="@{viewmodel.facebookButtonClicked}"
-                        android:padding="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/facebooklogo" />
+                        android:contentDescription="@string/facebook_login_Description"
+                        app:mContextGoogle="@{viewmodel.mContext}"
+                        />
 
-                    <com.facebook.login.widget.LoginButton
-                        android:id="@+id/facebookButton"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:visibility="invisible"
-                        app:facebookButtonPermissions = "@{null}"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center">
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            app:cornerRadius="15dp"
+                            android:layout_gravity="center"
+                            android:onClick="@{viewmodel.facebookButtonClicked}"
+                            android:clickable="@{viewmodel.itemClickableOrEnabled}"
+                            app:backgroundTint="@color/com_facebook_blue"
+                            app:icon="@drawable/com_facebook_button_icon"
+                            app:iconGravity="start"
+                            app:iconPadding="10dp"
+                            app:iconTintMode="multiply"
+                            app:iconSize="20dp"
+                            android:focusable="true"
+                            android:textAllCaps="false"
+                            android:text="@string/continue_with_facebook_text"
+                            android:textColor="@color/colorWhite"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            android:contentDescription="@string/facebook_login_Description">
+                        </com.google.android.material.button.MaterialButton>
+
+                    </LinearLayout>
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/or_login"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:onClick="@{viewmodel.navigationEmailLoginButton}"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        />
 
                 </LinearLayout>
 

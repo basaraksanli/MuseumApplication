@@ -2,6 +2,7 @@ package com.example.museumapplication.utils.auth
 
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
@@ -66,11 +67,13 @@ class EmailAuth : IBaseAuth {
                     UserLoggedIn.instance.setUser(user!!)
                     viewModel!!.navigateToHomePage.postValue(true)
                     viewModel!!.itemClickableOrEnabled.postValue(true)
+                    viewModel!!.progressBarVisibility.postValue(View.GONE)
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.d("Login:", "Fail $e")
                     Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG).show()
                     viewModel!!.itemClickableOrEnabled.postValue(true)
+                    viewModel!!.progressBarVisibility.postValue(View.GONE)
                 }
     }
 
@@ -104,10 +107,12 @@ class EmailAuth : IBaseAuth {
                         }
                     }
                     viewModel!!.navigateToHomePage.postValue(true)
+                    viewModel!!.progressBarVisibility.postValue(View.GONE)
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.d("Register:", "Fail$e")
                     Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG).show()
+                    viewModel!!.progressBarVisibility.postValue(View.GONE)
                 }
     }
 

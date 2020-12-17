@@ -2,6 +2,7 @@ package com.example.museumapplication.utils.auth
 
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
@@ -53,9 +54,11 @@ class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
             val huaweiAccount = authHuaweiIdTask.result
             Log.i("Huawei Login:", "accessToken:" + huaweiAccount.accessToken)
             authWithHuawei(huaweiAccount)
+            viewModel.progressBarVisibility.postValue(View.GONE)
         } else {
             Log.e("Huawei ID Fail", "sign in failed : " + (authHuaweiIdTask.exception as ApiException).statusCode)
             viewModel.itemClickableOrEnabled.postValue(true)
+            viewModel.progressBarVisibility.postValue(View.GONE)
         }
     }
 

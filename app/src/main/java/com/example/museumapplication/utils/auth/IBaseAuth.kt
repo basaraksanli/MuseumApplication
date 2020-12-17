@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.auth.AuthActivity
-import com.example.museumapplication.ui.auth.LoginFragment
 import com.huawei.agconnect.auth.AGConnectAuth
 
 interface IBaseAuth {

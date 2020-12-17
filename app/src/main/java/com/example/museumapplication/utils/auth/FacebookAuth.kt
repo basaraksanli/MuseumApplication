@@ -3,6 +3,7 @@ package com.example.museumapplication.utils.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
@@ -41,17 +42,20 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+                viewModel.progressBarVisibility.postValue(View.GONE)
             }
 
             override fun onCancel() {
                 Log.d("FacebookLogin:", ":onCancel")
                 viewModel.itemClickableOrEnabled.postValue(true)
+                viewModel.progressBarVisibility.postValue(View.GONE)
             }
 
             override fun onError(error: FacebookException) {
                 Log.d("FacebookLogin:", ":onError", error)
                 viewModel.itemClickableOrEnabled.postValue(true)
                 Toast.makeText(viewModel.mContext, error.message, Toast.LENGTH_LONG).show()
+                viewModel.progressBarVisibility.postValue(View.GONE)
             }
         })
     }

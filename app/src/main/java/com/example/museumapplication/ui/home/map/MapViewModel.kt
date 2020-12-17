@@ -96,10 +96,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         mapUtils.resetInfo()
-        val sp = PreferenceManager.getDefaultSharedPreferences(context)
-        museumRange = sp.getInt("museumRange", 50)
-        searchMuseumButtonRangeString.value = searchMuseumButtonRangeString.value + " ($museumRange km)"
-
     }
 
 
@@ -208,6 +204,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             changeMapSize(null)
         buttonsIsEnabled.postValue(false)
         mapUtils.searchMuseums(currentLocation.value!!, museumRange *1000)
+    }
+
+    fun setMuseumRangeString(){
+        val sp = PreferenceManager.getDefaultSharedPreferences(context)
+        museumRange = sp.getInt("museumRange", 50)
+        searchMuseumButtonRangeString.value = context.getString(R.string.search_for_museums) + " ($museumRange km)"
     }
 
 

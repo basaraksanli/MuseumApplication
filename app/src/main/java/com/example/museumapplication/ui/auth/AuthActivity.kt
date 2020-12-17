@@ -37,9 +37,13 @@ class AuthActivity : AppCompatActivity() {
 
 
         val fragment  = supportFragmentManager.findFragmentById(R.id.container)
-        if (fragment is SignupFragment)
+        if ( fragment is EmailLoginFragment)
         {
             viewModel.navigateToLoginPage.postValue(true)
+        }
+        else if(fragment is SignupFragment)
+        {
+            viewModel.navigateToEmailLogin.postValue(true)
         }
         else
         {

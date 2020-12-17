@@ -12,7 +12,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.auth.SignupFragment">
+        tools:context=".ui.auth.SignupFragment"
+        android:background="@drawable/test">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,7 +31,8 @@
                 <TextView
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/email" />
+                    android:text="@string/email"
+                    android:textColor="@color/colorWhite"/>
 
                 <EditText
                     android:layout_width="0dp"
@@ -38,7 +40,9 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textEmailAddress"
-                    android:text="@={viewmodel.registerEmailText}" />
+                    android:text="@={viewmodel.registerEmailText}"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorWhite"/>
             </LinearLayout>
 
             <LinearLayout
@@ -53,7 +57,8 @@
                     android:layout_marginEnd="10dp"
                     android:text="@={viewmodel.timer}"
                     android:textAlignment="center"
-                    android:visibility="@{viewmodel.timerTextVisibility}" />
+                    android:visibility="@{viewmodel.timerTextVisibility}"
+                    android:textColor="@color/colorWhite" />
 
                 <Button
                     android:id="@+id/requestCodeButton"
@@ -79,7 +84,8 @@
                     android:id="@+id/textView2"
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/name" />
+                    android:text="@string/name"
+                    android:textColor="@color/colorWhite" />
 
                 <EditText
                     android:layout_width="0dp"
@@ -88,7 +94,9 @@
                     android:autofillHints="Name"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="@={viewmodel.registerName}"/>
+                    android:text="@={viewmodel.registerName}"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorWhite"/>
             </LinearLayout>
 
             <LinearLayout
@@ -99,7 +107,8 @@
                 <TextView
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/password" />
+                    android:text="@string/password"
+                    android:textColor="@color/colorWhite"/>
 
                 <EditText
                     android:layout_width="0dp"
@@ -107,7 +116,9 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPassword"
-                    android:text="@={viewmodel.registerPasswordText}"/>
+                    android:text="@={viewmodel.registerPasswordText}"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorWhite"/>
             </LinearLayout>
 
             <LinearLayout
@@ -118,7 +129,8 @@
                 <TextView
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/repeat_pass" />
+                    android:text="@string/repeat_pass"
+                    android:textColor="@color/colorWhite"/>
 
                 <EditText
                     android:layout_width="0dp"
@@ -126,7 +138,9 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPassword"
-                    android:text="@={viewmodel.repeatPass}"/>
+                    android:text="@={viewmodel.repeatPass}"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorWhite"/>
             </LinearLayout>
 
             <LinearLayout
@@ -137,7 +151,8 @@
                 <TextView
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/verification_code" />
+                    android:text="@string/verification_code"
+                    android:textColor="@color/colorWhite"/>
 
                 <EditText
                     android:layout_width="0dp"
@@ -147,7 +162,9 @@
                     android:inputType="number"
                     android:maxLength="6"
                     android:textAlignment="center"
-                    android:text="@={viewmodel.verificationCode}"/>
+                    android:text="@={viewmodel.verificationCode}"
+                    android:textColor="@color/colorWhite"
+                    android:backgroundTint="@color/colorWhite"/>
 
             </LinearLayout>
 

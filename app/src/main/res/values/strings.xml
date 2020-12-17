@@ -2,14 +2,14 @@
     <string name="google_client_id">332211262049-t34jk3di3plslksj6vm27l6lb6pi0k98.apps.googleusercontent.com</string>
     <string name="api_key">CgB6e3x9CJLwZFmYaBB4a5BnglIhGyV/XDb0mIuMuVC8PcmLJp1BlHwnbBeNr5Rz4LoFmXUJA0LkGu07uPe4c8Lx</string>
     <string name="app_name">Museum Application</string>
-    <string name="email">Email:</string>
-    <string name="password">Password:</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
     <string name="sign_in_with_email">Sign in with Email</string>
     <string name="register_with_email">Register with Email</string>
     <string name="facebook_login_Description">Facebook Login</string>
     <string name="gmail_login_Description">Gmail Login</string>
     <string name="huaweiid_login_Description">HuaweiID Login</string>
-    <string name="or_login_with">or Login With:</string>
+    <string name="or_login">Login</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
@@ -103,4 +103,11 @@
     <string name="thread_sleep_error">Thread sleep error</string>
     <string name="verification_already_requested">You have already requested verification code for this email recently .</string>
     <string name="fill_verification_email_warning">Fill this field to get verification code!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="continue_with_google_text">Continue with Google</string>
+    <string name="continue_with_huawei_text">Continue with Huawei</string>
+    <string name="continue_with_facebook_text">Continue with Facebook</string>
+    <string name="museum_staff_login">Museum Staff Login</string>
+    <string name="or_are_you_a_museum_staff">Or Are you a Museum Staff?</string>
 </resources>

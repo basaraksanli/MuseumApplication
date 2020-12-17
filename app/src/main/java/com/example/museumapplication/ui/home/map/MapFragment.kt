@@ -69,6 +69,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
 
         // To keep the screen online
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        viewModel.setMuseumRangeString()
 
         mMapView = binding.root.findViewById(R.id.mapView)
         listView = binding.root.findViewById(R.id.siteList)

@@ -2,6 +2,7 @@ package com.example.museumapplication.utils.auth
 
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.example.museumapplication.R
 import com.example.museumapplication.data.LinkedAccount
@@ -61,9 +62,11 @@ class GoogleAuth(var viewModel: SharedAuthViewModel) : IBaseAuth {
             viewModel.itemClickableOrEnabled.postValue(true)
             val account = result.signInAccount
             account?.let { authWithGoogle(it) }
+            viewModel.progressBarVisibility.postValue(View.GONE)
         } else {
             viewModel.itemClickableOrEnabled.postValue(true)
             client.disconnect()
+            viewModel.progressBarVisibility.postValue(View.GONE)
         }
     }
 

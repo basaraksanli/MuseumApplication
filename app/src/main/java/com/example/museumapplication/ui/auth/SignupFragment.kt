@@ -5,20 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.museumapplication.R
-import com.example.museumapplication.databinding.FragmentLoginBinding
 import com.example.museumapplication.databinding.FragmentSignupBinding
 import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.ui.museumpanel.analyticspanel.PagerViewModel
-import com.example.museumapplication.utils.auth.EmailAuth
-import com.example.museumapplication.utils.auth.IBaseAuth
-import com.example.museumapplication.utils.auth.AuthUtils.checkFields
 
 class SignupFragment : Fragment() {
 
@@ -49,10 +41,10 @@ class SignupFragment : Fragment() {
         /**
          * navigation to Login Page
          */
-        viewModel.navigateToLoginPage.observe(viewLifecycleOwner, {
+        viewModel.navigateToEmailLogin.observe(viewLifecycleOwner, {
           if(it){
-              parentFragmentManager.beginTransaction().replace(R.id.container, LoginFragment()).commit()
-              viewModel.navigateToLoginPage.value = false
+              parentFragmentManager.beginTransaction().replace(R.id.container, EmailLoginFragment()).commit()
+              viewModel.navigateToEmailLogin.value = false
           }
         })
 

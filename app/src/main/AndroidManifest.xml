@@ -54,7 +54,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.auth.SignupFragment" />
-        <activity android:name=".ui.auth.LoginFragment" />
+        <activity android:name=".ui.auth.AccountLoginFragment" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
