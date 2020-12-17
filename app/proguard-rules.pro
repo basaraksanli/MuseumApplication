@@ -30,3 +30,9 @@
 -keep class com.huawei.hms.**{*;}
 -keep interface com.huawei.hms.**{*;}
 -keep class com.huawei.cloud.services.drive.**{*;}
+
+
+
+
+
+

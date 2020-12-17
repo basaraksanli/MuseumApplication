@@ -30,7 +30,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.auth.AuthActivity"></activity>
+        <activity android:name=".ui.auth.AuthActivity" />
         <activity
             android:name=".ui.museumpanel.MuseumPanelActivity"
             android:label="@string/title_activity_museum_panel"
@@ -53,8 +53,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.auth.SignupFragment" />
-        <activity android:name=".ui.auth.AccountLoginFragment" />
+
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

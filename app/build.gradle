@@ -28,10 +28,10 @@ android {
 
     signingConfigs {
         config {
+            storeFile file("../museumAppKey.jks")
+            storePassword '123456aks'
+            keyPassword '123456aks'
             keyAlias 'key0'
-            storeFile file('E:\\museumAppKey.jks')
-            storePassword '163501aks'
-            keyPassword '163501aks'
         }
     }
     buildTypes {
