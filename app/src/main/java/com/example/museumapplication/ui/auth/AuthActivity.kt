@@ -35,22 +35,19 @@ class AuthActivity : AppCompatActivity() {
      */
     override fun onBackPressed() {
 
-
-        val fragment  = supportFragmentManager.findFragmentById(R.id.container)
-        if ( fragment is EmailLoginFragment)
-        {
-            viewModel.navigateToLoginPage.postValue(true)
-        }
-        else if(fragment is SignupFragment)
-        {
-            viewModel.navigateToEmailLogin.postValue(true)
-        }
-        else
-        {
-            val startMain = Intent(Intent.ACTION_MAIN)
-            startMain.addCategory(Intent.CATEGORY_HOME)
-            startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(startMain)
+        when (supportFragmentManager.findFragmentById(R.id.container)) {
+            is EmailLoginFragment -> {
+                viewModel.navigateToLoginPage.postValue(true)
+            }
+            is SignupFragment -> {
+                viewModel.navigateToEmailLogin.postValue(true)
+            }
+            else -> {
+                val startMain = Intent(Intent.ACTION_MAIN)
+                startMain.addCategory(Intent.CATEGORY_HOME)
+                startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(startMain)
+            }
         }
 
     }

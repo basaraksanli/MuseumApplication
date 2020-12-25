@@ -6,50 +6,46 @@ package com.example.museumapplication.data;
 
 import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
 import com.huawei.agconnect.cloud.database.annotations.DefaultValue;
-import com.huawei.agconnect.cloud.database.Text;
-import com.huawei.agconnect.cloud.database.annotations.NotNull;
 import com.huawei.agconnect.cloud.database.annotations.IsIndex;
+import com.huawei.agconnect.cloud.database.annotations.NotNull;
 import com.huawei.agconnect.cloud.database.annotations.PrimaryKey;
-
-import java.util.Date;
 
 /**
  * Definition of ObjectType LinkedAccount.
  *
- * @since 2020-11-18
+ * @since 2020-12-24
  */
 public class LinkedAccount extends CloudDBZoneObject {
+
     @PrimaryKey
-    private String LinkedID;
+    private String linkedID;
 
     @NotNull
-    @IsIndex(indexName = "index")
     @DefaultValue(stringValue = "NA")
-    private String AccountID;
+    private String accountID;
 
     public LinkedAccount() {
-        super();
-        this.AccountID = "NA";
+        this.accountID = "NA";
 
     }
-    public LinkedAccount(String LinkedID, String AccountID) {
-        this.LinkedID = LinkedID;
-        this.AccountID = AccountID;
+    public LinkedAccount(String linkedID, String accountID) {
+        this.linkedID = linkedID;
+        this.accountID = accountID;
     }
-    public void setLinkedID(String LinkedID) {
-        this.LinkedID = LinkedID;
+    public void setLinkedID(String linkedID) {
+        this.linkedID = linkedID;
     }
 
     public String getLinkedID() {
-        return LinkedID;
+        return linkedID;
     }
 
-    public void setAccountID(String AccountID) {
-        this.AccountID = AccountID;
+    public void setAccountID(String accountID) {
+        this.accountID = accountID;
     }
 
     public String getAccountID() {
-        return AccountID;
+        return accountID;
     }
 
 }

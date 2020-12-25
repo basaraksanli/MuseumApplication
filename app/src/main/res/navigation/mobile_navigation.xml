@@ -7,15 +7,23 @@
 
     <fragment
         android:id="@+id/nav_explore"
-        android:name="com.example.museumapplication.ui.home.beacon.VirtualGuildeFragment"
+        android:name="com.example.museumapplication.ui.home.beacon.VirtualGuideFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_virtual_guide" />
+        tools:layout="@layout/fragment_virtual_guide" >
+        <action
+            android:id="@+id/action_nav_explore_to_nav_map"
+            app:destination="@id/nav_map" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.example.museumapplication.ui.home.settings.SettingsFragment"
         android:label="@string/menu_settings"
-        tools:layout="@xml/root_preferences" />
+        tools:layout="@xml/root_preferences" >
+        <action
+            android:id="@+id/action_nav_settings_to_nav_map"
+            app:destination="@id/nav_map" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_map"
@@ -26,6 +34,10 @@
         android:id="@+id/nav_favorites"
         android:name="com.example.museumapplication.ui.home.favorite.MainFavoriteFragment"
         android:label="@string/favorites"
-        tools:layout="@layout/favorite_main_fragment" />
+        tools:layout="@layout/favorite_main_fragment" >
+        <action
+            android:id="@+id/action_nav_favorites_to_nav_map"
+            app:destination="@id/nav_map" />
+    </fragment>
 
 </navigation>

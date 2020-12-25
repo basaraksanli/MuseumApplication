@@ -4,7 +4,7 @@ import android.content.Context
 import android.location.Location
 import android.os.Looper
 import com.example.museumapplication.data.Constant
-import com.example.museumapplication.utils.resultListeners.LocationListener
+import com.example.museumapplication.utils.result_listeners.LocationListener
 import com.huawei.hms.location.*
 
 

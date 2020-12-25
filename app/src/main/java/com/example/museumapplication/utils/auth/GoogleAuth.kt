@@ -99,7 +99,7 @@ class GoogleAuth(var viewModel: SharedAuthViewModel) : IBaseAuth {
                 .addOnFailureListener { e: Exception ->
                     // onFail
                     viewModel.itemClickableOrEnabled.postValue(true)
-                    Toast.makeText(viewModel.mContext, e.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(viewModel.mContext,"Insert user info failed", Toast.LENGTH_LONG).show()
                 }
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -18,6 +19,9 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.museumapplication.R
 import com.example.museumapplication.data.UserLoggedIn
+import com.example.museumapplication.ui.home.beacon.VirtualGuideFragment
+import com.example.museumapplication.ui.home.favorite.MainFavoriteFragment
+import com.example.museumapplication.ui.home.settings.SettingsFragment
 import com.example.museumapplication.utils.auth.IBaseAuth.Companion.logout
 import com.example.museumapplication.utils.settings.SettingsUtils
 import com.facebook.login.LoginManager
@@ -32,6 +36,9 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        UserLoggedIn.instance.retrieveFavoriteMuseumList(this)
+        UserLoggedIn.instance.retrieveFavoriteArtifactList(this)
+
         SettingsUtils.setTheme(this)
         setContentView(R.layout.activity_home)
 
@@ -80,7 +87,9 @@ class HomeActivity : AppCompatActivity() {
                         UserLoggedIn.instance.profilePicture = resource
                         profilePictureView.setImageBitmap(resource)
                     }
-                    override fun onLoadCleared(placeholder: Drawable?) {}
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        Log.d("Glide", "profile picture onLoadCleared")
+                    }
                 })
     }
 
@@ -111,10 +120,26 @@ class HomeActivity : AppCompatActivity() {
      * On Back Pressed - User is directed to home page of the device
      */
     override fun onBackPressed() {
-        val startMain = Intent(Intent.ACTION_MAIN)
-        startMain.addCategory(Intent.CATEGORY_HOME)
-        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(startMain)
+        when (supportFragmentManager.fragments.first().childFragmentManager.fragments[0]) {
+            is SettingsFragment -> {
+                val nav =  Navigation.findNavController(this, R.id.nav_host_fragment)
+                nav.navigate(R.id.action_nav_settings_to_nav_map)
+            }
+            is VirtualGuideFragment -> {
+                val nav = Navigation.findNavController(this, R.id.nav_host_fragment)
+                nav.navigate(R.id.action_nav_explore_to_nav_map)
+            }
+            is MainFavoriteFragment ->{
+                val nav = Navigation.findNavController(this, R.id.nav_host_fragment)
+                nav.navigate(R.id.action_nav_favorites_to_nav_map)
+            }
+            else -> {
+                val startMain = Intent(Intent.ACTION_MAIN)
+                startMain.addCategory(Intent.CATEGORY_HOME)
+                startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(startMain)
+            }
+        }
     }
 
 

@@ -23,6 +23,7 @@ import org.json.JSONObject
 class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
     companion object{
         const val RC_SIGN_IN = 64206
+        const val TAG = "Facebook Login"
     }
 
     var auth: AGConnectAuth = AGConnectAuth.getInstance()
@@ -36,7 +37,7 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
     override fun login() {
         LoginManager.getInstance().registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
-                Log.d("FacebookLogin:", ":onSuccess:$loginResult")
+                Log.d(TAG, ":onSuccess:$loginResult")
                 try {
                     authWithFacebook(loginResult.accessToken)
                 } catch (e: Exception) {
@@ -46,15 +47,15 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
             }
 
             override fun onCancel() {
-                Log.d("FacebookLogin:", ":onCancel")
+                Log.d(TAG, ":onCancel")
                 viewModel.itemClickableOrEnabled.postValue(true)
                 viewModel.progressBarVisibility.postValue(View.GONE)
             }
 
             override fun onError(error: FacebookException) {
-                Log.d("FacebookLogin:", ":onError", error)
+                Log.d(TAG, ":onError", error)
                 viewModel.itemClickableOrEnabled.postValue(true)
-                Toast.makeText(viewModel.mContext, error.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(viewModel.mContext, "Login Error", Toast.LENGTH_LONG).show()
                 viewModel.progressBarVisibility.postValue(View.GONE)
             }
         })
@@ -64,15 +65,15 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
      * graphRequest function is used to retrieve user information from the Facebook
      * facebook credential does not provide user information without graph request
      */
-    private fun graphRequest(accessToken: AccessToken?, UserID: String?) {
+    private fun graphRequest(accessToken: AccessToken?, userID: String?) {
         val request = GraphRequest.newMeRequest(
                 accessToken
         ) { `object`: JSONObject, _: GraphResponse? ->
             try {
                 if (instance.checkFirstTimeUser(`object`.getString("email"))) {
-                    val user = User(UserID, `object`.getString("id"), `object`.getString("email"), `object`.getString("name"), "https://graph.facebook.com/" + `object`.getString("id") + "/picture?type=large")
+                    val user = User(userID, `object`.getString("id"), `object`.getString("email"), `object`.getString("name"), "https://graph.facebook.com/" + `object`.getString("id") + "/picture?type=large")
                     instance.upsertUser(user)
-                    instance.upsertAccountLinkInfo(LinkedAccount(UserID, user.uid))
+                    instance.upsertAccountLinkInfo(LinkedAccount(userID, user.uid))
                     UserLoggedIn.instance.setUser(user)
                     viewModel.navigateToHomePage.postValue(true)
                 } else {
@@ -110,7 +111,7 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
                 .addOnFailureListener { e: Exception ->
                     // onFail
                     viewModel.itemClickableOrEnabled.postValue(true)
-                    Toast.makeText(viewModel.mContext, e.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(viewModel.mContext, "AGC Auth Error", Toast.LENGTH_LONG).show()
                 }
     }
 

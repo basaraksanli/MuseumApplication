@@ -5,12 +5,10 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.opengl.Visibility
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.AndroidViewModel
@@ -19,9 +17,6 @@ import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
 import com.example.museumapplication.utils.auth.*
 import com.example.museumapplication.utils.services.CloudDBManager
-import com.facebook.login.widget.LoginButton
-import com.google.android.gms.common.SignInButton
-import com.huawei.hms.support.hwid.ui.HuaweiIdAuthButton
 
 
 /**
@@ -195,8 +190,11 @@ class SharedAuthViewModel(application: Application) : AndroidViewModel(applicati
             (auth as EmailAuth).setCredentialInfo(registerEmailText.value!!, registerPasswordText.value!!, verificationCode.value!!, registerName.value!!)
             (auth as EmailAuth?)!!.register()
         }
-        else
+        else {
             Toast.makeText(mContext, "Please control and fill all the fields.", Toast.LENGTH_LONG).show()
+            progressBarVisibility.postValue(View.GONE)
+        }
+
     }
 
 
@@ -218,5 +216,4 @@ class SharedAuthViewModel(application: Application) : AndroidViewModel(applicati
             }
         }.start()
     }
-
 }

@@ -5,82 +5,77 @@
 package com.example.museumapplication.data;
 
 import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
-import com.huawei.agconnect.cloud.database.annotations.DefaultValue;
-import com.huawei.agconnect.cloud.database.Text;
-import com.huawei.agconnect.cloud.database.annotations.NotNull;
 import com.huawei.agconnect.cloud.database.annotations.IsIndex;
 import com.huawei.agconnect.cloud.database.annotations.PrimaryKey;
-
-import java.util.Date;
 
 /**
  * Definition of ObjectType User.
  *
- * @since 2020-11-18
+ * @since 2020-12-24
  */
+
 public class User extends CloudDBZoneObject {
     @PrimaryKey
-    @IsIndex(indexName = "index1")
-    private String UID;
+    private String uID;
 
-    private String ProviderUID;
+    private String providerID;
 
-    private String Email;
+    private String email;
 
-    private String DisplayName;
+    private String displayName;
 
-    private String PhotoURL;
+    private String photoURL;
 
     public User() {
         super();
 
     }
-    public User(String UID, String ProviderUID,String Email,String DisplayName, String PhotoUrl){
-        this.UID = UID;
-        this.ProviderUID = ProviderUID;
-        this.Email = Email;
-        this.DisplayName = DisplayName;
-        this.PhotoURL = PhotoUrl;
+    public User(String uID, String providerUID, String email, String displayName, String photoUrl){
+        this.uID = uID;
+        this.providerID = providerUID;
+        this.email = email;
+        this.displayName = displayName;
+        this.photoURL = photoUrl;
     }
 
-    public void setUID(String UID) {
-        this.UID = UID;
+    public void setUID(String uID) {
+        this.uID = uID;
     }
 
     public String getUID() {
-        return UID;
+        return uID;
     }
 
-    public void setProviderUID(String ProviderUID) {
-        this.ProviderUID = ProviderUID;
+    public void setProviderID(String providerID) {
+        this.providerID = providerID;
     }
 
-    public String getProviderUID() {
-        return ProviderUID;
+    public String getProviderID() {
+        return providerID;
     }
 
-    public void setEmail(String Email) {
-        this.Email = Email;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
-    public void setDisplayName(String DisplayName) {
-        this.DisplayName = DisplayName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDisplayName() {
-        return DisplayName;
+        return displayName;
     }
 
-    public void setPhotoURL(String PhotoURL) {
-        this.PhotoURL = PhotoURL;
+    public void setPhotoURL(String photoURL) {
+        this.photoURL = photoURL;
     }
 
     public String getPhotoURL() {
-        return PhotoURL;
+        return photoURL;
     }
 
 }

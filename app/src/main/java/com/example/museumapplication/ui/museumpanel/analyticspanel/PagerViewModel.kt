@@ -19,7 +19,7 @@ import kotlin.collections.ArrayList
 
 
 class PagerViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+
     var museum = MutableLiveData<Museum>()
 
     /**

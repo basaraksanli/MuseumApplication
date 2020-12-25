@@ -9,13 +9,11 @@
     <string name="facebook_login_Description">Facebook Login</string>
     <string name="gmail_login_Description">Gmail Login</string>
     <string name="huaweiid_login_Description">HuaweiID Login</string>
-    <string name="or_login">Login</string>
+    <string name="or_login">Login / Register With Email</string>
     <string name="title_activity_home">HomeActivity</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
     <string name="request_verification_code">Request Verification Code</string>
     <string name="resend_verification_code">Resend Verification Code</string>
-    <string name="repeat_pass">Repeat Pass:</string>
+    <string name="repeat_pass">Repeat Password:</string>
     <string name="verification_code">Verification Code:</string>
     <string name="wait_xx_seconds_to_resend_the_verification_code">Wait XX seconds to resend the Verification Code</string>
     <string name="name">Name</string>
@@ -42,8 +40,8 @@
     <string name="Explore">Explore</string>
     <string name="notification_title">Explore Nearby Museums</string>
     <string name="search_for_museums">Search for Museums</string>
-    <string name="artifact_name">Artifact Name:</string>
-    <string name="no_nearby_artifact">No nearby artifact</string>
+    <string name="artifact_name">Exhibit Name:</string>
+    <string name="no_nearby_artifact">No nearby Exhibit</string>
     <string name="description">Description</string>
     <string name="focus_on_map">Focus on Map</string>
     <string name="museum_login">Museum Login</string>
@@ -103,11 +101,15 @@
     <string name="thread_sleep_error">Thread sleep error</string>
     <string name="verification_already_requested">You have already requested verification code for this email recently .</string>
     <string name="fill_verification_email_warning">Fill this field to get verification code!</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="continue_with_google_text">Continue with Google</string>
     <string name="continue_with_huawei_text">Continue with Huawei</string>
     <string name="continue_with_facebook_text">Continue with Facebook</string>
     <string name="museum_staff_login">Museum Staff Login</string>
     <string name="or_are_you_a_museum_staff">Or Are you a Museum Staff?</string>
+    <string name="could_not_connect">Could not connect to internet services. Check your network</string>
+    <string name="retry_string">RETRY</string>
+    <string name="email_permissions_warning">Please give email permissions for the application, otherwise you can\'t register to the app.</string>
+    <string name="networkWarnString">Network Warn</string>
 </resources>

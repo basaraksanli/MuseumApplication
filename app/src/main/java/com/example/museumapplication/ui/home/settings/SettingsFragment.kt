@@ -17,7 +17,7 @@ class SettingsFragment : PreferenceFragmentCompat() , SharedPreferences.OnShared
         if (key.equals("darkMode")) {
             // Set summary to be the user-description for the selected value
 
-            val darkMode = sharedPreferences!!.getBoolean("darkMode", true)
+            val darkMode = sharedPreferences!!.getBoolean("darkMode", false)
             if(darkMode)
                 activity?.setTheme(R.style.AppThemeDarkNoActionBar)
             else

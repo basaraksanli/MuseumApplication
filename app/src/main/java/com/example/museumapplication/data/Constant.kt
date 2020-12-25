@@ -1,7 +1,5 @@
 package com.example.museumapplication.data
 
-import android.Manifest
-
 object Constant {
     /**
      * Verification timer to wait before sending another request
@@ -72,4 +70,9 @@ object Constant {
      */
     const val LOCATION_INTERVAL = 10000L
 
+    /**
+     * Awareness kit configuration
+     */
+    const val AWARENESS_BARRIER_RADIUS = 5000.0
+    const val AWARENESS_BARRIER_DURATION = 1000L
 }

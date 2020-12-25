@@ -4,10 +4,12 @@ import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.museumapplication.R
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.ui.auth.SharedAuthViewModel
+import com.example.museumapplication.utils.GeneralUtils
 import com.example.museumapplication.utils.services.CloudDBManager.Companion.instance
 import com.huawei.agconnect.auth.AGConnectAuth
 import com.huawei.agconnect.auth.HwIdAuthProvider
@@ -53,7 +55,10 @@ class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
         if (authHuaweiIdTask.isSuccessful) {
             val huaweiAccount = authHuaweiIdTask.result
             Log.i("Huawei Login:", "accessToken:" + huaweiAccount.accessToken)
-            authWithHuawei(huaweiAccount)
+            if(huaweiAccount!!.email !=null)
+                authWithHuawei(huaweiAccount)
+            else
+                GeneralUtils.showWarnDialog(viewModel.mContext!!.getString(R.string.email_permissions_warning), viewModel.mContext, null)
             viewModel.progressBarVisibility.postValue(View.GONE)
         } else {
             Log.e("Huawei ID Fail", "sign in failed : " + (authHuaweiIdTask.exception as ApiException).statusCode)
@@ -89,7 +94,7 @@ class HuaweiAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
             viewModel.navigateToHomePage.postValue(true)
             viewModel.itemClickableOrEnabled.postValue(true)
         }.addOnFailureListener { e ->
-            Toast.makeText(viewModel.mContext, e.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(viewModel.mContext, "AGC Auth failed", Toast.LENGTH_LONG).show()
             Log.d("HuaweiID Fail:", e.message!!)
             viewModel.itemClickableOrEnabled.postValue(true)
         }

@@ -11,12 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.museumapplication.R
 import com.example.museumapplication.databinding.FragmentLoginBinding
 import com.example.museumapplication.ui.home.HomeActivity
-import com.example.museumapplication.ui.museumpanel.MuseumPanelActivity
 import com.example.museumapplication.utils.auth.FacebookAuth
 import com.example.museumapplication.utils.auth.GoogleAuth
 import com.example.museumapplication.utils.auth.HuaweiAuth
 import com.facebook.login.LoginManager
-import com.facebook.login.widget.LoginButton
 
 class AccountLoginFragment : Fragment() {
 
@@ -36,14 +34,6 @@ class AccountLoginFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
-
-        /**
-         * Sign Up activity navigation
-         */
-
-        /**
-         * Museum panel navigation
-         */
 
 
         /**
@@ -75,6 +65,9 @@ class AccountLoginFragment : Fragment() {
             }
         })
 
+        /**
+         * Email login navigation
+         */
         viewModel.navigateToEmailLogin.observe(viewLifecycleOwner,{
             if(it)
             {

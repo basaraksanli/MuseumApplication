@@ -23,14 +23,11 @@ class SplashActivity : AppCompatActivity() {
     var agcuser: AGConnectUser? = null
     var agConnectAuth: AGConnectAuth? = null
     var countDownTimer: CountDownTimer? = null
-
-    @SuppressLint("InvalidWakeLockTag")
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        UserLoggedIn.instance.retrieveFavoriteMuseumList(this)
-        UserLoggedIn.instance.retrieveFavoriteArtifactList(this)
 
         //initialize Cloud DB
         instance.initAGConnectCloudDB(this)
@@ -46,17 +43,19 @@ class SplashActivity : AppCompatActivity() {
         if (agConnectAuth!!.currentUser != null) {
             val loginTask = LoginTask().execute(this)
             countDownTimer = object : CountDownTimer(10000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {}
+                override fun onTick(millisUntilFinished: Long) {
+                    // Empty On Tick function
+                }
                 override fun onFinish() {
                     loginTask.cancel(true)
                     val builder = AlertDialog.Builder(this@SplashActivity)
                     builder.setTitle(resources.getIdentifier("app_name", "string", packageName))
-                    builder.setMessage("Could not connect to internet services. Check your network")
+                    builder.setMessage(getString(R.string.could_not_connect))
                     builder.setNegativeButton("EXIT") { _: DialogInterface?, _: Int ->
                         finish()
                         exitProcess(0)
                     }
-                    builder.setPositiveButton("RETRY") { _: DialogInterface?, _: Int ->
+                    builder.setPositiveButton(getString(R.string.retry_string)) { _: DialogInterface?, _: Int ->
                         val intent = intent
                         finish()
                         startActivity(intent)
@@ -81,7 +80,7 @@ class SplashActivity : AppCompatActivity() {
             try {
                 var user: User?
                 do {
-                    accountID = instance.getPrimaryAccountID_LinkedAccount(agcuser!!.uid)
+                    accountID = instance.getMainAccountIDofLinkedAccount(agcuser!!.uid)
                     user = instance.getUserByID(accountID)
                     if (user != null) UserLoggedIn.instance.setUser(user)
                 } while (user == null)

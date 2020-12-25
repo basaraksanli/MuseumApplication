@@ -74,7 +74,7 @@ class FavoriteArtifactListAdapter(private val artifactList: ArrayList<FavoriteAr
                 CloudDBManager.instance.decreaseFavArtifact(item.artifactID)
             }
             val sp = PreferenceManager.getDefaultSharedPreferences(context)
-            val darkMode: Boolean = sp.getBoolean("darkMode", true)
+            val darkMode: Boolean = sp.getBoolean("darkMode", false)
 
             showInformation.setOnClickListener{
                 val bottomSheetDialog = BottomSheetDialog(

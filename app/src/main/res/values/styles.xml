@@ -7,7 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    <style name="AppThemeNoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppThemeNoActionBar" parent="ThemeOverlay.MaterialComponents">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -20,7 +20,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    <style name="AppThemeDarkNoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppThemeDarkNoActionBar" parent="ThemeOverlay.MaterialComponents.Dark">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

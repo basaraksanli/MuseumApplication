@@ -12,10 +12,12 @@ import com.example.museumapplication.R
 import com.example.museumapplication.databinding.FragmentEmailLoginBinding
 import com.example.museumapplication.ui.home.HomeActivity
 import com.example.museumapplication.ui.museumpanel.MuseumPanelActivity
+import com.huawei.agconnect.auth.AGConnectAuth
+import com.huawei.agconnect.auth.AGConnectUser
 
 
 class EmailLoginFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +30,9 @@ class EmailLoginFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
+
+        if(AGConnectAuth.getInstance().currentUser!=null)
+            viewModel.navigateToHomePage.postValue(true)
 
         /**
          * Home Page Navigation in case registration is complete
@@ -50,6 +55,7 @@ class EmailLoginFragment : Fragment() {
                 val newIntent = Intent(activity, MuseumPanelActivity::class.java)
                 newIntent.putExtras(viewModel.extra)
                 requireActivity().startActivity(newIntent)
+                viewModel.navigateToMuseumPanel.postValue(false)
             }
         })
 

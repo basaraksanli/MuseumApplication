@@ -7,20 +7,17 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.PorterDuff
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.os.Build
-import android.os.Process
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -29,8 +26,9 @@ import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Constant
 import com.example.museumapplication.data.FavoriteArtifact
 import com.example.museumapplication.data.UserLoggedIn
+import com.example.museumapplication.utils.GeneralUtils
 import com.example.museumapplication.utils.services.CloudDBManager
-import com.example.museumapplication.utils.virtualGuide.BeaconUtils
+import com.example.museumapplication.utils.virtual_guide.BeaconUtils
 
 /**
  * Virtual Guide Page View Model
@@ -150,19 +148,18 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
     private fun operateConnectivityAction() {
         val `object` = context.getSystemService(Context.CONNECTIVITY_SERVICE)
         if (`object` !is ConnectivityManager) {
-            showWarnDialog("Network Warn", context)
+            GeneralUtils.showWarnDialog(context.getString(R.string.networkWarnString), context, navigateToHome)
             return
         }
         val activeNetworkInfo = `object`.activeNetworkInfo
         if (activeNetworkInfo == null) {
-            showWarnDialog("Network Warn", context)
+            GeneralUtils.showWarnDialog(context.getString(R.string.networkWarnString), context, navigateToHome)
             return
         }
         when (activeNetworkInfo.type) {
-            ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_WIFI -> {
-            }
+            ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_WIFI -> { Log.d("Connection", "Connection is established")}
             else -> {
-                showWarnDialog("Network Warn", context)
+                GeneralUtils.showWarnDialog(context.getString(R.string.networkWarnString), context, navigateToHome)
             }
         }
     }
@@ -177,12 +174,12 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
             Log.d("BeaconFragment", "Start StatusMonitoring.onReceive")
             when (intent.action) {
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                    showWarnDialog(context.resources.getString(R.string.bluetooth_error), context)
+                    GeneralUtils.showWarnDialog(context.resources.getString(R.string.bluetooth_error), context,navigateToHome)
                 }
                 BluetoothAdapter.ACTION_STATE_CHANGED -> {
                     val blueState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0)
                     if (blueState == BluetoothAdapter.STATE_OFF) {
-                        showWarnDialog(context.resources.getString(R.string.bluetooth_error), context)
+                        GeneralUtils.showWarnDialog(context.resources.getString(R.string.bluetooth_error), context,navigateToHome)
                     }
                 }
                 ConnectivityManager.CONNECTIVITY_ACTION -> {
@@ -191,29 +188,15 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
                 LocationManager.PROVIDERS_CHANGED_ACTION -> {
                     val `object` = context.getSystemService(Context.LOCATION_SERVICE)
                     if (`object` !is LocationManager) {
-                        showWarnDialog(context.resources.getString(R.string.gps_error), context)
+                        GeneralUtils.showWarnDialog(context.resources.getString(R.string.gps_error), context, navigateToHome)
                         return
                     }
                     if (!`object`.isLocationEnabled) {
-                        showWarnDialog(context.resources.getString(R.string.gps_error), context)
+                        GeneralUtils.showWarnDialog(context.resources.getString(R.string.gps_error), context,navigateToHome)
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Warning Dialog Builder for the issues
-     */
-    fun showWarnDialog(content: String , context: Context) {
-        DialogInterface.OnClickListener { _: DialogInterface?, _: Int -> Process.killProcess(Process.myPid()) }
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Warning")
-        builder.setMessage(content)
-        builder.setNegativeButton("Confirm") { _: DialogInterface, _: Int ->
-            navigateToHome.postValue(true)
-        }
-        builder.show()
     }
 
 }

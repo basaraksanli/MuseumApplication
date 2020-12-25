@@ -71,7 +71,7 @@ class EmailAuth : IBaseAuth {
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.d("Login:", "Fail $e")
-                    Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(viewModel!!.mContext, "Login Failed", Toast.LENGTH_LONG).show()
                     viewModel!!.itemClickableOrEnabled.postValue(true)
                     viewModel!!.progressBarVisibility.postValue(View.GONE)
                 }
@@ -111,7 +111,7 @@ class EmailAuth : IBaseAuth {
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.d("Register:", "Fail$e")
-                    Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(viewModel!!.mContext, "Register Failed", Toast.LENGTH_LONG).show()
                     viewModel!!.progressBarVisibility.postValue(View.GONE)
                 }
     }
@@ -142,7 +142,7 @@ class EmailAuth : IBaseAuth {
                     warningMessage.setGravity(Gravity.TOP, 0, 135)
                     warningMessage.show()
                 } else {
-                    val warningMessage = Toast.makeText(viewModel!!.mContext, e.message, Toast.LENGTH_LONG)
+                    val warningMessage = Toast.makeText(viewModel!!.mContext, "Verification code error", Toast.LENGTH_LONG)
                     warningMessage.setGravity(Gravity.TOP, 0, 135)
                     warningMessage.show()
                 }

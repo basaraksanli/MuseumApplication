@@ -5,13 +5,15 @@
         <SwitchPreference
             app:icon="@drawable/darkmode"
             app:key="darkMode"
-            app:summary="Tap to switch Dark Mode or Light Mode for the intergface"
-            app:title="Dark mode" />
+            app:summary="Tap to switch Dark Mode or Light Mode for the interface"
+            app:title="Dark mode"
+            app:defaultValue="false"/>
         <SwitchPreference
             app:icon="@drawable/darkmap"
             app:key="mapDarkMode"
             app:summary="Tap to switch Night Mode or Day Mode for Map"
-            app:title="Night Mode For Map" />
+            app:title="Night Mode For Map"
+            app:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceCategory app:title="Map Settings">
         <SeekBarPreference
@@ -19,11 +21,12 @@
             android:title="Museum Range"
             android:max="50"
             app:showSeekBarValue="true"
-            android:summary="Set search range for the Museums"
+            android:summary="Set search range for the Museums (km)"
             app:icon="@drawable/distance"
-            app:min="10"
+            app:min="1"
             android:key="museumRange"
-            app:seekBarIncrement="10"
+            app:seekBarIncrement="1"
+            app:defaultValue="50"
             />
     </PreferenceCategory>
     <PreferenceCategory app:title="Exhibit Settings">
@@ -34,8 +37,9 @@
             android:max="3"
             app:min="1"
             app:showSeekBarValue="true"
-            android:summary="Set detect range for the exhibits"
+            android:summary="Set detect range for the exhibits (m)"
             app:icon="@drawable/exhibit"
-            android:key="exhibitRange"/>
+            android:key="exhibitRange"
+            app:defaultValue="2"/>
     </PreferenceCategory>
 </PreferenceScreen>

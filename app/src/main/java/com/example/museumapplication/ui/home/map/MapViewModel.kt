@@ -7,25 +7,28 @@ import android.app.Application
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.location.Location
+import android.os.Build
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
-import com.example.museumapplication.utils.resultListeners.LocationListener
+import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.utils.map.LocationManager
 import com.example.museumapplication.utils.map.MapUtils
+import com.example.museumapplication.utils.result_listeners.LocationListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.huawei.hms.maps.model.LatLng
 import com.huawei.hms.maps.model.Marker
 import com.huawei.hms.site.api.model.Site
-import kotlinx.coroutines.channels.consumesAll
 
+@RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UseCompatLoadingForDrawables")
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -62,7 +65,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     var currentPositionMarker =  MutableLiveData<Marker> ()
     var activeMarkers =  MutableLiveData<ArrayList<Marker>>(arrayListOf())
-
+    var activeMarkerData = HashMap<String, Site>()
 
 
     companion object{
@@ -190,7 +193,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * Whenever the user searches for the museums, these locations are recorded to shared preferences
      */
     fun retrieveSiteList() {
-        val mPrefs = context.getSharedPreferences("SiteData", Context.MODE_PRIVATE)
+        val mPrefs = context.getSharedPreferences("${UserLoggedIn.instance.uID} siteList", Context.MODE_PRIVATE)
         val siteListJson = mPrefs.getString("siteList", "")
         val typeSite = object : TypeToken<List<Site?>?>() {}.type
         val gsonBuilder = GsonBuilder()

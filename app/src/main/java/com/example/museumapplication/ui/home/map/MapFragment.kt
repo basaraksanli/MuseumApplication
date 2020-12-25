@@ -1,12 +1,14 @@
 package com.example.museumapplication.ui.home.map
 
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -17,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
 import com.example.museumapplication.databinding.FragmentMapBinding
+import com.example.museumapplication.utils.GeneralUtils
+import com.example.museumapplication.utils.map.MapUtils
 import com.example.museumapplication.utils.permission.PermissionHelper
 import com.example.museumapplication.utils.permission.PermissionInterface
 import com.example.museumapplication.utils.settings.SettingsUtils
+import com.example.museumapplication.utils.virtual_guide.GpsCheckUtils
 import com.google.android.material.snackbar.Snackbar
 import com.huawei.hms.maps.CameraUpdateFactory
 import com.huawei.hms.maps.HuaweiMap
@@ -33,6 +38,7 @@ import com.huawei.hms.site.api.model.Coordinate
 import com.huawei.hms.site.api.model.Site
 import kotlin.system.exitProcess
 
+@RequiresApi(Build.VERSION_CODES.P)
 class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
 
     companion object {
@@ -53,6 +59,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
      * Map Fragment - Owns Map View Model
      */
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -79,33 +86,16 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         if (!isSuccess) {
             return null
         }
+        if(!GpsCheckUtils.isGpsEnabled(requireContext()))
+            GeneralUtils.showWarnDialog("GPS is not enabled. Please activate your GPS.", requireContext(), null)
 
-        //Scan museum warning
-        viewModel.scanMuseumWarning.observe(viewLifecycleOwner, {
-            if (it == true) {
-                Snackbar.make(binding.root, getString(R.string.please_scan_museum_warning), Snackbar.LENGTH_LONG).show()
-                viewModel.scanMuseumWarning.value = false
-            }
-        })
+        initializeMapObservers()
+        initializeUiObservers()
 
-        //Focus to current location button clicked observation
-        //It animates the map to the current position
-        viewModel.focusToCurrentLocation.observe(viewLifecycleOwner, {
-            if (it == true) {
-                animateCamera(LatLng(viewModel.currentLocation.value!!.latitude, viewModel.currentLocation.value!!.longitude), Constant.MAP_ZOOM)
-                viewModel.focusToCurrentLocation.value = false
-            }
-        })
 
-        //Creates new markers on the Sites whenever the list has a change
-        viewModel.siteList.observe(viewLifecycleOwner, {
-            if (isMapReady) {
-                setRecyclerViewAdapter(binding.root)
-                for (site: Site in it)
-                    viewModel.activeMarkers.value!!.add(drawMarker(viewModel.mapUtils.createMuseumMarkerOptions(site)))
-            }
-        })
-
+        return binding.root
+    }
+    private fun initializeMapObservers(){
         //General animate camera observation. Many animate functions in the project use this observation
         viewModel.animateCameraLatLng.observe(viewLifecycleOwner, {
             animateCamera(it, Constant.MAP_ZOOM)
@@ -132,9 +122,34 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
                 updateRecycleView(it)
             }
         })
-
-
-        return binding.root
+    }
+    private fun initializeUiObservers(){
+        //Creates new markers on the Sites whenever the list has a change
+        viewModel.siteList.observe(viewLifecycleOwner, {
+            if (isMapReady) {
+                setRecyclerViewAdapter(binding.root)
+                for (site: Site in it) {
+                    val marker =drawMarker(viewModel.mapUtils.createMuseumMarkerOptions(site))
+                    viewModel.activeMarkers.value!!.add(marker)
+                    viewModel.activeMarkerData[marker.id] = site
+                }
+            }
+        })
+        //Focus to current location button clicked observation
+        //It animates the map to the current position
+        viewModel.focusToCurrentLocation.observe(viewLifecycleOwner, {
+            if (it == true) {
+                animateCamera(LatLng(viewModel.currentLocation.value!!.latitude, viewModel.currentLocation.value!!.longitude), Constant.MAP_ZOOM)
+                viewModel.focusToCurrentLocation.value = false
+            }
+        })
+        //Scan museum warning
+        viewModel.scanMuseumWarning.observe(viewLifecycleOwner, {
+            if (it) {
+                Snackbar.make(binding.root, getString(R.string.please_scan_museum_warning), Snackbar.LENGTH_LONG).show()
+                viewModel.scanMuseumWarning.value = false
+            }
+        })
     }
 
     /**
@@ -187,11 +202,17 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         hMap!!.isIndoorEnabled = true
         viewModel.retrieveSiteList()
         viewModel.startLocationTrack()
+
+        hMap!!.setOnInfoWindowClickListener {
+            MapUtils.showMuseumInfo(viewModel.activeMarkerData[it.id]!!, binding.root, this)
+        }
     }
+
 
     override fun permissionsRequestCode(): Int {
         return viewModel.permissionsRequestCode()
     }
+
 
     override fun permissions(): Array<String?>? {
         return viewModel.permissions()
@@ -202,7 +223,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         Log.i(TAG, "requestPermissionsSuccess")
         initMap()
     }
-    fun requestPermissions(fragment: Fragment, permissionInterface: PermissionInterface): Boolean {
+    private fun requestPermissions(fragment: Fragment, permissionInterface: PermissionInterface): Boolean {
         mPermissionHelper = PermissionHelper(fragment, permissionInterface)
         mPermissionHelper!!.requestPermissions()
         return true
@@ -216,7 +237,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         builder.setIcon(android.R.drawable.ic_dialog_alert)
         builder.setNeutralButton(getString(R.string.exit)) { _, _ ->
             requireActivity().finish()
-            exitProcess(0);
+            exitProcess(0)
         }
         val alertDialog: AlertDialog = builder.create()
         alertDialog.setCancelable(false)
@@ -256,7 +277,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
      */
     private fun setRecyclerViewAdapter(view: View) {
         viewModel.siteList.value!!.sortWith { site1: Site, site2: Site -> (site1.distance - site2.distance).toInt() }
-        siteListAdapter = SiteListAdapter(viewModel.siteList.value!!, requireContext(), view, viewModel)
+        siteListAdapter = SiteListAdapter(viewModel.siteList.value!!, requireContext(), view, viewModel , this)
         listView!!.adapter = siteListAdapter
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL

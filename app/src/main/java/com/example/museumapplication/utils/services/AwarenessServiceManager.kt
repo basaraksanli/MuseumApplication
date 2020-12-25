@@ -36,7 +36,7 @@ class AwarenessServiceManager
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(NotificationManager::class.java) ?: return
+            getSystemService(NotificationManager::class.java) ?: return
             createNotificationChannel(this)
             val notification = Notification.Builder(this, NotificationUtils.CHANNEL_ID).build()
             startForeground(1, notification)

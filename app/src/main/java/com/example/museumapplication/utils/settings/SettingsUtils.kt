@@ -13,7 +13,7 @@ class SettingsUtils {
         fun setTheme(activity: Activity){
             val sp = PreferenceManager.getDefaultSharedPreferences(activity)
 
-            val darkMode = sp.getBoolean(activity.applicationContext.getString(R.string.darkModePreferences), true)
+            val darkMode = sp.getBoolean(activity.applicationContext.getString(R.string.darkModePreferences), false)
             if(darkMode)
                 activity.setTheme(R.style.AppThemeDarkNoActionBar)
             else
@@ -25,7 +25,7 @@ class SettingsUtils {
          */
         fun mapStyleDark (activity: Activity): Int {
             val sp = PreferenceManager.getDefaultSharedPreferences(activity)
-            return if(sp.getBoolean(activity.applicationContext.getString(R.string.mapDarkPreferences), true))
+            return if(sp.getBoolean(activity.applicationContext.getString(R.string.mapDarkPreferences), false))
                 R.raw.mapstyle_dark
             else
                 R.raw.mapstyle

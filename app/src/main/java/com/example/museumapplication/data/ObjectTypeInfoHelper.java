@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class ObjectTypeInfoHelper {
     private final static int FORMAT_VERSION = 1;
-    private final static int OBJECT_TYPE_VERSION = 22;
+    private final static int OBJECT_TYPE_VERSION = 26;
 
     public static ObjectTypeInfo getObjectTypeInfo() {
         ObjectTypeInfo objectTypeInfo = new ObjectTypeInfo();

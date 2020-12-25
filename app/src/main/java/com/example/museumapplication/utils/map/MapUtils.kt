@@ -10,17 +10,24 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
-import com.example.museumapplication.data.UserLoggedIn
+import com.example.museumapplication.data.Constant
+import com.example.museumapplication.data.FavoriteMuseum
+import com.example.museumapplication.data.UserLoggedIn.Companion.instance
 import com.example.museumapplication.ui.home.map.MapViewModel
 import com.example.museumapplication.utils.services.AwarenessServiceManager
-import com.facebook.FacebookSdk
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.huawei.hms.kit.awareness.Awareness
 import com.huawei.hms.kit.awareness.barrier.AwarenessBarrier
@@ -34,6 +41,7 @@ import com.huawei.hms.maps.model.MarkerOptions
 import com.huawei.hms.site.api.SearchResultListener
 import com.huawei.hms.site.api.SearchServiceFactory
 import com.huawei.hms.site.api.model.*
+import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.sign
@@ -84,6 +92,7 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         for (marker: Marker in viewModel.activeMarkers.value!!)
             marker.remove()
         viewModel.activeMarkers.value!!.clear()
+        viewModel.activeMarkerData.clear()
         viewModel.siteList.value!!.clear()
         val searchService = SearchServiceFactory.create(context, context.getString(R.string.api_key))
         var count = 0
@@ -106,35 +115,15 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
                         return
                     }
                     deleteAllBarriers(context)
-                    for (site in sites) {
-                        if (site.name.contains("Museum") || site.name.contains("Müzesi")) {
-                            if (!checkDuplicateSite(site)) {
-                                viewModel.siteList.value!!.add(site)
-                                addBarrierToAwarenessKit(site, 5000.0, 1000L)
-                                Log.d("Sites", site.name)
-                            }
-                        }
-                    }
+                    addMuseumsToList(sites)
                     count++
-                    if (count == 19) {
-                        viewModel.siteList.postValue(viewModel.siteList.value)
-                        viewModel.initializeSiteList.postValue(true)
-                        saveSiteListToDevice()
-                        viewModel.progressBarVisibility.value = View.GONE
-                        viewModel.buttonsIsEnabled.postValue(true)
-                    }
+                    processResults(count)
                 }
 
                 override fun onSearchError(searchStatus: SearchStatus) {
                     count++
                     Log.i("TAG", "Error : " + searchStatus.errorCode + " " + searchStatus.errorMessage)
-                    if (count == 19) {
-                        viewModel.siteList.postValue(viewModel.siteList.value)
-                        viewModel.initializeSiteList.postValue(true)
-                        saveSiteListToDevice()
-                        viewModel.progressBarVisibility.value = View.GONE
-                        viewModel.buttonsIsEnabled.postValue(true)
-                    }
+                    processResults(count)
                 }
             }
             searchService.nearbySearch(request, resultListener)
@@ -142,10 +131,38 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
     }
 
     /**
+     * processes onSearchResult and onSearchError results
+     * @param count Int
+     */
+    private fun processResults(count :Int){
+        if (count == 19) {
+            viewModel.siteList.postValue(viewModel.siteList.value)
+            viewModel.initializeSiteList.postValue(true)
+            saveSiteListToDevice()
+            viewModel.progressBarVisibility.value = View.GONE
+            viewModel.buttonsIsEnabled.postValue(true)
+        }
+    }
+
+    /**
+     * adds museums to the list in the viewModel
+     * @param sites MutableList<Site>
+     */
+    private fun addMuseumsToList(sites : MutableList<Site>){
+        for (site in sites) {
+            if ((site.name.contains("Museum") || site.name.contains("Müzesi")) && !checkDuplicateSite(site)) {
+                    viewModel.siteList.value!!.add(site)
+                    addBarrierToAwarenessKit(site, Constant.AWARENESS_BARRIER_RADIUS, Constant.AWARENESS_BARRIER_DURATION)
+                    Log.d("Sites", site.name)
+            }
+        }
+    }
+
+    /**
      * Shared preferences save of the current nearby museums
      */
-    fun saveSiteListToDevice() {
-        val mPrefs = context.getSharedPreferences("SiteData", Context.MODE_PRIVATE)
+    private fun saveSiteListToDevice() {
+        val mPrefs = context.getSharedPreferences("${instance.uID} siteList", Context.MODE_PRIVATE)
         val prefsEditor = mPrefs.edit()
         prefsEditor.clear()
         val gson = Gson()
@@ -165,13 +182,14 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
                 .title(site.name)
                 .icon(BitmapDescriptorFactory.fromBitmap(museumMarkerBitmap))
                 .anchorMarker(0.5f, 0.907f)
+
     }
 
 
     /**
      * This function checks the if there is duplicate museums in the list
      */
-    fun checkDuplicateSite(toCompare: Site): Boolean {
+    private fun checkDuplicateSite(toCompare: Site): Boolean {
         for (site in viewModel.siteList.value!!) {
             if (site.name == toCompare.name) return true
         }
@@ -187,6 +205,7 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         viewModel.currentPositionMarker.value = null
         viewModel.listWeight.value = 0f
         viewModel.activeMarkers.value!!.clear()
+        viewModel.activeMarkerData.clear()
         viewModel.listWeight.postValue(0f)
         viewModel.siteList.value!!.clear()
     }
@@ -222,11 +241,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         Awareness.getBarrierClient(context.applicationContext).updateBarriers(request)
                 .addOnSuccessListener {
                     Log.i("AddBarrier", "add barrier success")
-                    Toast.makeText(FacebookSdk.getApplicationContext(), "add barrier success", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e: Exception ->
                     Log.e("AddBarrier", "add barrier failed", e)
-                    Toast.makeText(FacebookSdk.getApplicationContext(), "add barrier failed$e", Toast.LENGTH_SHORT).show()
                 }
     }
 
@@ -293,6 +310,7 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
             try {
                 canvas.setBitmap(null)
             } catch (ignored: Exception) {
+                Log.d("MapUtils", "Ignored exception")
             }
         } catch (t: Throwable) {
             t.printStackTrace()
@@ -310,18 +328,165 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         color.textSize = 35f
         color.color = Color.BLACK
 
-        val profilePicture: Bitmap? = if (UserLoggedIn.instance.profilePicture == null)
+        val profilePicture: Bitmap? = if (instance.profilePicture == null)
             BitmapFactory.decodeResource(activity.resources, R.drawable.avatar)
         else
-            UserLoggedIn.instance.profilePicture
+            instance.profilePicture
 
 
         val bitmap = viewModel.mapUtils.createUserBitmap(profilePicture, activity)
-        options.title(UserLoggedIn.instance.name)
+        options.title(instance.name)
         options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
         options.anchorMarker(0.5f, 0.907f)
 
         return options
+    }
+
+    companion object {
+        private val df2 = DecimalFormat("#.##")
+
+        @SuppressLint("QueryPermissionsNeeded")
+        fun showMuseumInfo(data: Site, root: View, fragment: Fragment) {
+
+            val sp = PreferenceManager.getDefaultSharedPreferences(fragment.requireContext())
+            val darkMode = sp.getBoolean("darkMode", false)
+
+            val bottomSheetDialog = BottomSheetDialog(
+                    fragment.requireContext(), R.style.BottomSheetDialogTheme)
+            val bottomSheetView = LayoutInflater.from(fragment.requireContext().applicationContext)
+                    .inflate(R.layout.layout_bottom_sheet_museum, root.findViewById(R.id.bottom_sheet_container)
+                    )
+
+            val container = bottomSheetView.findViewById<View>(R.id.bottom_sheet_container)
+            val addressText = bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_museum_address)
+            val museumNameText = bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_museum_name)
+            val museumDistanceText = bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_museum_distance)
+            val museumTelephoneText = bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_museum_telephone)
+            val webPageText = bottomSheetView.findViewById<TextView>(R.id.bottom_sheet_web_page)
+
+
+            if (!darkMode) {
+                container.background.setTint(Color.WHITE)
+                addressText.setTextColor(Color.BLACK)
+                museumNameText.setTextColor(Color.BLACK)
+                museumDistanceText.setTextColor(Color.BLACK)
+                museumTelephoneText.setTextColor(Color.BLACK)
+                webPageText.setTextColor(Color.BLACK)
+            }
+            museumNameText.text = data.name
+            addressText.text = data.formatAddress
+            museumDistanceText.text = distanceToString(data)
+            museumTelephoneText.text = data.poi.phone
+            webPageText.text = data.poi.websiteUrl
+
+            directToCall(data.poi.phone, bottomSheetView, fragment, museumTelephoneText)
+            directWebPage(data.poi.websiteUrl, bottomSheetView, fragment, webPageText)
+
+            bottomSheetView.findViewById<View>(R.id.navigateButton).setOnClickListener {
+                directNavigationApp(data.location.lat, data.location.lng, fragment)
+            }
+            bottomSheetView.findViewById<View>(R.id.favorite_button).setOnClickListener {
+                val temp = instance.getMuseumFavoriteByName(data.name)
+                if (temp == null) {
+                    instance.favoriteMuseumList.add(FavoriteMuseum(data.name, data.formatAddress, data.poi.phone, data.poi.websiteUrl, data.location))
+                    instance.saveFavoriteMuseumListToDevice(fragment.requireContext())
+                    (bottomSheetView.findViewById<View>(R.id.starImage) as ImageView).setColorFilter(fragment.requireContext().resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
+                } else {
+                    instance.favoriteMuseumList.remove(temp)
+                    instance.saveFavoriteMuseumListToDevice(fragment.requireContext())
+                    (bottomSheetView.findViewById<View>(R.id.starImage) as ImageView).setColorFilter(fragment.requireContext().resources.getColor(R.color.colorWhite), PorterDuff.Mode.SRC_IN)
+                }
+            }
+            if (instance.getMuseumFavoriteByName(data.name) != null) (bottomSheetView.findViewById<View>(R.id.starImage) as ImageView).setColorFilter(fragment.requireContext().resources.getColor(R.color.color_gold), PorterDuff.Mode.SRC_IN)
+
+            bottomSheetDialog.setContentView(bottomSheetView)
+            bottomSheetDialog.show()
+        }
+
+        /**
+         * @param data Site
+         * @return String?
+         */
+        private fun distanceToString(data: Site): String? {
+            val distance = data.distance
+            return if (distance > 1000) df2.format(distance / 1000) + " km" else df2.format(distance) + " m"
+        }
+
+        /**
+         * Directs to User Yandex navigation or Google Navigation if the app is installed on the device
+         * @param lat
+         * @param lng
+         * @param fragment -- for intent control
+         *
+         */
+        private fun directNavigationApp(lat: Double, lng: Double, fragment: Fragment) {
+            val uriYandex = "yandexnavi://build_route_on_map?lat_to=${lat}&lon_to=${lng}"
+            val intentYandex = Intent(Intent.ACTION_VIEW, Uri.parse(uriYandex))
+            intentYandex.setPackage("ru.yandex.yandexnavi")
+
+            val uriGoogle = Uri.parse("google.navigation:q=${lat},${lng}&mode=w")
+            val intentGoogle = Intent(Intent.ACTION_VIEW, uriGoogle)
+            intentGoogle.setPackage("com.google.android.apps.maps")
+
+            val chooserIntent = Intent.createChooser(intentYandex, "choose map")
+            val arr = arrayOfNulls<Intent>(1)
+            arr[0] = intentGoogle
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arr)
+
+            val activities = fragment.activity?.packageManager?.queryIntentActivities(chooserIntent, 0)
+            if (activities?.size!! > 0) {
+                fragment.startActivity(chooserIntent)
+            }
+        }
+
+        /**
+         * directs user to the poi web page
+         * @param webSiteUrl String
+         * @param bottomSheetView
+         * @param fragment for intent controls
+         * @param webPageText TextView
+         */
+        private fun directWebPage(webSiteUrl: String?, bottomSheetView: View, fragment: Fragment, webPageText: TextView) {
+            if (webSiteUrl != null) {
+                webPageText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                bottomSheetView.findViewById<View>(R.id.bottom_sheet_web_page).setOnClickListener {
+                    val url: String
+                    if (!webSiteUrl.startsWith("http://") && !webSiteUrl.startsWith("https://")) {
+                        url = "http://$webSiteUrl"
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        fragment.requireContext().startActivity(browserIntent)
+                    } else {
+                        url = webSiteUrl
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        fragment.requireContext().startActivity(browserIntent)
+                    }
+                }
+            }
+        }
+
+        /**
+         * directs user to call
+         * @param phone
+         * @param bottomSheetView
+         * @param fragment
+         * @param museumTelephoneText TextView
+         */
+        private fun directToCall(phone: String?, bottomSheetView: View, fragment: Fragment, museumTelephoneText: TextView) {
+            if (phone != null) {
+                museumTelephoneText.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                bottomSheetView.findViewById<View>(R.id.bottom_sheet_museum_telephone).setOnClickListener {
+                    if (fragment.requireContext().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                        val intent = Intent(Intent.ACTION_CALL)
+                        intent.data = Uri.parse("tel:" + phone)
+                        fragment.requireContext().startActivity(intent)
+                    } else {
+                        val perm = arrayOf(Manifest.permission.CALL_PHONE)
+                        fragment.requestPermissions(perm, 10103)
+                    }
+                }
+            }
+        }
+
     }
 
 
