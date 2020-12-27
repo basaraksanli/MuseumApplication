@@ -17,6 +17,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
+import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.utils.map.LocationManager
 import com.example.museumapplication.utils.map.MapUtils
@@ -53,7 +54,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var progressBarVisibility = MutableLiveData(View.VISIBLE)
     var listWeight = MutableLiveData(0f)
     var fabImage = MutableLiveData(context.getDrawable(R.drawable.uparrow))
-    private var museumRange = 50
+    var museumRange = 50
+    var museumResultCount = MutableLiveData(0)
+    var museumResultRange = MutableLiveData(0)
     /**
      * Camera variables
      */
@@ -66,6 +69,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     var currentPositionMarker =  MutableLiveData<Marker> ()
     var activeMarkers =  MutableLiveData<ArrayList<Marker>>(arrayListOf())
     var activeMarkerData = HashMap<String, Site>()
+
 
 
     companion object{
@@ -120,7 +124,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         return REQUEST_CODE
     }
 
-    fun permissions(): Array<String?>? {
+    fun permissions(): Array<String?> {
         return arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -193,7 +197,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      * Whenever the user searches for the museums, these locations are recorded to shared preferences
      */
     fun retrieveSiteList() {
-        val mPrefs = context.getSharedPreferences("${UserLoggedIn.instance.uID} siteList", Context.MODE_PRIVATE)
+        var mPrefs = context.getSharedPreferences("${UserLoggedIn.instance.uID} siteList", Context.MODE_PRIVATE)
         val siteListJson = mPrefs.getString("siteList", "")
         val typeSite = object : TypeToken<List<Site?>?>() {}.type
         val gsonBuilder = GsonBuilder()
@@ -201,12 +205,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         if (siteListJson!!.isNotEmpty()) {
             siteList.value =  gson.fromJson(siteListJson, typeSite)
         }
-    }
-    fun searchMuseumClick(view: View){
-        if(listWeight.value == 1f)
-            changeMapSize(null)
-        buttonsIsEnabled.postValue(false)
-        mapUtils.searchMuseums(currentLocation.value!!, museumRange *1000)
+        museumResultCount.postValue(siteList.value!!.size)
+
+        mPrefs = context.getSharedPreferences("${UserLoggedIn.instance.uID} museumRange", Context.MODE_PRIVATE)
+        museumResultRange.postValue(mPrefs.getInt("museumRange" , 0))
     }
 
     fun setMuseumRangeString(){

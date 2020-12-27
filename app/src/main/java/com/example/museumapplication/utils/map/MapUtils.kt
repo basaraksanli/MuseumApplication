@@ -20,10 +20,12 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
 import com.example.museumapplication.data.FavoriteMuseum
+import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.data.UserLoggedIn.Companion.instance
 import com.example.museumapplication.ui.home.map.MapViewModel
 import com.example.museumapplication.utils.services.AwarenessServiceManager
@@ -103,6 +105,16 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
         request.poiType = LocationType.MUSEUM
         request.language = "en"
         request.pageSize = 20
+
+        viewModel.museumResultRange.postValue(radius)
+        val sharedPref = context.getSharedPreferences("${instance.uID} museumRange", Context.MODE_PRIVATE)
+
+        with(sharedPref.edit()){
+            putInt("museumRange", radius)
+            apply()
+        }
+
+
         for (i in 1..19) {
             request.pageIndex = i
             val resultListener: SearchResultListener<NearbySearchResponse?> = object : SearchResultListener<NearbySearchResponse?> {
@@ -141,6 +153,7 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
             saveSiteListToDevice()
             viewModel.progressBarVisibility.value = View.GONE
             viewModel.buttonsIsEnabled.postValue(true)
+            viewModel.museumResultCount.postValue(viewModel.siteList.value!!.size)
         }
     }
 
@@ -199,7 +212,9 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
     /**
      * reset all the information in the view model
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     fun resetInfo() {
+        viewModel.fabImage.value = context.getDrawable(R.drawable.uparrow)
         viewModel.progressBarVisibility.value = View.VISIBLE
         viewModel.buttonsIsEnabled.value = true
         viewModel.currentPositionMarker.value = null
@@ -213,7 +228,7 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
     /**
      * For every museum nearby, Awareness barriers are added in order to notify the user when he is close
      */
-    fun addBarrierToAwarenessKit(site: Site, radius: Double, duration: Long) {
+    private fun addBarrierToAwarenessKit(site: Site, radius: Double, duration: Long) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return
         }

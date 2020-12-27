@@ -93,24 +93,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
-                android:id="@+id/searchForMuseumButton"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/colorPrimary"
-                android:clickable="true"
-                android:drawableStart="@android:drawable/ic_menu_search"
-                android:drawableTint="@color/colorWhite"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:paddingStart="50dp"
-                android:paddingEnd="50dp"
-                android:text="@{viewmodel.searchMuseumButtonRangeString}"
-                android:textAllCaps="false"
-                android:onClick="@{viewmodel.searchMuseumClick}"
-                android:textColor="@color/colorWhite"
-                app:setEnabled="@{viewmodel.buttonsIsEnabled}"/>
+
 
             <LinearLayout
                 android:id="@+id/mapListLayout"
@@ -118,6 +101,19 @@
                 android:layout_height="0dp"
                 android:setWeight="@{viewmodel.listWeight}"
                 android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/searchForMuseumButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:paddingStart="50dp"
+                    android:paddingEnd="50dp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite"
+                    android:text="@{@string/searchResult(viewmodel.museumResultCount, viewmodel.museumResultRange/1000)}"
+                    app:setEnabled="@{viewmodel.buttonsIsEnabled}"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/siteList"

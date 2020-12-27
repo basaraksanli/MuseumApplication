@@ -4,10 +4,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
@@ -44,6 +41,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
     companion object {
         private const val TAG = "MapFragment"
     }
+
     private var hMap: HuaweiMap? = null
     private var mMapView: MapView? = null
     private var listView: RecyclerView? = null
@@ -62,7 +60,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
 
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
@@ -86,7 +83,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         if (!isSuccess) {
             return null
         }
-        if(!GpsCheckUtils.isGpsEnabled(requireContext()))
+        if (!GpsCheckUtils.isGpsEnabled(requireContext()))
             GeneralUtils.showWarnDialog("GPS is not enabled. Please activate your GPS.", requireContext(), null)
 
         initializeMapObservers()
@@ -95,7 +92,31 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
 
         return binding.root
     }
-    private fun initializeMapObservers(){
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.map_menu, menu)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.map_menu -> {
+                if(viewModel.listWeight.value == 1f)
+                    viewModel.changeMapSize(null)
+                viewModel.buttonsIsEnabled.postValue(false)
+                viewModel.mapUtils.searchMuseums(viewModel.currentLocation.value!!, viewModel.museumRange *1000)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun initializeMapObservers() {
         //General animate camera observation. Many animate functions in the project use this observation
         viewModel.animateCameraLatLng.observe(viewLifecycleOwner, {
             animateCamera(it, Constant.MAP_ZOOM)
@@ -123,13 +144,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
             }
         })
     }
-    private fun initializeUiObservers(){
+
+    private fun initializeUiObservers() {
         //Creates new markers on the Sites whenever the list has a change
         viewModel.siteList.observe(viewLifecycleOwner, {
             if (isMapReady) {
                 setRecyclerViewAdapter(binding.root)
                 for (site: Site in it) {
-                    val marker =drawMarker(viewModel.mapUtils.createMuseumMarkerOptions(site))
+                    val marker = drawMarker(viewModel.mapUtils.createMuseumMarkerOptions(site))
                     viewModel.activeMarkers.value!!.add(marker)
                     viewModel.activeMarkerData[marker.id] = site
                 }
@@ -156,7 +178,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
      * Creates user marker and focus on it
      * If there is a site to focus at the start of the application, focus on it
      */
-    private fun handleFirstLocation(location: Location){
+    private fun handleFirstLocation(location: Location) {
         if (requireActivity().intent.extras == null)
             moveCamera(LatLng(location.latitude, location.longitude), Constant.MAP_ZOOM)
         else {
@@ -192,7 +214,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
     override fun onMapReady(map: HuaweiMap) {
         Log.d(TAG, "onMapReady: ")
         hMap = map
-        isMapReady= true
+        isMapReady = true
 
         hMap!!.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(),
                 SettingsUtils.mapStyleDark(requireActivity())))
@@ -204,7 +226,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         viewModel.startLocationTrack()
 
         hMap!!.setOnInfoWindowClickListener {
-            MapUtils.showMuseumInfo(viewModel.activeMarkerData[it.id]!!, binding.root, this)
+            if (it.id != viewModel.currentPositionMarker.value!!.id)
+                MapUtils.showMuseumInfo(viewModel.activeMarkerData[it.id]!!, binding.root, this)
         }
     }
 
@@ -223,6 +246,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
         Log.i(TAG, "requestPermissionsSuccess")
         initMap()
     }
+
     private fun requestPermissions(fragment: Fragment, permissionInterface: PermissionInterface): Boolean {
         mPermissionHelper = PermissionHelper(fragment, permissionInterface)
         mPermissionHelper!!.requestPermissions()
@@ -277,7 +301,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
      */
     private fun setRecyclerViewAdapter(view: View) {
         viewModel.siteList.value!!.sortWith { site1: Site, site2: Site -> (site1.distance - site2.distance).toInt() }
-        siteListAdapter = SiteListAdapter(viewModel.siteList.value!!, requireContext(), view, viewModel , this)
+        siteListAdapter = SiteListAdapter(viewModel.siteList.value!!, requireContext(), view, viewModel, this)
         listView!!.adapter = siteListAdapter
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
