@@ -113,4 +113,5 @@
     <string name="email_permissions_warning">Please give email permissions for the application, otherwise you can\'t register to the app.</string>
     <string name="networkWarnString">Network Warn</string>
     <string name="searchResult">%1$s museums found in %2$s kilometers</string>
+
 </resources>

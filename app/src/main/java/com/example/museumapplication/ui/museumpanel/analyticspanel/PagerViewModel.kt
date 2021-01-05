@@ -1,21 +1,31 @@
+/*
+ * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.museumapplication.ui.museumpanel.analyticspanel
 
-import android.annotation.SuppressLint
 import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.anychart.APIlib
-import com.anychart.AnyChart
-import com.anychart.AnyChartView
 import com.bumptech.glide.Glide
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Museum
 import com.example.museumapplication.data.Visit
 import com.example.museumapplication.utils.museumpanel.StatisticsUtils
 import com.example.museumapplication.utils.services.CloudDBManager
-import kotlin.collections.ArrayList
 
 
 class PagerViewModel : ViewModel() {
@@ -28,6 +38,8 @@ class PagerViewModel : ViewModel() {
     var visitList = MutableLiveData<ArrayList<Visit>>()
     var artifactList = arrayListOf<Artifact>()
 
+    val museumVisitCountList = MutableLiveData<MutableList<Pair<String, Int>>>()
+    val museumVisitLengthList = MutableLiveData<MutableList<Pair<String, Int>>>()
 
     /**
      * variable initializations
@@ -74,56 +86,6 @@ class PagerViewModel : ViewModel() {
         }
 
         /**
-         * Total visit graph with Any Chart Library
-         */
-        @SuppressLint("SimpleDateFormat")
-        @JvmStatic
-        @BindingAdapter("loadPlotTotalVisit")
-        fun loadPlotTotalVisit(view: AnyChartView, visitList: ArrayList<Visit>) {
-
-            APIlib.getInstance().setActiveAnyChartView(view)
-
-            val data = statisticsUtils.getLastWeekVisits(visitList)
-
-            val bar = AnyChart.bar3d()
-            bar.data(data)
-            bar.palette().items("Red", "#ff6f60")
-            bar.animation(true)
-            bar.contextMenu(true)
-            bar.xAxis(0).labels(true)
-            bar.yAxis(0).labels().format("{%Value}")
-            bar.xAxis(0).title("Day")
-            bar.yAxis(0).title("Count")
-            bar.credits().enabled(false)
-            view.setChart(bar)
-        }
-
-        /**
-         * Visit Length graph with any chart library
-         */
-        @SuppressLint("SimpleDateFormat")
-        @JvmStatic
-        @BindingAdapter("loadPlotVisitLength")
-        fun loadPlotVisitLength(view: AnyChartView, visitList: ArrayList<Visit>) {
-            val statisticsUtils = StatisticsUtils()
-            APIlib.getInstance().setActiveAnyChartView(view)
-
-            val data = statisticsUtils.getLastWeekVisitLengths(visitList)
-            val bar = AnyChart.bar3d()
-            bar.data(data)
-            bar.palette().items("Red", "#ff6f60")
-            bar.animation(true)
-            bar.contextMenu(true)
-            bar.xAxis(0).labels(true)
-            bar.yAxis(0).labels().format("{%Value} seconds")
-            bar.xAxis(0).title("Day")
-            bar.yAxis(0).title("Seconds")
-
-            bar.credits().enabled(false)
-            view.setChart(bar)
-        }
-
-        /**
          * Top exhibits load images
          */
         @JvmStatic
@@ -163,6 +125,11 @@ class PagerViewModel : ViewModel() {
     }
 
     fun initialize() {
+
+
+
+
+
         /**
          * Cloud Db operations for getting artifact and museum information for specific partner museum
          */
@@ -172,6 +139,9 @@ class PagerViewModel : ViewModel() {
         /**
          * statistics calculations
          */
+        museumVisitCountList.value = statisticsUtils.getLastWeekVisits(visitList.value!!)
+        museumVisitLengthList.value = statisticsUtils.getLastWeekVisitLengths(visitList.value!!)
+
         totalVisits.value = visitList.value!!.size
         progressBarVisibility.value = View.GONE
 

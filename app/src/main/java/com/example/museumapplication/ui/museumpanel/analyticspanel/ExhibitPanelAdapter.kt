@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.museumapplication.ui.museumpanel.analyticspanel
 
 
@@ -10,9 +25,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.anychart.APIlib
-import com.anychart.AnyChart
-import com.anychart.AnyChartView
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Visit
@@ -102,44 +114,55 @@ class ExhibitPanelAdapter(private val context: Context, private val root: View, 
                 val lastWeekVisitLengthData = statisticUtils.getLastWeekVisitLengths(artifactVisitList)
                 bottomSheetView.findViewById<TextView>(R.id.lastWeekAverageVisitLength).text = statisticUtils.findLastWeekAverageVisitLength(lastWeekVisitCountData, lastWeekVisitLengthData).toString() +" s"
 
+                val textViewListCountDays = arrayListOf<TextView>()
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.firstDay))
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.secondDay))
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.thirdDay))
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.fourthDay))
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.fifthDay))
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.sixthDay))
+                textViewListCountDays.add(bottomSheetView.findViewById(R.id.seventhDay))
 
-                val anyChartViewVisit = bottomSheetView.findViewById<AnyChartView>(R.id.visitChart)
-                APIlib.getInstance().setActiveAnyChartView(anyChartViewVisit)
+                val textViewListLengthDays = arrayListOf<TextView>()
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.firstDayL))
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.secondDayL))
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.thirdDayL))
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.fourthDayL))
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.fifthDayL))
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.sixthDayL))
+                textViewListLengthDays.add(bottomSheetView.findViewById(R.id.seventhDayL))
+
+                for (i in 0..6){
+                    textViewListCountDays[i].text = lastWeekVisitCountData[i].first
+                    textViewListLengthDays[i].text = lastWeekVisitCountData[i].first
+                }
 
 
-                /**
-                 * last week visit count graph with any chart library
-                 */
-                val barVisit = AnyChart.bar3d()
-                barVisit.data(lastWeekVisitCountData)
-                barVisit.palette().items("Red", "#ff6f60")
-                barVisit.animation(true)
-                barVisit.contextMenu(true)
-                barVisit.xAxis(0).labels(true)
-                barVisit.yAxis(0).labels().format("{%Value}")
-                barVisit.xAxis(0).title("Day")
-                barVisit.yAxis(0).title("Count")
-                anyChartViewVisit.setChart(barVisit)
+                val textViewListCount = arrayListOf<TextView>()
+                textViewListCount.add(bottomSheetView.findViewById(R.id.firstDayCount))
+                textViewListCount.add(bottomSheetView.findViewById(R.id.secondDayCount))
+                textViewListCount.add(bottomSheetView.findViewById(R.id.thirdDayCount))
+                textViewListCount.add(bottomSheetView.findViewById(R.id.fourthDayCount))
+                textViewListCount.add(bottomSheetView.findViewById(R.id.fifthDayCount))
+                textViewListCount.add(bottomSheetView.findViewById(R.id.sixthDayCount))
+                textViewListCount.add(bottomSheetView.findViewById(R.id.seventhDayCount))
 
-                val anyChartViewLength = bottomSheetView.findViewById<AnyChartView>(R.id.visitLengthChart)
-                APIlib.getInstance().setActiveAnyChartView(anyChartViewLength)
+                val textViewListLength = arrayListOf<TextView>()
+                textViewListLength.add(bottomSheetView.findViewById(R.id.firstDayLength))
+                textViewListLength.add(bottomSheetView.findViewById(R.id.secondDayLength))
+                textViewListLength.add(bottomSheetView.findViewById(R.id.thirdDayLength))
+                textViewListLength.add(bottomSheetView.findViewById(R.id.fourthDayLength))
+                textViewListLength.add(bottomSheetView.findViewById(R.id.fifthDayLength))
+                textViewListLength.add(bottomSheetView.findViewById(R.id.sixthDayLength))
+                textViewListLength.add(bottomSheetView.findViewById(R.id.seventhDayLength))
 
+                for (i in 0..6){
+                    textViewListCount[i].text = lastWeekVisitCountData[i].second.toString()
+                }
 
-                /**
-                 * last week visit length with any chart library
-                 */
-                val barLength = AnyChart.bar3d()
-                barLength.data(lastWeekVisitLengthData)
-                barLength.palette().items("Red", "#ff6f60")
-                barLength.animation(true)
-                barLength.contextMenu(true)
-                barLength.xAxis(0).labels(true)
-                barLength.yAxis(0).labels().format("{%Value}")
-                barLength.xAxis(0).title("Day")
-                barLength.yAxis(0).title("Length")
-
-                anyChartViewLength.setChart(barLength)
-
+                for (i in 0..6){
+                    textViewListLength[i].text = lastWeekVisitLengthData[i].second.toString()
+                }
 
                 bottomSheetDialog.setContentView(bottomSheetView)
                 bottomSheetDialog.show()

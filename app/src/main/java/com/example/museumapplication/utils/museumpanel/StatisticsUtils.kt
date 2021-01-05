@@ -1,10 +1,23 @@
+/*
+ * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.museumapplication.utils.museumpanel
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.anychart.chart.common.dataentry.DataEntry
-import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.example.museumapplication.data.Artifact
 import com.example.museumapplication.data.Visit
 import java.text.SimpleDateFormat
@@ -35,7 +48,7 @@ class StatisticsUtils {
      * Statistical last week visit length calculations
      */
     @SuppressLint("SimpleDateFormat")
-    fun getLastWeekVisitLengths(visitList: ArrayList<Visit>): MutableList<DataEntry?> {
+    fun getLastWeekVisitLengths(visitList: ArrayList<Visit>): MutableList<Pair<String, Int>> {
         val lengths = mutableListOf(0, 0, 0, 0, 0, 0, 0)
         val dayOfWeekList = arrayListOf<Int>()
         val sdf = SimpleDateFormat("yyyy-MM-dd ")
@@ -54,9 +67,9 @@ class StatisticsUtils {
                 lengths[i] = lengths[i] / visitCount
             cal.add(Calendar.DAY_OF_YEAR, 1)
         }
-        val data = mutableListOf<DataEntry?>()
+        val data = mutableListOf<Pair<String, Int>>()
         for (i in 0..6)
-            data.add(ValueDataEntry(getDay(dayOfWeekList[i]), lengths[i]))
+            data.add(Pair(getDay(dayOfWeekList[i]), lengths[i]))
         return data
     }
 
@@ -64,7 +77,7 @@ class StatisticsUtils {
      * Statistical last week visit counts calculations
      */
     @SuppressLint("SimpleDateFormat")
-    fun getLastWeekVisits(visitList: ArrayList<Visit>): MutableList<DataEntry?> {
+    fun getLastWeekVisits(visitList: ArrayList<Visit>): MutableList<Pair<String, Int>> {
         val counts = mutableListOf(0, 0, 0, 0, 0, 0, 0)
         val dayOfWeekList = arrayListOf<Int>()
         val sdf = SimpleDateFormat("yyyy-MM-dd ")
@@ -76,19 +89,19 @@ class StatisticsUtils {
             counts[i] = visitList.filter { visit -> sdf.format(visit.date) == sdf.format(temp) }.size
             cal.add(Calendar.DAY_OF_YEAR, 1)
         }
-        val data = mutableListOf<DataEntry?>()
+        val data = mutableListOf<Pair<String, Int>>()
         for (i in 0..6)
-            data.add(ValueDataEntry(getDay(dayOfWeekList[i]), counts[i]))
+            data.add(Pair(getDay(dayOfWeekList[i]), counts[i]))
         return data
     }
 
     /**
      * last week total visit calculation
      */
-    fun findLastWeekTotalVisit(dataEntry: MutableList<DataEntry?>): Int {
+    fun findLastWeekTotalVisit(dataEntry: MutableList<Pair<String, Int>>): Int {
         var result = 0
-        for (entry: DataEntry? in dataEntry) {
-            result += entry!!.getValue("value").toString().toInt()
+        for (entry: Pair<String, Int>? in dataEntry) {
+            result += entry!!.second.toString().toInt()
         }
         return result
     }
@@ -114,13 +127,13 @@ class StatisticsUtils {
      * last week average visit length calculation
      */
     @SuppressLint("SimpleDateFormat")
-    fun findLastWeekAverageVisitLength(visitEntries: MutableList<DataEntry?>, lengthEntries: MutableList<DataEntry?>): Int {
+    fun findLastWeekAverageVisitLength(visitEntries: MutableList<Pair<String, Int>>, lengthEntries: MutableList<Pair<String, Int>>): Int {
         var result = 0
         var count = 0
         for (i in 1 until visitEntries.size) {
 
-            result += (lengthEntries[i]!!.getValue("value").toString().toInt()) * visitEntries[i]!!.getValue("value").toString().toInt()
-            count += visitEntries[i]!!.getValue("value").toString().toInt()
+            result += (lengthEntries[i].second.toString().toInt()) * visitEntries[i].second.toString().toInt()
+            count += visitEntries[i].second.toString().toInt()
         }
         return if (result!=0)
             result / count
