@@ -32,7 +32,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
-import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.utils.map.LocationManager
 import com.example.museumapplication.utils.map.MapUtils

@@ -111,10 +111,10 @@ class GoogleAuth(var viewModel: SharedAuthViewModel) : IBaseAuth {
                     viewModel.navigateToHomePage.postValue(true)
                     viewModel.itemClickableOrEnabled.postValue(true)
                 }
-                .addOnFailureListener { e: Exception ->
+                .addOnFailureListener {
                     // onFail
                     viewModel.itemClickableOrEnabled.postValue(true)
-                    Toast.makeText(viewModel.mContext,"Insert user info failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(viewModel.mContext,viewModel.mContext!!.getString(R.string.insert_user_fail), Toast.LENGTH_LONG).show()
                 }
     }
 

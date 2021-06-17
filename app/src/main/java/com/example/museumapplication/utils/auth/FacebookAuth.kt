@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.example.museumapplication.R
 import com.example.museumapplication.data.LinkedAccount
 import com.example.museumapplication.data.User
 import com.example.museumapplication.data.UserLoggedIn
@@ -70,7 +71,7 @@ class FacebookAuth(val viewModel: SharedAuthViewModel) : IBaseAuth {
             override fun onError(error: FacebookException) {
                 Log.d(TAG, ":onError", error)
                 viewModel.itemClickableOrEnabled.postValue(true)
-                Toast.makeText(viewModel.mContext, "Login Error", Toast.LENGTH_LONG).show()
+                Toast.makeText(viewModel.mContext, viewModel.mContext!!.getString(R.string.login_error), Toast.LENGTH_LONG).show()
                 viewModel.progressBarVisibility.postValue(View.GONE)
             }
         })

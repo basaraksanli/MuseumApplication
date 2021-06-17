@@ -104,6 +104,7 @@ public class TTSUtils {
      * Shutdowns TTS
      */
     public void destroyTTSreading(){
+        // Not used. Implemented for future usage
         mlTtsEngine.shutdown();
     }
 }

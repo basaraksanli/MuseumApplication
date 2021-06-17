@@ -161,12 +161,12 @@ class VirtualGuideViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun operateConnectivityAction() {
-        val `object` = context.getSystemService(Context.CONNECTIVITY_SERVICE)
-        if (`object` !is ConnectivityManager) {
+        val connectivityService = context.getSystemService(Context.CONNECTIVITY_SERVICE)
+        if (connectivityService !is ConnectivityManager) {
             GeneralUtils.showWarnDialog(context.getString(R.string.networkWarnString), context, navigateToHome)
             return
         }
-        val activeNetworkInfo = `object`.activeNetworkInfo
+        val activeNetworkInfo = connectivityService.activeNetworkInfo
         if (activeNetworkInfo == null) {
             GeneralUtils.showWarnDialog(context.getString(R.string.networkWarnString), context, navigateToHome)
             return

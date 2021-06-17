@@ -42,7 +42,6 @@
     <string name="search_for_museums">Search for Museums</string>
     <string name="artifact_name">Exhibit Name:</string>
     <string name="no_nearby_artifact">No nearby Exhibit</string>
-    <string name="description">Description</string>
     <string name="focus_on_map">Focus on Map</string>
     <string name="museum_login">Museum Login</string>
     <string name="title_activity_museum_panel">MuseumPanelActivity</string>
@@ -66,7 +65,6 @@
     <string name="favorites">Favorites</string>
     <string name="image">Image</string>
     <string name="artifactname">ArtifactName</string>
-    <string name="museum_name">Museum Name</string>
     <string name="museum_information">Museum Information</string>
     <string name="address">Address</string>
     <string name="phone_number">Phone Number:</string>
@@ -113,5 +111,24 @@
     <string name="email_permissions_warning">Please give email permissions for the application, otherwise you can\'t register to the app.</string>
     <string name="networkWarnString">Network Warn</string>
     <string name="searchResult">%1$s museums found in %2$s kilometers</string>
+    <string name="gps_not_enabled">GPS is not enabled. Please activate your GPS.</string>
+    <string name="login_error">Login Error</string>
+    <string name="insert_user_fail">Insert user info failed</string>
+    <string name="most_visited">Most Visited</string>
+    <string name="longest_stay">Longest Stay</string>
+    <string name="least_visited">Least Visited</string>
+    <string name="shortest_stay">Shortest Stay</string>
+    <string name="museum_distance">Museum Distance</string>
+    <string name="museum_address">Museum Address</string>
+    <string name="museum_phone">Museum Phone</string>
+    <string name="museum_page">Museum Page</string>
+    <string name="total_visit_length">Total Visit Length:</string>
+    <string name="last_week_average_length">Last Week Average Length:</string>
+    <string name="museum_name">Museum Name</string>
+    <string name="description">Description</string>
+    <string name="distance">Distance</string>
+    <string name="_50m">50m</string>
+    <string name="explore_nearby_museums">Explore Nearby Museums</string>
+    <string name="museum_description">Museum Description</string>
 
 </resources>

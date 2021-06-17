@@ -35,12 +35,10 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.example.museumapplication.R
 import com.example.museumapplication.data.Constant
 import com.example.museumapplication.data.FavoriteMuseum
-import com.example.museumapplication.data.UserLoggedIn
 import com.example.museumapplication.data.UserLoggedIn.Companion.instance
 import com.example.museumapplication.ui.home.map.MapViewModel
 import com.example.museumapplication.utils.services.AwarenessServiceManager
@@ -302,10 +300,10 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
     /**
      * This is a function to calculate and draw circle like marker with an image inside
      */
-    private fun dp(value: Float, fragment: Activity): Int {
+    private fun dp(value: Float, activity: Activity): Int {
         return if (value == 0f) {
             0
-        } else ceil(fragment.resources.displayMetrics.density * value.toDouble()).toInt()
+        } else ceil(activity.resources.displayMetrics.density * value.toDouble()).toInt()
     }
 
     /**
@@ -354,15 +352,11 @@ class MapUtils(private val context: Context, private val viewModel: MapViewModel
      */
     fun getUserMarkerOptions(location: Location, activity: Activity): MarkerOptions? {
         val options = MarkerOptions().position(LatLng(location.latitude, location.longitude))
-        val color = Paint()
-        color.textSize = 35f
-        color.color = Color.BLACK
 
         val profilePicture: Bitmap? = if (instance.profilePicture == null)
             BitmapFactory.decodeResource(activity.resources, R.drawable.avatar)
         else
             instance.profilePicture
-
 
         val bitmap = viewModel.mapUtils.createUserBitmap(profilePicture, activity)
         options.title(instance.name)

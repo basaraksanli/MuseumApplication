@@ -11,6 +11,6 @@
         android:layout_height="wrap_content"
         android:paddingBottom="20dp"
         style="@style/TextAppearance.Compat.Notification.Title"
-        android:text="Explore Nearby Museums"/>
+        android:text="@string/explore_nearby_museums"/>
 
 </LinearLayout>

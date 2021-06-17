@@ -45,9 +45,9 @@ object NetCheckUtils {
      * @return true:Mobile is connection
      */
     private fun isMobileConnection(context: Context): Boolean {
-        val `object` = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
                 ?: return false
-        val networkInfo = `object`.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+        val networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
         return networkInfo != null && networkInfo.isConnected
     }
 

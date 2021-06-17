@@ -29,8 +29,8 @@ object GpsCheckUtils {
      */
     @RequiresApi(api = Build.VERSION_CODES.P)
     fun isGpsEnabled(context: Context): Boolean {
-        val `object` = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
                 ?: return false
-        return `object`.isLocationEnabled
+        return locationManager.isLocationEnabled
     }
 }

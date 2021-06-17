@@ -126,6 +126,8 @@ class BeaconUtils (val context: Context, val viewModel: VirtualGuideViewModel){
         val id = messageContent.toInt()
         artifactDistances.remove(id)
         downloadedArtifacts.removeAt(id)
+        if (viewModel.currentArtifact.value!!.artifactID == id)
+            viewModel.currentArtifact.postValue(null)
     }
 
     /**

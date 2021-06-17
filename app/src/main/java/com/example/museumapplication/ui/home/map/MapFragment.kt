@@ -99,7 +99,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
             return null
         }
         if (!GpsCheckUtils.isGpsEnabled(requireContext()))
-            GeneralUtils.showWarnDialog("GPS is not enabled. Please activate your GPS.", requireContext(), null)
+            GeneralUtils.showWarnDialog(getString(R.string.gps_not_enabled), requireContext(), null)
 
         initializeMapObservers()
         initializeUiObservers()
@@ -285,7 +285,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionInterface {
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
-        mPermissionHelper!!.requestPermissionsResult(requestCode, permissions, grantResults)
+        mPermissionHelper!!.requestPermissionsResult(requestCode, grantResults)
     }
 
 

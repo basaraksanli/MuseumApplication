@@ -28,7 +28,6 @@ import com.example.museumapplication.databinding.FragmentEmailLoginBinding
 import com.example.museumapplication.ui.home.HomeActivity
 import com.example.museumapplication.ui.museumpanel.MuseumPanelActivity
 import com.huawei.agconnect.auth.AGConnectAuth
-import com.huawei.agconnect.auth.AGConnectUser
 
 
 class EmailLoginFragment : Fragment() {

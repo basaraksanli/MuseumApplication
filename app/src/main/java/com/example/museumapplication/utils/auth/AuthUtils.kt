@@ -30,7 +30,7 @@ object AuthUtils {
      * Checks if the email is valid
      */
     private fun isEmailValid(email: String?): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        return Patterns.EMAIL_ADDRESS.matcher(email!!).matches()
     }
 
     /**

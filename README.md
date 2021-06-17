@@ -133,6 +133,11 @@ Museum App is designed with MVVM design pattern.
 - Huawei Cloud DB
 - Huawei Machine Learning Kit- Text to Speech
 - LiveData
+- Kotlin Library
+- Lifecycle
+- Facebook Sign in
+- Google Sign in
+- CardView
 - DataBinding
 - TimeIT
 - Navigation

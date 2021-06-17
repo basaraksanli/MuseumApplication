@@ -37,7 +37,7 @@ class PermissionHelper
 
 
     fun requestPermissionsResult(
-            requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean {
+            requestCode: Int, grantResults: IntArray): Boolean {
         if (requestCode == mPermissionInterface.permissionsRequestCode()) {
             var isAllGranted = true
             for (result in grantResults) {

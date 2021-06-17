@@ -160,7 +160,7 @@ class VirtualGuideFragment : Fragment(), PermissionInterface {
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
-        mPermissionHelper!!.requestPermissionsResult(requestCode, permissions, grantResults)
+        mPermissionHelper!!.requestPermissionsResult(requestCode, grantResults)
     }
 
     private fun requestPermissions(fragment: Fragment, permissionInterface: PermissionInterface): Boolean {

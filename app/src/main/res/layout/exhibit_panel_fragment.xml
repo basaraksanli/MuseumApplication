@@ -36,7 +36,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Most Visited"
+                            android:text="@string/most_visited"
                             android:gravity="center"
                             android:textStyle="bold"/>
                         <ImageView
@@ -60,7 +60,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Longest Stay"
+                            android:text="@string/longest_stay"
                             android:gravity="center"
                             android:textStyle="bold"/>
                         <ImageView
@@ -90,7 +90,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Least Visited"
+                            android:text="@string/least_visited"
                             android:gravity="center"
                             android:textStyle="bold"/>
                         <ImageView
@@ -114,7 +114,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Shortest Stay"
+                            android:text="@string/shortest_stay"
                             android:gravity="center"
                             android:textStyle="bold"/>
                         <ImageView

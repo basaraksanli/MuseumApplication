@@ -34,6 +34,7 @@ object BluetoothCheckUtils {
      * @return true：Forced to open Bluetooth device successfully
      */
     fun turnOnBluetooth(): Boolean {
+        // Not used. Implemented for future usage
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         return bluetoothAdapter?.enable() ?: false
     }

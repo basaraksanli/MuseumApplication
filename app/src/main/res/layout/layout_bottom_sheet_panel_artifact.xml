@@ -180,7 +180,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:layout_weight="2"
-                                android:text="Total Visit Length:"
+                                android:text="@string/total_visit_length"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -228,7 +228,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
                                 android:layout_weight="2"
-                                android:text="Last Week Average Length:"
+                                android:text="@string/last_week_average_length"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 

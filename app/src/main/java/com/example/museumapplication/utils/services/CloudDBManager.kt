@@ -66,6 +66,7 @@ class CloudDBManager {
      * Close Cloud Db zone
      */
     fun closeCloudDBZone() {
+        // Not used. Implemented for future usage
         try {
             mCloudDB!!.closeCloudDBZone(mCloudDBZone)
         } catch (e: AGConnectCloudDBException) {
@@ -388,6 +389,7 @@ class CloudDBManager {
      * increases current visit count of the artifact
      */
     fun increaseCurrentVisitCount(artifactID: Int) {
+        // Not used. Implemented for future usage
         if (mCloudDBZone == null) {
             Log.d(TAG, cloudDBError)
             return
@@ -407,6 +409,7 @@ class CloudDBManager {
      * decreases current visit count of the artifact
      */
     fun decreaseCurrentVisitCount(artifactID: Int) {
+        // Not used. Implemented for future usage
         if (mCloudDBZone == null) {
             Log.d(TAG, cloudDBError)
             return
